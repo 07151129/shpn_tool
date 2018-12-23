@@ -91,5 +91,6 @@ const struct script_desc* script_for_name(const char* name);
 bool make_label(uint16_t offs, struct script_state* state); /* true if not present previously */
 
 bool cmd_is_branch(const union script_cmd* cmd);
+bool has_label(uint16_t offs, const struct script_state* state);
 
 #endif

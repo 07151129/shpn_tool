@@ -21,11 +21,11 @@ static uint32_t next_cmd_arg(uint16_t a1, uint16_t w, const struct script_state*
     return *(uint32_t*)(&((uint8_t*)state->args)[2 * w - 2]);
 }
 
-uint16_t handler_stub(uint16_t arg0, uint16_t arg1, struct script_state* state) {
+static uint16_t handler_stub(uint16_t arg0, uint16_t arg1, struct script_state* state) {
     return 0;
 }
 
-uint16_t handler_Jump(uint16_t arg0, uint16_t arg1, struct script_state* state) {
+static uint16_t handler_Jump(uint16_t arg0, uint16_t arg1, struct script_state* state) {
     if (arg1 != 1)
         return UINT16_MAX;
 
@@ -37,6 +37,8 @@ uint16_t handler_Jump(uint16_t arg0, uint16_t arg1, struct script_state* state) 
     if (!state->dumping)
         make_label(dst, state);
     else {
+        assert(has_label(dst, state) && "Out-of-sync labels between phases");
+
         assert(state->va_ctx.buf && state->va_ctx.sz > sizeof("L_0xffff"));
         sprintf(state->va_ctx.buf, "L_0x%x", dst);
     }
@@ -62,7 +64,7 @@ static bool strtab_print_str(char* buf, size_t sz, const uint8_t* strtab, uint16
     return ret;
 }
 
-uint16_t handler_ShowText(uint16_t arg0, uint16_t arg1, struct script_state* state) {
+static uint16_t handler_ShowText(uint16_t arg0, uint16_t arg1, struct script_state* state) {
     assert(arg0 == 0 && arg1 == 1);
 
     uint32_t v3 = 0; // v3 != 0 => new frame?
@@ -79,7 +81,7 @@ uint16_t handler_ShowText(uint16_t arg0, uint16_t arg1, struct script_state* sta
     return 0;
 }
 
-uint16_t handler_LoadBackground(uint16_t arg0, uint16_t has_bg, struct script_state* state) {
+static uint16_t handler_LoadBackground(uint16_t arg0, uint16_t has_bg, struct script_state* state) {
     uint16_t bg_idx = 0;
 
     if (state->dumping) {
@@ -93,7 +95,7 @@ uint16_t handler_LoadBackground(uint16_t arg0, uint16_t has_bg, struct script_st
     return bg_idx;
 }
 
-uint16_t handler_LoadEffect(uint16_t arg0, uint16_t arg1, struct script_state* state) {
+static uint16_t handler_LoadEffect(uint16_t arg0, uint16_t arg1, struct script_state* state) {
     assert(arg0 == 0);
 
     uint16_t idx0 = next_cmd_arg(arg0, 1, state);
@@ -147,7 +149,7 @@ static bool print_choice(size_t start, uint32_t mask, uint16_t arg0, size_t narg
     return true;
 }
 
-uint16_t handler_Choice(uint16_t arg0, uint16_t arg1, struct script_state* state) {
+static uint16_t handler_Choice(uint16_t arg0, uint16_t arg1, struct script_state* state) {
     assert(arg1 <= 10);
     uint32_t mask = UINT16_MAX * 2 + 1;
 
@@ -157,7 +159,7 @@ uint16_t handler_Choice(uint16_t arg0, uint16_t arg1, struct script_state* state
     return 0;
 }
 
-uint16_t handler_ChoiceIdx(uint16_t arg0, uint16_t arg1, struct script_state* state) {
+static uint16_t handler_ChoiceIdx(uint16_t arg0, uint16_t arg1, struct script_state* state) {
     uint32_t dst = next_cmd_arg(arg0, 1, state) & UINT16_MAX;
     assert(arg1 > 0);
     uint32_t mask = UINT16_MAX * 2 + 1 + UINT16_MAX + 1;
@@ -168,7 +170,7 @@ uint16_t handler_ChoiceIdx(uint16_t arg0, uint16_t arg1, struct script_state* st
     return 0;
 }
 
-uint16_t handler_Stop(uint16_t arg0, uint16_t arg1, struct script_state* state) {
+static uint16_t handler_Stop(uint16_t arg0, uint16_t arg1, struct script_state* state) {
     return UINT16_MAX;
 }
 
@@ -270,7 +272,7 @@ loc_800633c:
     goto loc_8006348;
 }
 
-uint16_t handler_0x4(uint16_t arg0, uint16_t arg1, struct script_state* state) {
+static uint16_t handler_0x4(uint16_t arg0, uint16_t arg1, struct script_state* state) {
     assert(arg0 == 0);
 
     if (state->dumping) {
@@ -300,6 +302,11 @@ static uint16_t handler_0x0(uint16_t a1, uint16_t a2, struct script_state* state
     if (/* a1 << 16 || */ a2)
         return UINT16_MAX;
     return 0;
+}
+
+/* It's a no-op, but we prohibit disassembly of this instruction */
+static uint16_t handler_0x30(uint16_t a1, uint16_t a2, struct script_state* state) {
+    return UINT16_MAX;
 }
 
 void init_script_handlers() {
@@ -339,7 +346,8 @@ void init_script_handlers() {
     script_handlers[0x11].name = "Choice";
     script_handlers[0x11].has_va = true;
     script_handlers[0x11].handler = handler_Choice;
-    script_handlers[0x10].nargs = 0;
+
+    script_handlers[0x30].handler = handler_0x30;
 
     script_handlers[0x35].name = "ChoiceIdx";
     script_handlers[0x35].has_va = true;

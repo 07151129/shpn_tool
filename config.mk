@@ -3,7 +3,8 @@ LD := $(CC)
 STRIP ?= strip
 
 CFLAGS_OPT := \
-    -Os
+    -Os \
+    -DNDEBUG
 
 CFLAGS := \
     -std=c11 \

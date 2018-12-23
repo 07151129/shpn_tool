@@ -55,6 +55,8 @@ static uint16_t dis_cmd(const union script_cmd* cmd, struct script_state* state,
     if (state->dumping && at_label)
         fprintf(fout, "L_0x%x:\n", state->cmd_offs);
 
+    /* FIXME: We should really dump all the variable args somehow */
+
     if (ret != UINT16_MAX && state->dumping) {
         if (handler->name)
             fprintf(fout, "%s(", handler->name);
@@ -68,19 +70,20 @@ static uint16_t dis_cmd(const union script_cmd* cmd, struct script_state* state,
 
         if (handler->has_va)
             fprintf(fout, "%s%s", handler->nargs > 0 ? ", " : "", state->va_ctx.buf);
-        fprintf(fout, "); // 0x%x (0x%x): %08x\n", state->cmd_offs, state->cmd_offs_next, cmd->ival);
+        fprintf(fout, "); // 0x%x: %08x\n", state->cmd_offs, cmd->ival);
     }
 
     return ret;
 }
 
-static bool has_label(uint16_t offs, const struct script_state* state);
+bool has_label(uint16_t offs, const struct script_state* state);
 
 static void dump_uint32(const union script_cmd* cmd, const struct script_state* state, FILE* fout) {
-    assert(!is_valid_cmd(cmd) && "Trying to dump valid cmd as uint32");
+    /* Allow dumping valing code as bytes as well as interpretation doesn't matter at that point */
+    // assert(!is_valid_cmd(cmd) && "Trying to dump valid cmd as uint32");
     /* Some dead code might perform jumps that make no sense, so ignore this for now */
     // assert(!has_label(state->cmd_offs, state) && "Branch to unrecognised cmd");
-    fprintf(fout, ".4byte 0x%x // 0x%x 0x%x\n", cmd->ival, state->cmd_offs, state->cmd_offs_next);
+    fprintf(fout, ".4byte 0x%x // 0x%x\n", cmd->ival, state->cmd_offs);
 }
 
 #define SCRIPT_CKSUM_SEED 0x5678
@@ -112,7 +115,7 @@ void script_state_init(struct script_state* state, const uint8_t* strtab, const 
     const union script_cmd* cmds, uint16_t* labels) {
     assert(state);
 
-    static uint8_t arg_tab_default[0x56 * sizeof(uint32_t)]; /* FIXME: Size, r/w access? */
+    // static uint8_t arg_tab_default[0x56 * sizeof(uint32_t)]; /* FIXME: Size, r/w access? */
     static char va_buf_default[VA_BUF_DEFAULT_SZ];
 
     memset(state, 0, sizeof(*state));
@@ -129,7 +132,7 @@ void script_state_init(struct script_state* state, const uint8_t* strtab, const 
     state->label_ctx.labels = labels;
 }
 
-#define SCRIPT_DUMP_NCMDS_MAX 10000u
+#define SCRIPT_DUMP_NCMDS_MAX 15000u
 
 #define NLABELS_MAX SCRIPT_DUMP_NCMDS_MAX /* worst case */
 static uint16_t labels[NLABELS_MAX]; /* offsets into cmd buffer */
@@ -178,7 +181,7 @@ static int label_cmp(const void* lhs, const void* rhs) {
 }
 
 /* FIXME: Should hash labels to get rid of O(n^2) running time.. */
-static bool has_label(uint16_t offs, const struct script_state* state) {
+bool has_label(uint16_t offs, const struct script_state* state) {
     for (size_t i = 0; i < state->label_ctx.nlabels; i++)
         if (state->label_ctx.labels[i] == offs)
             return true;
@@ -263,15 +266,11 @@ phase:
 
             /* Cannot disassemble at this address */
             if (dis_ret == UINT16_MAX) {
-                /* In phase one, stop here */
-                if (!state.dumping)
-                    break;
-
-                /* Otherwise, dump uint32 at addr */
-                if (!is_valid) {
+                /* Just dump it as uint32, we don't really care what it does */
+                if (state.dumping)
                     dump_uint32(cmd, &state, fout);
-                    state.cmd_offs_next = state.cmd_offs + sizeof(*cmd);
-                }
+                /* In either phase, don't trust the encoded cmd_offs_next */
+                state.cmd_offs_next = state.cmd_offs + sizeof(*cmd);
             }
 
             chk_label = true;
@@ -285,7 +284,8 @@ phase:
 
     /* Second phase */
     state.dumping = true;
-    qsort(state.label_ctx.labels, state.label_ctx.nlabels, sizeof(*state.label_ctx.labels), label_cmp);
+    qsort(state.label_ctx.labels, state.label_ctx.nlabels, sizeof(*state.label_ctx.labels),
+        label_cmp);
     state.label_ctx.curr_label = 0;
     ninst = 0;
     /* Do the same, but now dump commands starting at each label */
