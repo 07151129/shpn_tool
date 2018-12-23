@@ -5,9 +5,13 @@
 #include <stdint.h>
 #include <stdio.h>
 
-#define SCRIPT_OP_MAX 118
-#define STRTAB_MENU_VMA 0x857546C
+#define SCRIPT_OP_MAX 117
+#define STRTAB_MENU_VMA 0x857546C /* FIXME: Hardcoded for now */
 
+/**
+ * Serialised representation of a command in a script.
+ * A command may be followed by a buffer of variable size used for storing its arguments.
+ */
 union script_cmd {
     struct {
         unsigned op : 12;
@@ -26,20 +30,31 @@ struct script_desc {
 };
 
 struct script_state {
-    /* byte offset into cmd buffer */
+    /**
+     * Byte offset into cmd buffer.
+     * When disassembling we do not advance it to branch destination, unlike the
+     * in-game interpreter.
+     */
     uint16_t cmd_offs;
     uint16_t cmd_offs_next;
 
     const union script_cmd* cmds;
 
-    uint16_t op;
+    struct {
+        uint16_t* labels;
+        size_t nlabels; /* amount of labels in buffer */
+        size_t curr_label; /* index of label being processed */
+    } label_ctx;
+
+    /* If false, handler must not output anything to va_ctx */
+    bool dumping;
 
     /* Used in next_cmd_arg */
     const union script_cmd* args; /* 0x3001E58 */
-    uint16_t arg_tab_unk0;
 
-    uint16_t arg_tab_idx;
-    uint8_t* arg_tab;
+    /* Hopefully unused? */
+    // uint16_t arg_tab_idx;
+    // uint8_t* arg_tab;
 
     const uint8_t* strtab, * strtab_menu;
 
@@ -69,5 +84,12 @@ struct script_cmd_handler {
 void init_script_handlers();
 bool script_dump(const uint8_t* rom, size_t rom_sz, const struct script_desc* desc, FILE* fout);
 const struct script_desc* script_for_name(const char* name);
+
+/**
+ * Used by branch command handlers to mark their destination.
+ */
+bool make_label(uint16_t offs, struct script_state* state); /* true if not present previously */
+
+bool cmd_is_branch(const union script_cmd* cmd);
 
 #endif

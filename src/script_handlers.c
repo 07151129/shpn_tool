@@ -10,12 +10,12 @@
 #include "script.h"
 #include "strtab.h"
 
-struct script_cmd_handler script_handlers[SCRIPT_OP_MAX];
+struct script_cmd_handler script_handlers[SCRIPT_OP_MAX + 1];
 
 static uint32_t next_cmd_arg(uint16_t a1, uint16_t w, const struct script_state* state) {
     if (a1 & (0x8000 >> (w - 1))) {
         assert(false);
-        return state->arg_tab[state->arg_tab_idx - next_cmd_arg(0, w, state)];
+        // return state->arg_tab[state->arg_tab_idx - next_cmd_arg(0, w, state)];
     }
 
     return *(uint32_t*)(&((uint8_t*)state->args)[2 * w - 2]);
@@ -31,10 +31,15 @@ uint16_t handler_Jump(uint16_t arg0, uint16_t arg1, struct script_state* state) 
 
     assert(arg0 == 0);
 
-    state->cmd_offs_next = next_cmd_arg(arg0, 1, state);
+    uint16_t dst = next_cmd_arg(arg0, 1, state);
+    assert(dst % 2 == 0 && "Misaligned jump destination");
 
-    assert(state->va_ctx.buf && state->va_ctx.sz > sizeof("0xffff"));
-    sprintf(state->va_ctx.buf, "0x%x", state->cmd_offs_next);
+    if (!state->dumping)
+        make_label(dst, state);
+    else {
+        assert(state->va_ctx.buf && state->va_ctx.sz > sizeof("L_0xffff"));
+        sprintf(state->va_ctx.buf, "L_0x%x", dst);
+    }
 
     return 0;
 }
@@ -65,9 +70,11 @@ uint16_t handler_ShowText(uint16_t arg0, uint16_t arg1, struct script_state* sta
         v3 = next_cmd_arg(arg0, 2, state);
     uint16_t line_idx = next_cmd_arg(arg0, 1, state);
 
-    size_t nprinted;
-    state->has_err = !strtab_print_str(state->va_ctx.buf, state->va_ctx.sz, state->strtab, line_idx,
-        &nprinted);
+    if (state->dumping) {
+        size_t nprinted;
+        state->has_err = !strtab_print_str(state->va_ctx.buf, state->va_ctx.sz, state->strtab, line_idx,
+            &nprinted);
+    }
 
     return 0;
 }
@@ -75,11 +82,13 @@ uint16_t handler_ShowText(uint16_t arg0, uint16_t arg1, struct script_state* sta
 uint16_t handler_LoadBackground(uint16_t arg0, uint16_t has_bg, struct script_state* state) {
     uint16_t bg_idx = 0;
 
-    if (has_bg) {
-        bg_idx = next_cmd_arg(arg0, 1, state);
-        snprintf(state->va_ctx.buf, state->va_ctx.sz, "0x%x", bg_idx);
-    } else
-        state->va_ctx.buf[0] = '\0';
+    if (state->dumping) {
+        if (has_bg) {
+            bg_idx = next_cmd_arg(arg0, 1, state);
+            snprintf(state->va_ctx.buf, state->va_ctx.sz, "0x%x", bg_idx);
+        } else
+            state->va_ctx.buf[0] = '\0';
+    }
 
     return bg_idx;
 }
@@ -90,7 +99,9 @@ uint16_t handler_LoadEffect(uint16_t arg0, uint16_t arg1, struct script_state* s
     uint16_t idx0 = next_cmd_arg(arg0, 1, state);
     uint16_t idx1 = next_cmd_arg(arg0, 2, state);
 
-    snprintf(state->va_ctx.buf, state->va_ctx.sz, "0x%x, 0x%x", idx0, idx1);
+    if (state->dumping) {
+        snprintf(state->va_ctx.buf, state->va_ctx.sz, "0x%x, 0x%x", idx0, idx1);
+    }
 
     return 0;
 }
@@ -140,7 +151,8 @@ uint16_t handler_Choice(uint16_t arg0, uint16_t arg1, struct script_state* state
     assert(arg1 <= 10);
     uint32_t mask = UINT16_MAX * 2 + 1;
 
-    state->has_err = !print_choice(0, mask, arg0, arg1, false, 0, state);
+    if (state->dumping)
+        state->has_err = !print_choice(0, mask, arg0, arg1, false, 0, state);
 
     return 0;
 }
@@ -150,7 +162,8 @@ uint16_t handler_ChoiceIdx(uint16_t arg0, uint16_t arg1, struct script_state* st
     assert(arg1 > 0);
     uint32_t mask = UINT16_MAX * 2 + 1 + UINT16_MAX + 1;
 
-    state->has_err = !print_choice(1, mask, arg0, arg1, true, dst, state);
+    if (state->dumping)
+        state->has_err = !print_choice(1, mask, arg0, arg1, true, dst, state);
 
     return 0;
 }
@@ -160,28 +173,29 @@ uint16_t handler_Stop(uint16_t arg0, uint16_t arg1, struct script_state* state) 
 }
 
 /* FIXME */
-static uint16_t sub_80027b4(bool update, struct script_state* state) {
-    uint16_t ret = *((uint8_t*)state->cmds + state->cmd_offs_next + 1) << 8 |
-        *((uint8_t*)state->cmds + state->cmd_offs_next);
+static uint16_t sub_80027b4(bool update, struct script_state* state, uint16_t* dst) {
+    uint16_t ret = *((uint8_t*)state->cmds + *dst + 1) << 8 |
+        *((uint8_t*)state->cmds + *dst);
     if (update) {
-        fprintf(stderr, "cmd_offs_next = 0x%x + 2\n", state->cmd_offs_next);
-        state->cmd_offs_next += 2;
+        // fprintf(stderr, "cmd_offs_next = 0x%x + 2\n", state->cmd_offs_next);
+        *dst += 2;
     }
     return ret;
 }
 
-static uint16_t sub_8002704(struct script_state* state) {
-    uint32_t v0 = sub_80027b4(true, state) << 16;
+static uint16_t sub_8002704(struct script_state* state, uint16_t* dst) {
+    uint32_t v0 = sub_80027b4(true, state, dst) << 16;
     uint32_t v1 = 16 * v0 >> 20;
 
     for (uint32_t i = v0 >> 28; i != UINT16_MAX; i = (i - 1) & UINT16_MAX)
-        sub_80027b4(true, state);
+        sub_80027b4(true, state, dst);
     return v1;
 }
 
 #define SAR(x, w) ((x) >> (w))
 
-uint32_t sub_80062d4(char* arg0, uint32_t arg1, uint32_t arg2, uint32_t arg3, struct script_state* state) {
+uint32_t sub_80062d4(char* arg0, uint32_t arg1, uint32_t arg2, uint32_t arg3,
+    struct script_state* state, uint16_t* dst) {
     char* s0 = arg0;
     uint32_t r5 = 0x0;
     uint32_t r8 = arg1 << 0x10;
@@ -193,7 +207,7 @@ uint32_t sub_80062d4(char* arg0, uint32_t arg1, uint32_t arg2, uint32_t arg3, st
     uint32_t r0, r4, r1, r2, r3;
 
 loc_80062f6:
-    r0 = sub_80027b4(false, state);
+    r0 = sub_80027b4(false, state, dst);
     r4 = 0xfff & r0;
     r1 = 0x0;
     if (r1 >= r10) goto loc_8006348;
@@ -225,7 +239,7 @@ loc_8006320:
     goto loc_8006348;
 
 loc_8006348:
-    r4 = sub_8002704(state) << 0x10 >> 0x10;
+    r4 = sub_8002704(state, dst) << 0x10 >> 0x10;
     if (r4 != 0x4) {
             if (r4 == 0x8) {
                     if (r6 == 0x8) {
@@ -243,7 +257,7 @@ loc_8006348:
 loc_800636c:
     r0 = SAR(var_24, 0x10);
     if (r0 == 0x1) {
-        sub_8002704(state);
+        sub_8002704(state, dst);
     }
     r0 = SAR(r4 << 0x10, 0x10);
     return r0;
@@ -259,15 +273,32 @@ loc_800633c:
 uint16_t handler_0x4(uint16_t arg0, uint16_t arg1, struct script_state* state) {
     assert(arg0 == 0);
 
-    assert(state->va_ctx.buf && state->va_ctx.sz > sizeof("0xffff"));
-    sprintf(state->va_ctx.buf, "0x%x", next_cmd_arg(arg0, 1, state) & UINT16_MAX);
-
-    if (state->cmd_offs == 0x1706) {
-        uint16_t val = sub_80062d4((char[]){0x05, 0x00, 0x06, 0x00, 0x07, 0x00}, 3, 0, 4, state);
-        if (val == 7)
-            sub_8002704(state);
+    if (state->dumping) {
+        assert(state->va_ctx.buf && state->va_ctx.sz > sizeof("0xffff"));
+        sprintf(state->va_ctx.buf, "0x%x", next_cmd_arg(arg0, 1, state) & UINT16_MAX);
     }
 
+    /* FIXME: Decoding if branch is taken */
+    /* FIXME: Decoding multiple branch destinations for ChoiceIdx? */
+    if (state->cmd_offs == 0x1706) {
+        uint16_t dst = state->cmd_offs_next;
+        uint16_t val = sub_80062d4((char[]){0x05, 0x00, 0x06, 0x00, 0x07, 0x00}, 3, 0, 4, state, &dst);
+        if (val == 7)
+            sub_8002704(state, &dst);
+
+        if (!state->dumping)
+            make_label(dst, state);
+
+        if (state->dumping)
+            ;// FIXME
+    }
+
+    return 0;
+}
+
+static uint16_t handler_0x0(uint16_t a1, uint16_t a2, struct script_state* state) {
+    if (/* a1 << 16 || */ a2)
+        return UINT16_MAX;
     return 0;
 }
 
@@ -276,6 +307,9 @@ void init_script_handlers() {
         script_handlers[i] = (struct script_cmd_handler){.name = NULL, .handler = handler_stub,
             .has_va = false, .nargs = 2};
     }
+
+    script_handlers[0].handler = handler_0x0;
+    script_handlers[7].handler = handler_0x0;
 
     script_handlers[1].name = "Jump";
     script_handlers[1].handler = handler_Jump;
@@ -319,4 +353,9 @@ void init_script_handlers() {
     script_handlers[0x63].name = "Stop";
     script_handlers[0x63].nargs = 0;
     // script_handlers[0x63].handler = handler_Stop;
+}
+
+bool cmd_is_branch(const union script_cmd* cmd) {
+    assert(cmd->op != 0x2 && cmd->op != 0x8);
+    return cmd->op == 1 || cmd->op == 4;
 }
