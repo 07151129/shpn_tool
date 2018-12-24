@@ -304,6 +304,16 @@ static uint16_t handler_0x0(uint16_t a1, uint16_t a2, struct script_state* state
     return 0;
 }
 
+static uint16_t handler_ShowMovie(uint16_t a1, uint16_t a2, struct script_state* state) {
+    assert(a2 == 1);
+
+    if (state->dumping) {
+        assert(state->va_ctx.buf && state->va_ctx.sz > sizeof("0xffff"));
+        sprintf(state->va_ctx.buf, "0x%x", next_cmd_arg(a1, 1, state) & UINT16_MAX);
+    }
+    return 0;
+}
+
 /* It's a no-op, but we prohibit disassembly of this instruction */
 static uint16_t handler_0x30(uint16_t a1, uint16_t a2, struct script_state* state) {
     return UINT16_MAX;
@@ -331,6 +341,11 @@ void init_script_handlers() {
     script_handlers[0xc].handler = handler_ShowText;
     script_handlers[0xc].has_va = true;
     script_handlers[0xc].nargs = 0;
+
+    script_handlers[0xd].name = "ShowMovie";
+    script_handlers[0xd].handler = handler_ShowMovie;
+    script_handlers[0xd].has_va = true;
+    script_handlers[0xd].nargs = 0;
 
     script_handlers[0x10].name = "HandleInput";
     script_handlers[0x10].nargs = 0;
