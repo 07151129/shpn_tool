@@ -83,7 +83,7 @@ static void dump_uint32(const union script_cmd* cmd, const struct script_state* 
     // assert(!is_valid_cmd(cmd) && "Trying to dump valid cmd as uint32");
     /* Some dead code might perform jumps that make no sense, so ignore this for now */
     // assert(!has_label(state->cmd_offs, state) && "Branch to unrecognised cmd");
-    fprintf(fout, ".4byte 0x%x // 0x%x\n", cmd->ival, state->cmd_offs);
+    fprintf(fout, ".4byte 0x%x // 0x%x: %08x\n", cmd->ival, state->cmd_offs, cmd->op);
 }
 
 #define SCRIPT_CKSUM_SEED 0x5678
@@ -210,7 +210,7 @@ bool has_label(uint16_t offs, const struct script_state* state) {
  */
 bool script_dump(const uint8_t* rom, size_t rom_sz, const struct script_desc* desc, FILE* fout) {
 #define HDR_SZ 6
-    const struct {uint16_t unk0, unk1, unk2;}* hdr = (void*)&rom[VMA2OFFS(desc->vma)];
+    const struct script_hdr* hdr = (void*)&rom[VMA2OFFS(desc->vma)];
     static_assert(sizeof(*hdr) == sizeof(uint16_t[3]), "");
 
     uint16_t cks = cksum((uint8_t*)hdr, desc->sz, SCRIPT_CKSUM_SEED);
@@ -219,7 +219,11 @@ bool script_dump(const uint8_t* rom, size_t rom_sz, const struct script_desc* de
             cks, desc->cksum);
 
     const union script_cmd* cmds = (void*)&((uint8_t*)hdr)[sizeof(*hdr)];
-    const void* cmd_end = &((uint8_t*)cmds)[hdr->unk0 + hdr->unk1 + hdr->unk2];
+
+    /* FIXME: We should definitely skip the branch info buffer, but should we also skip the bytes
+    afterwards? */
+    const void* cmd_end = &((uint8_t*)cmds)[hdr->branch_info_offs /* + hdr->branch_info_offs
+        + hdr->bytes_to_end */];
 
     if ((void*)cmds >= cmd_end) {
         fprintf(stderr, "Script is too short\n");

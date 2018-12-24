@@ -21,6 +21,14 @@ union script_cmd {
 };
 static_assert(sizeof(union script_cmd) == sizeof(uint32_t), "");
 
+struct script_hdr {
+    /* All offsets imply skipping the header */
+    uint16_t branch_info_offs;
+    uint16_t branch_info_sz;
+    uint16_t bytes_to_end; /* from branch info end */
+};
+static_assert(sizeof(struct script_hdr) == sizeof(uint16_t[3]), "");
+
 struct script_desc {
     const char* name;
     uint32_t vma;
