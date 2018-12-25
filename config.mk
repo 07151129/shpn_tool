@@ -29,3 +29,6 @@ ifeq ($(DEBUG), 1)
 else
     CFLAGS += $(CFLAGS_OPT)
 endif
+
+CFLAGS += -fsanitize=$(SANITIZE)
+LDFLAGS += -fsanitize=$(SANITIZE)
