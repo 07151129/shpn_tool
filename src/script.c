@@ -81,6 +81,7 @@ bool has_label(uint16_t offs, const struct script_state* state);
 static void dump_uint32(const union script_cmd* cmd, const struct script_state* state, FILE* fout) {
     /* Allow dumping valing code as bytes as well as interpretation doesn't matter at that point */
     // assert(!is_valid_cmd(cmd) && "Trying to dump valid cmd as uint32");
+
     /* Some dead code might perform jumps that make no sense, so ignore this for now */
     // assert(!has_label(state->cmd_offs, state) && "Branch to unrecognised cmd");
     fprintf(fout, ".4byte 0x%x // 0x%x: %08x\n", cmd->ival, state->cmd_offs, cmd->op);
@@ -112,11 +113,14 @@ const struct script_desc* script_for_name(const char* name) {
 #define VA_BUF_DEFAULT_SZ (SJIS_TO_U8_MIN_SZ(DEC_BUF_SZ_SJIS) * 4)
 
 void script_state_init(struct script_state* state, const uint8_t* strtab, const uint8_t* strtab_menu,
-    const union script_cmd* cmds, uint16_t* labels) {
+    const union script_cmd* cmds, uint16_t* labels, const char* branch_info,
+    const uint8_t* branch_info_unk) {
     assert(state);
 
+    /* Those are the "default" non thread-safe buffers (OK for now) */
     // static uint8_t arg_tab_default[0x56 * sizeof(uint32_t)]; /* FIXME: Size, r/w access? */
     static char va_buf_default[VA_BUF_DEFAULT_SZ];
+    static uint8_t choices[SCRIPT_CHOICES_SZ];
 
     memset(state, 0, sizeof(*state));
     // state->arg_tab = arg_tab_default;
@@ -130,6 +134,11 @@ void script_state_init(struct script_state* state, const uint8_t* strtab, const 
     state->cmds = cmds;
 
     state->label_ctx.labels = labels;
+
+    state->choice_ctx.choices = choices;
+
+    state->branch_info = branch_info;
+    state->branch_info_unk = branch_info_unk;
 }
 
 #define SCRIPT_DUMP_NCMDS_MAX 15000u
@@ -189,7 +198,7 @@ bool has_label(uint16_t offs, const struct script_state* state) {
 }
 
 /**
- * The disassembler works in two phases:
+ * The disassembler works in three phases:
  * During the first phase it adds a label for location zero, and then starts
  * reading the instructions at that location. For the first branch instruction that it encounters,
  * it creates a label for its destination if there is none yet, and attempts to read as many
@@ -199,17 +208,25 @@ bool has_label(uint16_t offs, const struct script_state* state) {
  * label that has just been processed is marked as explored. The process repeats until there is no
  * unexplored label in the list.
  *
- * During the second phase, the list of labels is sorted, resulting in a linear map of dumpable
- * code regions, each either terminated by an invalid instruction, branch instruction, or another
- * label. Then the textual representation of instructions is dumped starting at each label address
- * from the list. If an invalid instruction is encountered, then the data starting at that address
- * is dumped as is until the next label is encountered, so there need not be set-location directive.
+ * We need to record data about last Choice operation so that we can decode Branch properly.
+ * We must guarantee that we have visited L_i before L_j for i <= j, as a Branch in L_j may rely
+ * on a Choice at L_i. However, this is not possible during the first phase, as labels are
+ * discovered out-of-order. During the second phase we thus sort the label list and repeat the first
+ * phase. We alternate between those two phases until no new labels are created during the first
+ * phase. It is prohibited to create any new labels for branch operation during the first phase.
  *
- * Because there are finitely many branch instructions in a script, finitely many labels will be
+ * During the third phase, the textual representation of instructions is dumped starting at each
+ * label address from the list. If an invalid instruction is encountered, then the data starting at
+ * that address is dumped as is until the next label is encountered, so there need not be
+ * set-location directive: the dump is guaranteed to be contiguous.
+ *
+ * Because there are finitely many branch/jump instructions in a script, finitely many labels will be
  * created, so the procedure will terminate.
+ *
+ * FIXME: In worst case, we discover new labels at the end of each phase, resulting in n invocations
+ * of qsort...
  */
 bool script_dump(const uint8_t* rom, size_t rom_sz, const struct script_desc* desc, FILE* fout) {
-#define HDR_SZ 6
     const struct script_hdr* hdr = (void*)&rom[VMA2OFFS(desc->vma)];
     static_assert(sizeof(*hdr) == sizeof(uint16_t[3]), "");
 
@@ -222,7 +239,7 @@ bool script_dump(const uint8_t* rom, size_t rom_sz, const struct script_desc* de
 
     /* FIXME: We should definitely skip the branch info buffer, but should we also skip the bytes
     afterwards? */
-    const void* cmd_end = &((uint8_t*)cmds)[hdr->branch_info_offs /* + hdr->branch_info_offs
+    const void* cmd_end = &((uint8_t*)cmds)[hdr->branch_info_offs /* + hdr->branch_info_sz
         + hdr->bytes_to_end */];
 
     if ((void*)cmds >= cmd_end) {
@@ -232,14 +249,17 @@ bool script_dump(const uint8_t* rom, size_t rom_sz, const struct script_desc* de
 
     struct script_state state;
     script_state_init(&state, &rom[VMA2OFFS(desc->strtab_vma)], &rom[VMA2OFFS(STRTAB_MENU_VMA)],
-        cmds, labels);
+        cmds, labels, cmd_end, &rom[VMA2OFFS(BRANCH_INFO_UMK_VMA)]);
 
     /* Phase one: read code and create labels */
     make_label(0, &state); /* The initial label */
 
     size_t ninst = 0;
+    size_t nlabels;
 
 phase:
+    nlabels = state.label_ctx.nlabels;
+
     while (has_labels(&state)) {
         state.cmd_offs_next = next_label(&state);
 
@@ -255,7 +275,10 @@ phase:
             state.cmd_offs_next += sizeof(*cmd) + 2 * cmd->arg;
             state.args = cmd + 1;
 
-            if (state.dumping && ninst == SCRIPT_DUMP_NCMDS_MAX) {
+            if (ninst == SCRIPT_DUMP_NCMDS_MAX) {
+                /* Stop adding labels at this point */
+                if (!state.dumping)
+                    break;
                 fprintf(stderr, "Dump length exceeds %u, stopping...\n", SCRIPT_DUMP_NCMDS_MAX);
                 return false;
             }
@@ -283,16 +306,38 @@ phase:
         state.label_ctx.curr_label++;
     }
 
+    state.label_ctx.curr_label = 0;
+
+    /* Phase one or two discovered labels that weren't present at beginning of phase */
+    if (state.label_ctx.nlabels > nlabels) {
+        assert(!state.dumping && "Third phase isn't supposed to discover new labels");
+
+        /* It was phase one */
+        if (!state.choice_ctx.make_labels) {
+
+            /* Sort and repeat phase one, but now let handler_Choice create new labels */
+            state.choice_ctx.make_labels = true;
+            qsort(state.label_ctx.labels, state.label_ctx.nlabels, sizeof(*state.label_ctx.labels),
+                label_cmp);
+            goto phase;
+        } else { /* It was phase two */
+            /* Just repeat phase one; label order doesn't matter */
+            state.choice_ctx.make_labels = false;
+            goto phase;
+        }
+    }
+
+    /* Third phase complete */
     if (state.dumping)
         return true;
 
-    /* Second phase */
+    /* Third phase */
     state.dumping = true;
+    state.choice_ctx.make_labels = false;
     qsort(state.label_ctx.labels, state.label_ctx.nlabels, sizeof(*state.label_ctx.labels),
         label_cmp);
-    state.label_ctx.curr_label = 0;
     ninst = 0;
-    /* Do the same, but now dump commands starting at each label */
+    /* Repeat phase one, but now dump commands starting at each label */
     goto phase;
 
     assert(false); /* Unreachable */

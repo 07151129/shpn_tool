@@ -14,6 +14,8 @@
 
 struct script_cmd_handler script_handlers[SCRIPT_OP_MAX + 1];
 
+/* FIXME: Improve error handling: signal error instead of aborting at asserts */
+
 static uint32_t next_cmd_arg(uint16_t a1, uint16_t w, const struct script_state* state) {
     if (a1 & (0x8000 >> (w - 1))) {
         assert(false);
@@ -155,6 +157,11 @@ static uint16_t handler_Choice(uint16_t arg0, uint16_t arg1, struct script_state
     assert(arg1 <= 10);
     uint32_t mask = UINT16_MAX * 2 + 1;
 
+    if (state->choice_ctx.make_labels || state->dumping) {
+        state->choice_ctx.last_nchoices = 2;
+        state->choice_ctx.last_choice_idx = 0;
+    }
+
     if (state->dumping)
         state->has_err = !print_choice(0, mask, arg0, arg1, false, 0, state);
 
@@ -165,6 +172,10 @@ static uint16_t handler_ChoiceIdx(uint16_t arg0, uint16_t arg1, struct script_st
     uint32_t dst = next_cmd_arg(arg0, 1, state) & UINT16_MAX;
     assert(arg1 > 0);
     uint32_t mask = UINT16_MAX * 2 + 1 + UINT16_MAX + 1;
+
+    if (state->choice_ctx.make_labels) {
+        /* FIXME */
+    }
 
     if (state->dumping)
         state->has_err = !print_choice(1, mask, arg0, arg1, true, dst, state);
@@ -181,33 +192,53 @@ uint32_t branch_dst(char* arg0, uint32_t arg1, uint32_t arg2, uint32_t arg3,
 uint32_t is_branch_taken(const char* info, const struct script_state* state);
 uint16_t sub_8002704(struct script_state* state, uint16_t* dst);
 
-static uint16_t handler_0x4(uint16_t arg0, uint16_t arg1, struct script_state* state) {
+static uint16_t handler_Branch(uint16_t arg0, uint16_t arg1, struct script_state* state) {
     assert(arg0 == 0);
+
+    uint16_t idx = next_cmd_arg(arg0, 1, state);
+
+    size_t nprinted = 0;
 
     if (state->dumping) {
         assert(state->va_ctx.buf && state->va_ctx.sz > sizeof("0xffff"));
-        sprintf(state->va_ctx.buf, "0x%x", next_cmd_arg(arg0, 1, state) & UINT16_MAX);
+        nprinted += sprintf(state->va_ctx.buf, "0x%x", idx);
     }
 
-    /* FIXME: Decoding if branch is taken */
-    /* FIXME: Decoding multiple branch destinations for ChoiceIdx? */
-    if (state->cmd_offs == 0x1706) {
-        uint16_t dst = state->cmd_offs_next;
-        uint16_t val = branch_dst((char[]){0x05, 0x00, 0x06, 0x00, 0x07, 0x00}, 3, 0, 4, state, &dst);
-        if (val == 7)
-            sub_8002704(state, &dst);
+    /* Why do we need that again? */
+#if 0
+    uint32_t not_taken = is_branch_taken(&state->branch_info[idx], state);
+    fprintf(stderr, "branch @ 0x%x: 0x%x\n", state->cmd_offs, taken);
 
-        if (!state->dumping)
-            make_label(dst, state);
-
-        if (state->dumping)
-            ;// FIXME
+    if ((int32_t)not_taken >> 16 == UINT32_MAX) {
+        state->has_err = true;
+        return UINT16_MAX;
     }
+#endif
+
+    /* Are we preceded by Choice? Otherwise it's a spurious branch that we ignore */
+    if (state->choice_ctx.last_nchoices > 0)
+        for (size_t i = 0; i < state->choice_ctx.last_nchoices - 1; i++) {
+            uint16_t dst = state->cmd_offs_next;
+            uint16_t val = branch_dst((char[]){0x05, 0x00, 0x06, 0x00, 0x07, 0x00}, 3, 0, 4, state, &dst);
+            if (val == 7)
+                sub_8002704(state, &dst);
+
+            if (state->choice_ctx.make_labels)
+                make_label(dst, state);
+            else if (state->dumping) {
+                assert(state->va_ctx.sz - nprinted > sizeof(", L_0xffff"));
+                nprinted += sprintf(&state->va_ctx.buf[nprinted - 1], ", L_0x%x", dst);
+            }
+        }
+
+    /* Forget about the preceding Choice */
+    if (state->choice_ctx.make_labels)
+        state->choice_ctx.last_nchoices = 0;
 
     return 0;
 }
 
-static uint16_t handler_0x0(uint16_t a1, uint16_t a2, struct script_state* state) {
+static uint16_t handler_Nop(uint16_t a1, uint16_t a2, struct script_state* state) {
     if (/* a1 << 16 || */ a2)
         return UINT16_MAX;
     return 0;
@@ -234,15 +265,19 @@ void init_script_handlers() {
             .has_va = false, .nargs = 2};
     }
 
-    script_handlers[0].handler = handler_0x0;
-    script_handlers[7].handler = handler_0x0;
+    script_handlers[0].handler = handler_Nop;
+    script_handlers[0].name = "Nop";
+
+    script_handlers[7].handler = handler_Nop;
+    script_handlers[7].name = "Nop";
 
     script_handlers[1].name = "Jump";
     script_handlers[1].handler = handler_Jump;
     script_handlers[1].has_va = true;
     script_handlers[1].nargs = 0;
 
-    script_handlers[4].handler = handler_0x4;
+    script_handlers[4].name = "Branch";
+    script_handlers[4].handler = handler_Branch;
     script_handlers[4].has_va = true;
     script_handlers[4].nargs = 0;
 

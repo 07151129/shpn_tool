@@ -10,10 +10,11 @@
 #include <string.h>
 
 #include "script.h"
-#include "strtab.h"
 
 static uint32_t sub_800281C(char a1, int a2) {
     uint32_t result; // r0
+
+    assert(false);
 
     result = (uint32_t)(0x10000u << a1) >> 16;
     if (!(a2 << 16))
@@ -21,15 +22,29 @@ static uint32_t sub_800281C(char a1, int a2) {
     return result;
 }
 
-static uint32_t sub_80027DC(int a1) {
+static uint32_t sub_80027DC(size_t a1, const struct script_state* state) {
     uint32_t v1; // r1
 
-    v1 = gScriptChoices0[(unsigned int)(a1 << 16) >> 19] & sub_800281C(((a1 << 16) & 0x70000u) >> 16, 1);
+    assert(false && "choices_0 is never used");
+#if 0
+    size_t idx = (a1 << 16) >> 19;
+    assert(idx < SCRIPT_CHOICES_SZ);
+
+    fprintf(stderr, "0x%x: choices_0[0x%lx]\n", state->cmd_offs, idx);
+
+    v1 = state->choices_0[idx] & sub_800281C(((a1 << 16) & 0x70000u) >> 16, 1);
     return (-v1 | v1) >> 31;
+#endif
 }
 
-static uint32_t sub_800280C(int a1) {
-    return *(uint16_t*)((char*)gScriptChoices1 + (2 * a1 & 0x1FFFF));
+static uint32_t sub_800280C(uint32_t a1, const struct script_state* state) {
+    size_t idx = 2 * a1 & 0x1FFFF;
+
+    assert(idx < SCRIPT_CHOICES_SZ);
+
+    fprintf(stderr, "0x%x: choices_1[0x%lx]\n", state->cmd_offs, idx);
+
+    return *(uint16_t*)&(state->choice_ctx.choices[idx]);
 }
 
 static int sub_8006B54(const char* a1) {
@@ -47,7 +62,7 @@ static int sub_8006B54(const char* a1) {
     return v2;
 }
 
-const char* sub_8006A48(const char* info, uint16_t* retb) {
+const char* sub_8006A48(const char* info, uint16_t* retb, const struct script_state* state) {
     int v4; // r2
     int v5; // r4
     int v6; // r10
@@ -63,7 +78,6 @@ const char* sub_8006A48(const char* info, uint16_t* retb) {
     char v16; // r2
     int v17; // r1
 
-    info = info;
     v4 = *info;
     if (v4 != 102 && v4 != 115) {
         if (isdigit(v4)) {
@@ -101,10 +115,10 @@ const char* sub_8006A48(const char* info, uint16_t* retb) {
         }
         if (v6 >> 16 == 102) {
             v10 = sub_8006B54((const char*)retb + 1);
-            v11 = sub_80027DC(v10);
+            v11 = sub_80027DC(v10, state);
         } else {
             v12 = sub_8006B54((const char*)retb + 1);
-            v11 = sub_800280C(v12);
+            v11 = sub_800280C(v12, state);
         }
         retb[9] = v11;
         result = &info[v7 >> 16];
@@ -112,8 +126,7 @@ const char* sub_8006A48(const char* info, uint16_t* retb) {
     return result;
 }
 
-const char* sub_80069E4(const char* info, uint16_t* retb) {
-    uint16_t* v3; // r5
+const char* sub_80069E4(const char* info, uint16_t* retb, const struct script_state* state) {
     int v4; // r0
     int v6; // r0
     const char* v7; // r4
@@ -122,13 +135,13 @@ const char* sub_80069E4(const char* info, uint16_t* retb) {
     retb[9] = 0;
     retb[8] = 0;
     if (isdigit(*info) || (((v4 = *info, v4 == 'f') || v4 == 's') && isdigit(info[1]))) {
-        info = sub_8006A48(info, v3);
+        info = sub_8006A48(info, retb, state);
         if (!info)
             return 0;
     }
     while (*info == ' ')
         ++info;
-    v3[8] = *info;
+    retb[8] = *info;
     v7 = info + 1;
     if (*info) {
         while (*v7 == ' ')
@@ -427,7 +440,7 @@ static const char* sub_80063FC(const char* info, uint16_t* retb, const struct sc
     uint8_t v7, v8, v14, v10;
 
     do {
-        info = sub_80069E4(info, v11);
+        info = sub_80069E4(info, v11, state);
         if (!info)
             return NULL;
         uint32_t v4 = sub_8006800(v11[8]) << 16;
@@ -438,7 +451,7 @@ static const char* sub_80063FC(const char* info, uint16_t* retb, const struct sc
             v6 = sub_80063B8(info, v12, state);
             if (v12[2] != 241)
                 return 0;
-            info = sub_80069E4(v6, v11);
+            info = sub_80069E4(v6, v11, state);
             if (!info || v11[0] & UINT8_MAX)
                 return 0;
             v5 = sub_8006800(v11[8]) & 0xFFFF;
