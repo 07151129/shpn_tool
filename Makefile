@@ -8,7 +8,7 @@ include config.mk
 
 SRC := \
 	src/main.c \
-	src/script.c \
+	src/script_disass.c \
 	src/crc32.c \
 	src/script_handlers.c \
 	src/sjis_to_u8.c \
