@@ -135,10 +135,10 @@ void script_state_init(struct script_state* state, const uint8_t* strtab, const 
 
     state->label_ctx.labels = labels;
 
-    state->choice_ctx.choices = choices;
-
     state->branch_info = branch_info;
     state->branch_info_unk = branch_info_unk;
+
+    state->choice_ctx.choices = choices;
 }
 
 #define SCRIPT_DUMP_NCMDS_MAX 15000u
@@ -198,7 +198,7 @@ bool has_label(uint16_t offs, const struct script_state* state) {
 }
 
 /**
- * The disassembler works in three phases:
+ * The disassembler works in two phases:
  * During the first phase it adds a label for location zero, and then starts
  * reading the instructions at that location. For the first branch instruction that it encounters,
  * it creates a label for its destination if there is none yet, and attempts to read as many
@@ -208,23 +208,14 @@ bool has_label(uint16_t offs, const struct script_state* state) {
  * label that has just been processed is marked as explored. The process repeats until there is no
  * unexplored label in the list.
  *
- * We need to record data about last Choice operation so that we can decode Branch properly.
- * We must guarantee that we have visited L_i before L_j for i <= j, as a Branch in L_j may rely
- * on a Choice at L_i. However, this is not possible during the first phase, as labels are
- * discovered out-of-order. During the second phase we thus sort the label list and repeat the first
- * phase. We alternate between those two phases until no new labels are created during the first
- * phase. It is prohibited to create any new labels for branch operation during the first phase.
- *
- * During the third phase, the textual representation of instructions is dumped starting at each
- * label address from the list. If an invalid instruction is encountered, then the data starting at
- * that address is dumped as is until the next label is encountered, so there need not be
- * set-location directive: the dump is guaranteed to be contiguous.
+ * During the second phase, the list of labels is sorted, resulting in a linear map of dumpable
+ * code regions, each either terminated by an invalid instruction, branch instruction, or another
+ * label. Then the textual representation of instructions is dumped starting at each label address
+ * from the list. If an invalid instruction is encountered, then the data starting at that address
+ * is dumped as is until the next label is encountered, so there need not be set-location directive.
  *
  * Because there are finitely many branch/jump instructions in a script, finitely many labels will be
  * created, so the procedure will terminate.
- *
- * FIXME: In worst case, we discover new labels at the end of each phase, resulting in n invocations
- * of qsort...
  */
 bool script_dump(const uint8_t* rom, size_t rom_sz, const struct script_desc* desc, FILE* fout) {
     const struct script_hdr* hdr = (void*)&rom[VMA2OFFS(desc->vma)];
@@ -255,11 +246,7 @@ bool script_dump(const uint8_t* rom, size_t rom_sz, const struct script_desc* de
     make_label(0, &state); /* The initial label */
 
     size_t ninst = 0;
-    size_t nlabels;
-
 phase:
-    nlabels = state.label_ctx.nlabels;
-
     while (has_labels(&state)) {
         state.cmd_offs_next = next_label(&state);
 
@@ -306,34 +293,13 @@ phase:
         state.label_ctx.curr_label++;
     }
 
-    state.label_ctx.curr_label = 0;
-
-    /* Phase one or two discovered labels that weren't present at beginning of phase */
-    if (state.label_ctx.nlabels > nlabels) {
-        assert(!state.dumping && "Third phase isn't supposed to discover new labels");
-
-        /* It was phase one */
-        if (!state.choice_ctx.make_labels) {
-
-            /* Sort and repeat phase one, but now let handler_Choice create new labels */
-            state.choice_ctx.make_labels = true;
-            qsort(state.label_ctx.labels, state.label_ctx.nlabels, sizeof(*state.label_ctx.labels),
-                label_cmp);
-            goto phase;
-        } else { /* It was phase two */
-            /* Just repeat phase one; label order doesn't matter */
-            state.choice_ctx.make_labels = false;
-            goto phase;
-        }
-    }
-
-    /* Third phase complete */
+    /* Second phase complete */
     if (state.dumping)
         return true;
 
-    /* Third phase */
+    /* Second phase */
     state.dumping = true;
-    state.choice_ctx.make_labels = false;
+    state.label_ctx.curr_label = 0;
     qsort(state.label_ctx.labels, state.label_ctx.nlabels, sizeof(*state.label_ctx.labels),
         label_cmp);
     ninst = 0;

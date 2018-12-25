@@ -73,10 +73,6 @@ struct script_state {
     /* FIXME: Doesn't have to be that large most likely */
 #define SCRIPT_CHOICES_SZ (256 * sizeof(uint32_t))
         uint8_t* choices;
-        size_t last_choice_idx; /* index into choices last Choice* would use */
-        uint32_t last_nchoices; /* amount of choices last Choice* operation had */
-
-        bool make_labels; /* can branch instruction make labels? */
     } choice_ctx;
 
     struct {

@@ -128,7 +128,7 @@ static bool print_choice(size_t start, uint32_t mask, uint16_t arg0, size_t narg
     }
 
     for (size_t i = start; i < nargs; i++) {
-        uint32_t line_idx =  next_cmd_arg(arg0, mask >> 16, state);
+        uint32_t line_idx = next_cmd_arg(arg0, mask >> 16, state);
         mask += UINT16_MAX + 1;
 
         ok &= strtab_print_str(va_buf, va_buf_sz, state->strtab_menu, line_idx, &nprinted);
@@ -157,28 +157,19 @@ static uint16_t handler_Choice(uint16_t arg0, uint16_t arg1, struct script_state
     assert(arg1 <= 10);
     uint32_t mask = UINT16_MAX * 2 + 1;
 
-    if (state->choice_ctx.make_labels || state->dumping) {
-        state->choice_ctx.last_nchoices = 2;
-        state->choice_ctx.last_choice_idx = 0;
-    }
-
     if (state->dumping)
         state->has_err = !print_choice(0, mask, arg0, arg1, false, 0, state);
 
     return 0;
 }
 
-static uint16_t handler_ChoiceIdx(uint16_t arg0, uint16_t arg1, struct script_state* state) {
+static uint16_t handler_ChoiceIdx(uint16_t arg0, uint16_t nargs, struct script_state* state) {
     uint32_t dst = next_cmd_arg(arg0, 1, state) & UINT16_MAX;
-    assert(arg1 > 0);
+    assert(nargs > 1);
     uint32_t mask = UINT16_MAX * 2 + 1 + UINT16_MAX + 1;
 
-    if (state->choice_ctx.make_labels) {
-        /* FIXME */
-    }
-
     if (state->dumping)
-        state->has_err = !print_choice(1, mask, arg0, arg1, true, dst, state);
+        state->has_err = !print_choice(1, mask, arg0, nargs, true, dst, state);
 
     return 0;
 }
@@ -215,25 +206,17 @@ static uint16_t handler_Branch(uint16_t arg0, uint16_t arg1, struct script_state
     }
 #endif
 
-    /* Are we preceded by Choice? Otherwise it's a spurious branch that we ignore */
-    if (state->choice_ctx.last_nchoices > 0)
-        for (size_t i = 0; i < state->choice_ctx.last_nchoices - 1; i++) {
-            uint16_t dst = state->cmd_offs_next;
-            uint16_t val = branch_dst((char[]){0x05, 0x00, 0x06, 0x00, 0x07, 0x00}, 3, 0, 4, state, &dst);
-            if (val == 7)
-                sub_8002704(state, &dst);
+    uint16_t dst = state->cmd_offs_next;
+    uint16_t val = branch_dst((char[]){0x05, 0x00, 0x06, 0x00, 0x07, 0x00}, 3, 0, 4, state, &dst);
+    if (val == 7)
+        sub_8002704(state, &dst);
 
-            if (state->choice_ctx.make_labels)
-                make_label(dst, state);
-            else if (state->dumping) {
-                assert(state->va_ctx.sz - nprinted > sizeof(", L_0xffff"));
-                nprinted += sprintf(&state->va_ctx.buf[nprinted - 1], ", L_0x%x", dst);
-            }
-        }
-
-    /* Forget about the preceding Choice */
-    if (state->choice_ctx.make_labels)
-        state->choice_ctx.last_nchoices = 0;
+    if (!state->dumping)
+        make_label(dst, state);
+    else {
+        assert(state->va_ctx.sz - nprinted > sizeof("L_0xffff"));
+        sprintf(&state->va_ctx.buf[nprinted - 1], ", L_0x%x", dst);
+    }
 
     return 0;
 }
