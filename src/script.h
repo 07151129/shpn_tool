@@ -35,6 +35,7 @@ struct script_desc {
     uint32_t strtab_vma;
     size_t sz;
     const uint16_t cksum;
+    const uint8_t* branch_info_unk; /* 0x823149C */
 };
 
 struct script_state {
@@ -65,6 +66,8 @@ struct script_state {
     // uint8_t* arg_tab;
 
     const uint8_t* strtab, * strtab_menu;
+    const char* branch_info;
+    const uint8_t* branch_info_unk;
 
     struct {
         char* buf; /* any extra arguments to be logged by a handler */

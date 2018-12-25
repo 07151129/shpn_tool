@@ -1,5 +1,7 @@
 #include <assert.h>
+#include <ctype.h>
 #include <fcntl.h>
+#include <limits.h>
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdlib.h>
@@ -174,103 +176,10 @@ static uint16_t handler_Stop(uint16_t arg0, uint16_t arg1, struct script_state* 
     return UINT16_MAX;
 }
 
-/* FIXME */
-static uint16_t sub_80027b4(bool update, struct script_state* state, uint16_t* dst) {
-    uint16_t ret = *((uint8_t*)state->cmds + *dst + 1) << 8 |
-        *((uint8_t*)state->cmds + *dst);
-    if (update) {
-        // fprintf(stderr, "cmd_offs_next = 0x%x + 2\n", state->cmd_offs_next);
-        *dst += 2;
-    }
-    return ret;
-}
-
-static uint16_t sub_8002704(struct script_state* state, uint16_t* dst) {
-    uint32_t v0 = sub_80027b4(true, state, dst) << 16;
-    uint32_t v1 = 16 * v0 >> 20;
-
-    for (uint32_t i = v0 >> 28; i != UINT16_MAX; i = (i - 1) & UINT16_MAX)
-        sub_80027b4(true, state, dst);
-    return v1;
-}
-
-#define SAR(x, w) ((x) >> (w))
-
-uint32_t sub_80062d4(char* arg0, uint32_t arg1, uint32_t arg2, uint32_t arg3,
-    struct script_state* state, uint16_t* dst) {
-    char* s0 = arg0;
-    uint32_t r5 = 0x0;
-    uint32_t r8 = arg1 << 0x10;
-    uint32_t r10 = SAR(r8, 0x10);
-    uint32_t var_24 = arg2 << 0x10;
-    uint32_t r7 = arg3 << 0x10;
-    uint32_t r6 = SAR(r7, 0x10);
-
-    uint32_t r0, r4, r1, r2, r3;
-
-loc_80062f6:
-    r0 = sub_80027b4(false, state, dst);
-    r4 = 0xfff & r0;
-    r1 = 0x0;
-    if (r1 >= r10) goto loc_8006348;
-
-loc_8006308:
-    r2 = SAR(r7, 0x10);
-    r3 = SAR(r8, 0x10);
-    goto loc_800630e;
-
-loc_800630e:
-    r1 = SAR(r1 << 0x10, 0x10);
-    r0 = *(uint16_t*)((r1 << 0x1) + s0);
-    if (r4 != r0) goto loc_800633c;
-
-loc_800631c:
-    if (r5 == 0x0) goto loc_800636c;
-
-loc_8006320:
-    if ((r4 == 0x7) && (r2 == 0x4)) {
-            r0 = r5 - 0x1 << 0x10;
-            r5 = r0 >> 0x10;
-    }
-    else {
-            if ((r4 == 0x9) && (r2 == 0x8)) {
-                    r0 = r5 - 0x1 << 0x10;
-                    r5 = r0 >> 0x10;
-            }
-    }
-    goto loc_8006348;
-
-loc_8006348:
-    r4 = sub_8002704(state, dst) << 0x10 >> 0x10;
-    if (r4 != 0x4) {
-            if (r4 == 0x8) {
-                    if (r6 == 0x8) {
-                            r5 = r5 + 0x1 << 0x10 >> 0x10;
-                    }
-            }
-    }
-    else {
-            if (r6 == 0x4) {
-                    r5 = r5 + 0x1 << 0x10 >> 0x10;
-            }
-    }
-    goto loc_80062f6;
-
-loc_800636c:
-    r0 = SAR(var_24, 0x10);
-    if (r0 == 0x1) {
-        sub_8002704(state, dst);
-    }
-    r0 = SAR(r4 << 0x10, 0x10);
-    return r0;
-
-loc_800633c:
-    r0 = r1 + 0x1 << 0x10;
-    r1 = r0 >> 0x10;
-    r0 = SAR(r0, 0x10);
-    if (r0 < r3) goto loc_800630e;
-    goto loc_8006348;
-}
+uint32_t branch_dst(char* arg0, uint32_t arg1, uint32_t arg2, uint32_t arg3,
+    struct script_state* state, uint16_t* dst);
+uint32_t is_branch_taken(const char* info, const struct script_state* state);
+uint16_t sub_8002704(struct script_state* state, uint16_t* dst);
 
 static uint16_t handler_0x4(uint16_t arg0, uint16_t arg1, struct script_state* state) {
     assert(arg0 == 0);
@@ -284,7 +193,7 @@ static uint16_t handler_0x4(uint16_t arg0, uint16_t arg1, struct script_state* s
     /* FIXME: Decoding multiple branch destinations for ChoiceIdx? */
     if (state->cmd_offs == 0x1706) {
         uint16_t dst = state->cmd_offs_next;
-        uint16_t val = sub_80062d4((char[]){0x05, 0x00, 0x06, 0x00, 0x07, 0x00}, 3, 0, 4, state, &dst);
+        uint16_t val = branch_dst((char[]){0x05, 0x00, 0x06, 0x00, 0x07, 0x00}, 3, 0, 4, state, &dst);
         if (val == 7)
             sub_8002704(state, &dst);
 

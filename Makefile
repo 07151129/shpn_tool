@@ -12,7 +12,8 @@ SRC := \
 	src/crc32.c \
 	src/script_handlers.c \
 	src/sjis_to_u8.c \
-	src/strtab.c
+	src/strtab.c \
+	src/branch.c
 
 OBJ := $(SRC:src/%.c=build/%.o)
 DEP := $(OBJ:%.o=%.d)
