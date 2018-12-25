@@ -304,12 +304,14 @@ void init_script_handlers() {
 
     script_handlers[0x11].name = "Choice";
     script_handlers[0x11].has_va = true;
+    script_handlers[0x11].nargs = 0;
     script_handlers[0x11].handler = handler_Choice;
 
     script_handlers[0x30].handler = handler_0x30;
 
     script_handlers[0x35].name = "ChoiceIdx";
     script_handlers[0x35].has_va = true;
+    script_handlers[0x35].nargs = 0;
     script_handlers[0x35].handler = handler_ChoiceIdx;
 
     script_handlers[0x5f].name = "PlayCredits";
