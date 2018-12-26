@@ -18,6 +18,13 @@ static struct script_desc scripts[] = {
         .strtab_vma = 0x853E908,
         .sz = 0xd3e4,
         .cksum = 0xba64
+    },
+    {
+        .name = "Cybil",
+        .vma = 0x823EAC0,
+        .strtab_vma = 0x853E908,
+        .sz = 0x4b59,
+        .cksum = 0xb971
     }
 };
 
