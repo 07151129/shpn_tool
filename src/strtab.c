@@ -6,6 +6,10 @@
 #include <stdio.h>
 #include <string.h>
 
+#ifdef HAS_ICONV
+#include <iconv.h>
+#endif
+
 #include "defs.h"
 #include "strtab.h"
 
@@ -100,7 +104,8 @@ leaf:
 
 bool sjis_to_u8(char *output, size_t szoutput, const char *input, size_t* nwritten);
 
-bool strtab_dec_str(const uint8_t* strtab, uint32_t idx, char* out, size_t out_sz, size_t* nwritten) {
+bool strtab_dec_str(const uint8_t* strtab, uint32_t idx, char* out, size_t out_sz, size_t* nwritten,
+    iconv_t conv) {
     const struct strtab_header* hdr = (const struct strtab_header*)strtab;
     assert(hdr->dict_offs == sizeof(struct strtab_header));
     assert(hdr->null == 0);
@@ -135,28 +140,82 @@ bool strtab_dec_str(const uint8_t* strtab, uint32_t idx, char* out, size_t out_s
     buf[len] = 0;
 
     /* return len > 0 && */ /* Apparently, they're OK with empty strings */
-    return sjis_to_u8(out, out_sz, buf, nwritten);
+
+    size_t cstatus = 0;
+
+    if (conv != (iconv_t)-1) {
+#ifdef HAS_ICONV
+        size_t out_sz_old = out_sz;
+        char* out_old = out;
+        char* outp = out;
+        char* bufp = buf;
+
+        /* Reset state */
+        iconv(conv, NULL, NULL, NULL, NULL);
+
+        cstatus = iconv(conv, (void*)&bufp, &len, &outp, &out_sz);
+
+        *nwritten = out_sz_old - out_sz;
+        out = out_old;
+        out[*nwritten]='\0';
+#endif
+    } else {
+        out[0] = '\0';
+        *nwritten = 1;
+        for (size_t i = 0; i < len; i++) {
+            if (*nwritten >= out_sz)
+                break;
+            if (*nwritten + sizeof("\\xff") > out_sz) {
+                cstatus = (size_t)-1;
+                break;
+            }
+            *nwritten += sprintf(&out[*nwritten - 1], "\\x%02x", (uint8_t)buf[i]);
+        }
+    }
+    return cstatus != (size_t)-1;
 }
 
-bool strtab_dump(const uint8_t* rom, size_t sz, uint32_t vma, uint32_t idx, bool has_idx, FILE* fout) {
+bool strtab_dump(const uint8_t* rom, uint32_t vma, uint32_t idx, bool has_idx, FILE* fout) {
     const void* strtab = &rom[VMA2OFFS(vma)];
+
+    iconv_t conv = (iconv_t)-1;
+#ifdef HAS_ICONV
+    conv = iconv_open("UTF-8", "SJIS");
+#endif
+
+    if (conv == (iconv_t)-1) {
+#ifdef HAS_ICONV
+        perror("iconv_open");
+#endif
+        fprintf(stderr, "iconv_open failed; will dump raw values\n");
+    }
+
+    bool ret = true;
 
     char buf[SJIS_TO_U8_MIN_SZ(DEC_BUF_SZ_SJIS)];
     size_t nwritten = 0;
     if (!has_idx)
         for (size_t i = 0; i < ((const struct strtab_header*)strtab)->nentries; i++)
-            if (!strtab_dec_str(strtab, i, buf, sizeof(buf), &nwritten)) {
+            if (!strtab_dec_str(strtab, i, buf, sizeof(buf), &nwritten, conv)) {
                 fprintf(stderr, "Failed to decode string at %zu\n", i);
-                return false;
+                ret = false;
+                goto done;
             } else
                 fprintf(fout, "%zu: %s\n", i, buf);
     else {
-        if (!strtab_dec_str(strtab, idx, buf, sizeof(buf), &nwritten)) {
+        if (!strtab_dec_str(strtab, idx, buf, sizeof(buf), &nwritten, conv)) {
             fprintf(stderr, "Failed to decode string at %u\n", idx);
-            return false;
+            ret = false;
+            goto done;
         } else
             fprintf(fout, "%u: %s\n", idx, buf);
     }
 
-    return true;
+done:
+    if (conv != (iconv_t)-1) {
+        if (!ret)
+            perror("iconv");
+        iconv_close(conv);
+    }
+    return ret;
 }

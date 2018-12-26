@@ -2,8 +2,11 @@
 #define SCRIPT_H
 
 #include <assert.h>
+#include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
+
+#include "strtab.h"
 
 #define SCRIPT_OP_MAX 117
 #define STRTAB_MENU_VMA 0x857546C /* FIXME: Hardcoded for now */
@@ -81,12 +84,14 @@ struct script_state {
     } va_ctx;
 
     bool has_err;
+
+    iconv_t conv;
 };
 
 struct script_cmd_handler {
     const char* name;
-    int nargs;
-    bool has_va;
+    // int nargs;
+    bool has_va; /* If true, we trust the handler to output at least all the varargs */
 
     /**
      * arg0 -- Never encountered arg0=1 so far, uses some state
@@ -109,5 +114,7 @@ bool make_label(uint16_t offs, struct script_state* state); /* true if not prese
 
 bool cmd_is_branch(const union script_cmd* cmd);
 bool has_label(uint16_t offs, const struct script_state* state);
+
+uint32_t script_next_cmd_arg(uint16_t a1, uint16_t w, const struct script_state* state);
 
 #endif

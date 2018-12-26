@@ -34,3 +34,12 @@ ifneq ($(SANITIZE),)
 	CFLAGS += -fsanitize=$(SANITIZE)
 	LDFLAGS += -fsanitize=$(SANITIZE)
 endif
+
+HAS_ICONV := 0
+ICONV ?= /usr
+
+ifneq ($(wildcard $(ICONV)/include/iconv.h),)
+	HAS_ICONV = 1
+	CFLAGS += -I$(ICONV)/include/iconv.h -DHAS_ICONV
+	LDFLAGS += -L$(ICONV)/lib -liconv
+endif

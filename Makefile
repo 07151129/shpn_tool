@@ -11,7 +11,6 @@ SRC := \
 	src/script_disass.c \
 	src/crc32.c \
 	src/script_handlers.c \
-	src/sjis_to_u8.c \
 	src/strtab.c \
 	src/branch.c
 
@@ -36,6 +35,11 @@ build/%.o: src/%.c
 	$(VERBOSE) $(ENV) $(CC) $(CFLAGS) $(INC) $(DEF) -MMD -MT $@ -MF build/$*.d -o $@ -c $<
 
 $(TARGET).sym: $(OBJ) $(OBJ_PARSER)
+ifeq ($(HAS_ICONV),0)
+	@echo iconv.h has not been found\; string decoding to UTF-8 will be unavailable. Set ICONV to \
+specify iconv installation prefix.
+endif
+
 	@echo ld $(notdir $@)
 	$(VERBOSE) $(ENV) $(LD) $(LDFLAGS) $(LDLIBS) -o $@ $(OBJ)
 

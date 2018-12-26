@@ -149,6 +149,27 @@ void script_state_init(struct script_state* state, const uint8_t* strtab, const 
     state->branch_info_unk = branch_info_unk;
 
     state->choice_ctx.choices = choices;
+
+    state->conv = (iconv_t)-1;
+
+#ifdef HAS_ICONV
+    state->conv = iconv_open("UTF-8", "SJIS");
+#endif
+
+    if (state->conv == (iconv_t)-1) {
+#ifdef HAS_ICONV
+        perror("iconv_open");
+#endif
+        fprintf(stderr, "iconv_open failed; will dump raw values\n");
+    }
+}
+
+static void script_state_free(struct script_state* state) {
+#ifdef HAS_ICONV
+    if (state->conv != (iconv_t)-1) {
+        iconv_close(state->conv);
+    }
+#endif
 }
 
 #define SCRIPT_DUMP_NCMDS_MAX 15000u
@@ -304,8 +325,10 @@ phase:
     }
 
     /* Second phase complete */
-    if (state.dumping)
+    if (state.dumping) {
+        script_state_free(&state);
         return true;
+    }
 
     /* Second phase */
     state.dumping = true;

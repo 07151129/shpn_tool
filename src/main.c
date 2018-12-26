@@ -18,8 +18,11 @@
 #include "strtab.h"
 
 static void usage() {
-    fprintf(stderr, "shpn-tool: analyze and modify Silent Hill Play Novel GBA ROM\n\n"
-                    "usage: <ROM> <verb> [...]\n\n"
+    fprintf(stderr, "shpn-tool: analyze and modify Silent Hill Play Novel GBA ROM\n"
+#ifdef HAS_ICONV
+                    "Built with iconv support"
+#endif
+                    "\nusage: <ROM> <verb> [...]\n\n"
                     "ROM is the AGB-ASHJ ROM path\n"
                     "Supported verbs:\n"
                     "script <name> <dump | embed>\n"
@@ -115,18 +118,26 @@ static bool parse_strtab_verb(int argc, char* const* argv, int i) {
     }
 
     if (++j < argc) {
-        if (opts.strtab_verb == STRTAB_DUMP || opts.strtab_verb == STRTAB_EMBED) {
+        if (opts.strtab_verb == STRTAB_EMBED) {
             opts.strtab_idx = strtoul(argv[j], NULL, 0);
             if (errno != 0)
                 opts.has_strtab_idx = false; /* FIXME: Non-portable? */
             else
                 opts.has_strtab_idx = true;
         }
+
+        if (opts.strtab_verb == STRTAB_DUMP)
+            opts.out_path = argv[j];
     }
 
     if (++j < argc) {
-        if (opts.strtab_verb == STRTAB_DUMP)
-            opts.out_path = argv[j];
+        if (opts.strtab_verb == STRTAB_DUMP) {
+            opts.strtab_idx = strtoul(argv[j], NULL, 0);
+            if (errno != 0)
+                opts.has_strtab_idx = false; /* FIXME: Non-portable? */
+            else
+                opts.has_strtab_idx = true;
+        }
         else if (opts.strtab_verb == STRTAB_EMBED)
             opts.in_path = argv[j];
     }
@@ -232,7 +243,7 @@ static bool strtab_verbs(const uint8_t* rom, size_t sz) {
     }
 
     if (opts.strtab_verb == SCRIPT_DUMP)
-        ret = strtab_dump(rom, sz, strtab_vma, opts.strtab_idx, opts.has_strtab_idx,
+        ret = strtab_dump(rom, strtab_vma, opts.strtab_idx, opts.has_strtab_idx,
             fout ? fout : stdout);
     /* FIXME: Embed */
 

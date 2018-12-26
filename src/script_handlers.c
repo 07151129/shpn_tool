@@ -51,13 +51,13 @@ static uint16_t handler_Jump(uint16_t arg0, uint16_t arg1, struct script_state* 
 }
 
 static bool strtab_print_str(char* buf, size_t sz, const uint8_t* strtab, uint16_t line_idx,
-        size_t* nprinted) {
+        size_t* nprinted, iconv_t conv) {
     assert(buf && sz > sizeof("(65535)\""));
     *nprinted = sprintf(buf,  "(%u)\"", line_idx);
     size_t dec_len = 0;
 
-    uint16_t ret = strtab_dec_str(strtab, line_idx, &buf[*nprinted], sz - *nprinted, &dec_len);
-    *nprinted += dec_len;
+    uint16_t ret = strtab_dec_str(strtab, line_idx, &buf[*nprinted], sz - *nprinted, &dec_len, conv);
+    *nprinted += dec_len + 1;
 
     if (!ret)
         fprintf(stderr, "Failed to decode line %d\n", line_idx);
@@ -79,7 +79,7 @@ static uint16_t handler_ShowText(uint16_t arg0, uint16_t arg1, struct script_sta
     if (state->dumping) {
         size_t nprinted;
         state->has_err = !strtab_print_str(state->va_ctx.buf, state->va_ctx.sz, state->strtab, line_idx,
-            &nprinted);
+            &nprinted, state->conv);
     }
 
     return 0;
@@ -131,7 +131,8 @@ static bool print_choice(size_t start, uint32_t mask, uint16_t arg0, size_t narg
         uint32_t line_idx = script_next_cmd_arg(arg0, mask >> 16, state);
         mask += UINT16_MAX + 1;
 
-        ok &= strtab_print_str(va_buf, va_buf_sz, state->strtab_menu, line_idx, &nprinted);
+        ok &= strtab_print_str(va_buf, va_buf_sz, state->strtab_menu, line_idx, &nprinted,
+            state->conv);
 
         if (!ok)
             return false;
