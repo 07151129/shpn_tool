@@ -70,13 +70,16 @@ static uint16_t dis_cmd(const union script_cmd* cmd, struct script_state* state,
         else
             fprintf(fout, "OP_0x%x(", cmd->op);
 
-        if (handler->nargs == 2)
-            fprintf(fout, "0x%x, 0x%x", cmd->arg >> 16, cmd->arg);
-        else if (handler->nargs == 1)
-            fprintf(fout, "0x%x", cmd->arg >> 16);
+        // fprintf(fout, "0x%x, 0x%x", cmd->arg >> 16, cmd->arg);
 
         if (handler->has_va)
-            fprintf(fout, "%s%s", handler->nargs > 0 ? ", " : "", state->va_ctx.buf);
+            fprintf(fout, "%s", state->va_ctx.buf);
+        else {
+            for (size_t i = 0; i < cmd->arg; i++) {
+                uint16_t arg = script_next_cmd_arg(cmd->arg >> 16, i + 1, state);
+                fprintf(fout, "%s0x%x", i > 0 ? ", " : "", arg);
+            }
+        }
         fprintf(fout, "); // 0x%x: %08x\n", state->cmd_offs, cmd->ival);
     }
 

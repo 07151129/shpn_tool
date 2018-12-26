@@ -16,7 +16,7 @@ struct script_cmd_handler script_handlers[SCRIPT_OP_MAX + 1];
 
 /* FIXME: Improve error handling: signal error instead of aborting at asserts */
 
-static uint32_t next_cmd_arg(uint16_t a1, uint16_t w, const struct script_state* state) {
+uint32_t script_next_cmd_arg(uint16_t a1, uint16_t w, const struct script_state* state) {
     if (a1 & (0x8000 >> (w - 1))) {
         assert(false);
         // return state->arg_tab[state->arg_tab_idx - next_cmd_arg(0, w, state)];
@@ -35,7 +35,7 @@ static uint16_t handler_Jump(uint16_t arg0, uint16_t arg1, struct script_state* 
 
     assert(arg0 == 0);
 
-    uint16_t dst = next_cmd_arg(arg0, 1, state);
+    uint16_t dst = script_next_cmd_arg(arg0, 1, state);
     assert(dst % 2 == 0 && "Misaligned jump destination");
 
     if (!state->dumping)
@@ -73,8 +73,8 @@ static uint16_t handler_ShowText(uint16_t arg0, uint16_t arg1, struct script_sta
 
     uint32_t v3 = 0; // v3 != 0 => new frame?
     if (arg1 == 2)
-        v3 = next_cmd_arg(arg0, 2, state);
-    uint16_t line_idx = next_cmd_arg(arg0, 1, state);
+        v3 = script_next_cmd_arg(arg0, 2, state);
+    uint16_t line_idx = script_next_cmd_arg(arg0, 1, state);
 
     if (state->dumping) {
         size_t nprinted;
@@ -90,7 +90,7 @@ static uint16_t handler_LoadBackground(uint16_t arg0, uint16_t has_bg, struct sc
 
     if (state->dumping) {
         if (has_bg) {
-            bg_idx = next_cmd_arg(arg0, 1, state);
+            bg_idx = script_next_cmd_arg(arg0, 1, state);
             snprintf(state->va_ctx.buf, state->va_ctx.sz, "0x%x", bg_idx);
         } else
             state->va_ctx.buf[0] = '\0';
@@ -102,8 +102,8 @@ static uint16_t handler_LoadBackground(uint16_t arg0, uint16_t has_bg, struct sc
 static uint16_t handler_LoadEffect(uint16_t arg0, uint16_t arg1, struct script_state* state) {
     assert(arg0 == 0);
 
-    uint16_t idx0 = next_cmd_arg(arg0, 1, state);
-    uint16_t idx1 = next_cmd_arg(arg0, 2, state);
+    uint16_t idx0 = script_next_cmd_arg(arg0, 1, state);
+    uint16_t idx1 = script_next_cmd_arg(arg0, 2, state);
 
     if (state->dumping) {
         snprintf(state->va_ctx.buf, state->va_ctx.sz, "0x%x, 0x%x", idx0, idx1);
@@ -128,7 +128,7 @@ static bool print_choice(size_t start, uint32_t mask, uint16_t arg0, size_t narg
     }
 
     for (size_t i = start; i < nargs; i++) {
-        uint32_t line_idx = next_cmd_arg(arg0, mask >> 16, state);
+        uint32_t line_idx = script_next_cmd_arg(arg0, mask >> 16, state);
         mask += UINT16_MAX + 1;
 
         ok &= strtab_print_str(va_buf, va_buf_sz, state->strtab_menu, line_idx, &nprinted);
@@ -164,7 +164,7 @@ static uint16_t handler_Choice(uint16_t arg0, uint16_t arg1, struct script_state
 }
 
 static uint16_t handler_ChoiceIdx(uint16_t arg0, uint16_t nargs, struct script_state* state) {
-    uint32_t dst = next_cmd_arg(arg0, 1, state) & UINT16_MAX;
+    uint32_t dst = script_next_cmd_arg(arg0, 1, state) & UINT16_MAX;
     assert(nargs > 1);
     uint32_t mask = UINT16_MAX * 2 + 1 + UINT16_MAX + 1;
 
@@ -186,7 +186,7 @@ uint16_t sub_8002704(struct script_state* state, uint16_t* dst);
 static uint16_t handler_Branch(uint16_t arg0, uint16_t arg1, struct script_state* state) {
     assert(arg0 == 0);
 
-    uint16_t idx = next_cmd_arg(arg0, 1, state);
+    uint16_t idx = script_next_cmd_arg(arg0, 1, state);
 
     size_t nprinted = 0;
 
@@ -215,7 +215,7 @@ static uint16_t handler_Branch(uint16_t arg0, uint16_t arg1, struct script_state
         make_label(dst, state);
     else {
         assert(state->va_ctx.sz - nprinted > sizeof("L_0xffff"));
-        sprintf(&state->va_ctx.buf[nprinted - 1], ", L_0x%x", dst);
+        sprintf(&state->va_ctx.buf[nprinted], ", L_0x%x", dst);
     }
 
     return 0;
@@ -232,7 +232,7 @@ static uint16_t handler_ShowMovie(uint16_t a1, uint16_t a2, struct script_state*
 
     if (state->dumping) {
         assert(state->va_ctx.buf && state->va_ctx.sz > sizeof("0xffff"));
-        sprintf(state->va_ctx.buf, "0x%x", next_cmd_arg(a1, 1, state) & UINT16_MAX);
+        sprintf(state->va_ctx.buf, "0x%x", script_next_cmd_arg(a1, 1, state) & UINT16_MAX);
     }
     return 0;
 }
@@ -245,7 +245,7 @@ static uint16_t handler_0x30(uint16_t a1, uint16_t a2, struct script_state* stat
 void init_script_handlers() {
     for (size_t i = 0; i < SCRIPT_OP_MAX; i++) {
         script_handlers[i] = (struct script_cmd_handler){.name = NULL, .handler = handler_stub,
-            .has_va = false, .nargs = 2};
+            .has_va = false/*, .nargs = 2*/};
     }
 
     script_handlers[0].handler = handler_Nop;
@@ -257,53 +257,55 @@ void init_script_handlers() {
     script_handlers[1].name = "Jump";
     script_handlers[1].handler = handler_Jump;
     script_handlers[1].has_va = true;
-    script_handlers[1].nargs = 0;
+    // script_handlers[1].nargs = 0;
 
     script_handlers[4].name = "Branch";
     script_handlers[4].handler = handler_Branch;
     script_handlers[4].has_va = true;
-    script_handlers[4].nargs = 0;
+    // script_handlers[4].nargs = 0;
 
     script_handlers[0xc].name = "ShowText";
     script_handlers[0xc].handler = handler_ShowText;
     script_handlers[0xc].has_va = true;
-    script_handlers[0xc].nargs = 0;
+    // script_handlers[0xc].nargs = 0;
 
     script_handlers[0xd].name = "ShowMovie";
     script_handlers[0xd].handler = handler_ShowMovie;
-    script_handlers[0xd].has_va = true;
-    script_handlers[0xd].nargs = 0;
+    // script_handlers[0xd].has_va = true;
+    // script_handlers[0xd].nargs = 0;
 
     script_handlers[0x10].name = "HandleInput";
-    script_handlers[0x10].nargs = 0;
+    // script_handlers[0x10].nargs = 0;
 
     script_handlers[0x69].name = "LoadBackground";
-    script_handlers[0x69].has_va = true;
+    // script_handlers[0x69].has_va = true;
     script_handlers[0x69].handler = handler_LoadBackground;
 
     script_handlers[0x6d].name = "LoadEffect";
-    script_handlers[0x6d].has_va = true;
+    // script_handlers[0x6d].has_va = true;
     script_handlers[0x6d].handler = handler_LoadEffect;
 
     script_handlers[0x11].name = "Choice";
     script_handlers[0x11].has_va = true;
-    script_handlers[0x11].nargs = 0;
+    // script_handlers[0x11].nargs = 0;
     script_handlers[0x11].handler = handler_Choice;
 
     script_handlers[0x30].handler = handler_0x30;
 
     script_handlers[0x35].name = "ChoiceIdx";
     script_handlers[0x35].has_va = true;
-    script_handlers[0x35].nargs = 0;
+    // script_handlers[0x35].nargs = 0;
     script_handlers[0x35].handler = handler_ChoiceIdx;
 
     script_handlers[0x5f].name = "PlayCredits";
-    script_handlers[0x5f].nargs = 0;
+    // script_handlers[0x5f].nargs = 0;
 
     script_handlers[0x60].name = "GiveCard";
 
+    script_handlers[0x61].name = "Puzzle";
+
     script_handlers[0x63].name = "Stop";
-    script_handlers[0x63].nargs = 0;
+    // script_handlers[0x63].nargs = 0;
     // script_handlers[0x63].handler = handler_Stop;
 }
 
