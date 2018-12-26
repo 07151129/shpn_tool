@@ -30,5 +30,7 @@ else
     CFLAGS += $(CFLAGS_OPT)
 endif
 
-CFLAGS += -fsanitize=$(SANITIZE)
-LDFLAGS += -fsanitize=$(SANITIZE)
+ifneq ($(SANITIZE),)
+	CFLAGS += -fsanitize=$(SANITIZE)
+	LDFLAGS += -fsanitize=$(SANITIZE)
+endif
