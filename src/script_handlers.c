@@ -57,7 +57,7 @@ static bool strtab_print_str(char* buf, size_t sz, const uint8_t* strtab, uint16
     size_t dec_len = 0;
 
     uint16_t ret = strtab_dec_str(strtab, line_idx, &buf[*nprinted], sz - *nprinted, &dec_len, conv);
-    *nprinted += dec_len + 1;
+    *nprinted += dec_len;
 
     if (!ret)
         fprintf(stderr, "Failed to decode line %d\n", line_idx);

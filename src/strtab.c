@@ -155,16 +155,14 @@ bool strtab_dec_str(const uint8_t* strtab, uint32_t idx, char* out, size_t out_s
 
         cstatus = iconv(conv, (void*)&bufp, &len, &outp, &out_sz);
 
-        *nwritten = out_sz_old - out_sz;
+        *nwritten = out_sz_old - out_sz + 1;
         out = out_old;
-        out[*nwritten]='\0';
+        out[*nwritten - 1] = '\0';
 #endif
     } else {
         out[0] = '\0';
         *nwritten = 1;
         for (size_t i = 0; i < len; i++) {
-            if (*nwritten >= out_sz)
-                break;
             if (*nwritten + sizeof("\\xff") > out_sz) {
                 cstatus = (size_t)-1;
                 break;
