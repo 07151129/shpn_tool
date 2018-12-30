@@ -120,8 +120,7 @@ bool strtab_dec_str(const uint8_t* strtab, uint32_t idx, char* out, size_t out_s
 
     size_t len = 0;
 
-    uint32_t msg_idx = 0;
-    memcpy(&msg_idx, &strtab[hdr->msgs_offs + 3 * idx], 3);
+    uint32_t msg_idx = *(uint32_t*)(&strtab[hdr->msgs_offs + 3 * idx]) & 0xffffff;
 
     const uint8_t* msg = &strtab[hdr->msgs_offs + msg_idx];
     uint8_t bits = *msg;
