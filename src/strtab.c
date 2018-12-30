@@ -1,4 +1,5 @@
 #include <assert.h>
+#include <limits.h>
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdlib.h>
@@ -70,8 +71,10 @@ err:
             if (*bits & 0x80)
                 n = (struct dict_node*)&(((uint8_t*)dict)[n->offs_r]);
             else {
-                assert(n + 1 == (struct dict_node*)&(((uint8_t*)dict)[n->offs_l]));
-                n++;
+                // assert(n + 1 == (struct dict_node*)&(((uint8_t*)dict)[n->offs_l]) &&
+                    // "Left child must follow its parent immediately");
+                // n++;
+                n = (struct dict_node*)&(((uint8_t*)dict)[n->offs_l]);
             }
 
             *bits <<= 1;
@@ -101,8 +104,6 @@ leaf:
         *len = *len + 1;
     }
 }
-
-bool sjis_to_u8(char *output, size_t szoutput, const char *input, size_t* nwritten);
 
 bool strtab_dec_str(const uint8_t* strtab, uint32_t idx, char* out, size_t out_sz, size_t* nwritten,
     iconv_t conv) {
@@ -215,4 +216,314 @@ done:
         iconv_close(conv);
     }
     return ret;
+}
+
+#define DICT_SZ_MAX 1000
+
+/* Intermediate dict_node format used for building a dictionary */
+static struct dict_node_inter {
+    struct dict_node node;
+    unsigned long freq;
+    bool has_parent;
+    size_t parent_idx;
+} dict [DICT_SZ_MAX];
+
+static void set_parent_child_ref(const struct dict_node_inter* child, size_t child_idx, size_t tgt) {
+    if (!child->has_parent)
+        return;
+    struct dict_node_inter* parent = &dict[child->parent_idx];
+
+    if (parent->node.offs_l == child_idx)
+        parent->node.offs_l = tgt;
+    else if (parent->node.offs_r == child_idx)
+        parent->node.offs_r = tgt;
+}
+
+static void set_child_parent_ref(struct dict_node_inter* parent, size_t tgt) {
+    if (is_leaf(&parent->node))
+        return;
+
+    dict[parent->node.offs_l].parent_idx = tgt;
+    dict[parent->node.offs_r].parent_idx = tgt;
+}
+
+static bool swap_nodes(struct dict_node_inter* lhs, struct dict_node_inter* rhs) {
+    size_t ilhs = lhs - dict, irhs = rhs - dict;
+
+    if (ilhs == irhs)
+        return false;
+
+    struct dict_node_inter nlhs = *lhs, nrhs = *rhs;
+
+    set_parent_child_ref(&nlhs, ilhs, irhs);
+    set_parent_child_ref(&nrhs, irhs, ilhs);
+
+    set_child_parent_ref(&nlhs, irhs);
+    set_child_parent_ref(&nrhs, ilhs);
+
+    nlhs.node = rhs->node;
+    nrhs.node = lhs->node;
+
+    nlhs.has_parent = rhs->has_parent;
+    nrhs.has_parent = lhs->has_parent;
+
+    nlhs.parent_idx = rhs->parent_idx;
+    nrhs.parent_idx = lhs->parent_idx;
+
+    *lhs = nlhs;
+    *rhs = nrhs;
+
+    return true;
+}
+
+static bool make_dict(const char** strs, size_t nstrs, size_t* nentries) {
+    static uint8_t char_freqs[UINT8_MAX + 1];
+
+    /* First, make leaves for each char encountered in strs */
+    for (size_t i = 0; i < nstrs; i++)
+        for (const char* str = strs[i]; *str; str++)
+            char_freqs[(size_t)*str]++;
+
+    /* Add NUL as well */
+    char_freqs[0]++;
+
+    size_t dict_nitems = 0;
+    for (size_t i = 0; i < sizeof(char_freqs) / sizeof(*char_freqs); i++) {
+        if (char_freqs[i]) {
+            dict[dict_nitems] = (struct dict_node_inter){{.val = i}, .freq = char_freqs[i]};
+            dict_nitems++;
+        }
+    }
+
+    size_t nroots = dict_nitems;
+
+    if (nroots < 2)
+        return false;
+
+    while (nroots > 1) {
+        /* Find two roots with least frequencies */
+        size_t least_idx = 0;
+        unsigned long least_freq = ULONG_MAX;
+
+        for (size_t i = 0; i < dict_nitems; i++)
+            if (!dict[i].has_parent && dict[i].freq <= least_freq) {
+                least_idx = i;
+                least_freq = dict[i].freq;
+            }
+
+        size_t second_least_idx = 0;
+        least_freq = ULONG_MAX;
+
+        for (size_t i = 0; i < dict_nitems; i++)
+            if (i != least_idx && !dict[i].has_parent && dict[i].freq <= least_freq) {
+                second_least_idx = i;
+                least_freq = dict[i].freq;
+            }
+
+        if (dict_nitems + 1 > DICT_SZ_MAX)
+            return false;
+
+        /* Merge the two roots */
+        dict[dict_nitems] = (struct dict_node_inter){
+            .node = {.tag = UINT32_MAX, .offs_l = least_idx, .offs_r = second_least_idx},
+            .freq = dict[least_idx].freq + dict[second_least_idx].freq
+        };
+
+        dict[least_idx].has_parent = true;
+        dict[least_idx].parent_idx = dict_nitems;
+
+        dict[second_least_idx].has_parent = true;
+        dict[second_least_idx].parent_idx = dict_nitems;
+
+        dict_nitems++;
+        nroots = nroots - 2 + 1;
+    }
+
+    /* Swap the actual root and the first element */
+    assert(dict[0].has_parent && is_leaf(&dict[0].node) && !dict[dict_nitems - 1].has_parent);
+    swap_nodes(&dict[0], &dict[dict_nitems - 1]);
+
+    *nentries = dict_nitems;
+    return true;
+}
+
+static void dump_dict(const struct dict_node_inter* root) {
+    // if (root->has_parent)
+    //     fprintf(stderr, "0x%zx -> ", root->parent_idx);
+    fprintf(stderr, "0x%lx: ", root - dict);
+    if (!is_leaf(&root->node)) {
+        fprintf(stderr, "0x%x, 0x%x\n", root->node.offs_l, root->node.offs_r);
+        dump_dict(&dict[root->node.offs_l]);
+        dump_dict(&dict[root->node.offs_r]);
+    }
+    else
+        fprintf(stderr, "%c\n", root->node.val);
+}
+
+#define NBYTES_PER_CHAR_MAX 2
+struct char_bits {
+    uint8_t bytes[NBYTES_PER_CHAR_MAX];
+    size_t nbits;
+};
+
+static_assert(CHAR_BIT == 8, "Where are we?");
+
+static bool bits_for_char(char c, struct char_bits* dst, size_t nbytes_max, size_t dict_sz) {
+    bool leaf_found = false;
+    size_t leaf_idx = 0;
+
+    for (size_t i = 0; i < dict_sz; i++)
+        if (is_leaf(&dict[i].node) && dict[i].node.val == c) {
+            leaf_found = true;
+            leaf_idx = i;
+            break;
+        }
+
+    /* As we never attempt to encode a character that is not a leaf, it's safe to do this */
+    if (!leaf_found)
+        return true;
+
+    dst->nbits = 0;
+
+    assert(dict[leaf_idx].has_parent);
+
+    while (dict[leaf_idx].has_parent) {
+        if (dst->nbits / 8 > nbytes_max)
+            return false;
+
+        size_t byte_idx = dst->nbits / 8;
+
+        const struct dict_node_inter* parent = &dict[dict[leaf_idx].parent_idx];
+        if (parent->node.offs_l == leaf_idx)
+            dst->bytes[byte_idx] &= ~(uint8_t)(1 << (dst->nbits % 8));
+        else
+            dst->bytes[byte_idx] |= 1 << (dst->nbits % 8);
+
+        leaf_idx = dict[leaf_idx].parent_idx;
+        dst->nbits++;
+    }
+
+    // fprintf(stderr, "%c: 0x%x, nbits = %zu\n", c, dst->bytes[0], dst->nbits);
+
+    return true;
+}
+
+/* FIXME: Need to check somewhere if strlen of each part until \n <= 512 */
+bool make_strtab(const char** strs, size_t nstrs, uint8_t* dst, size_t dst_sz, size_t* nwritten) {
+    size_t dict_nentries;
+    size_t dst_sz_init = dst_sz;
+
+    if (!make_dict(strs, nstrs, &dict_nentries))
+        return false;
+
+    // dump_dict(dict);
+
+    if (dict_nentries * sizeof(struct dict_node) + sizeof(struct strtab_header) > dst_sz)
+        return false;
+
+    static struct char_bits bits_for_chars[UINT8_MAX + 1];
+
+    for (size_t i = 0; i < nstrs; i++)
+        for (const char* str = strs[i]; ; str++) {
+            if (!bits_for_chars[(size_t)*str].nbits && !bits_for_char(*str,
+                    &bits_for_chars[(size_t)*str], NBYTES_PER_CHAR_MAX, dict_nentries))
+            return false;
+            if (!*str)
+                break;
+        }
+
+    /* Now that we have our dict, check if header + all the entries fit */
+    if (dst_sz < sizeof(struct strtab_header) + sizeof(struct dict_node) * dict_nentries)
+        return false;
+
+    *(struct strtab_header*)dst = (struct strtab_header){
+        .dict_offs = sizeof(struct strtab_header),
+        .msgs_offs = sizeof(struct strtab_header) + dict_nentries * sizeof(struct dict_node),
+        .nentries = nstrs
+    };
+
+    for (size_t i = 0; i < dict_nentries; i++) {
+        /* Fix references to be byte offsets instead of offsets dict_node_inter[] */
+        dict[i].node.offs_l = dict[i].node.offs_l * sizeof(dict[i].node);
+        dict[i].node.offs_r = dict[i].node.offs_r * sizeof(dict[i].node);
+
+        memcpy(dst + sizeof(struct strtab_header) + i * sizeof(struct dict_node), &dict[i].node,
+            sizeof(struct dict_node));
+    }
+
+    dst_sz -= dict_nentries * sizeof(struct dict_node) + sizeof(struct strtab_header);
+
+    if (3 * dict_nentries > dst_sz)
+        return false;
+
+    uint8_t* msg_offsets = dst + ((struct strtab_header*)dst)->msgs_offs;
+    uint8_t* msg = msg_offsets + 3 * nstrs;
+
+    for (size_t i = 0; i < nstrs; i++) {
+        size_t nbits = 0;
+        uint8_t val = 0;
+
+        if (dst_sz < 3)
+            return false;
+
+        /* Write a three-byte offset from msgs to the message */
+        uint32_t msg_offs = (msg - msg_offsets) & 0xffffff;
+
+        if (msg_offs > MSG_OFFS_MAX)
+            return false;
+
+        memcpy(msg_offsets + 3 * i, &msg_offs, 3);
+        dst_sz -= 3;
+
+        assert(strs[i]);
+
+        /* For each char in str, make and write bytes out of its encoding bits */
+        for (const char* str = strs[i]; ; str++) {
+            struct char_bits bits = bits_for_chars[(size_t)*str];
+
+            for (size_t j = 0; j < bits.nbits; j++) {
+                size_t bit_pos = bits.nbits - j % 8 - 1;
+
+                // fprintf(stderr, "%c: bits.bytes[%zu] & (1 << %zu) = 0x%x\n", *str, j/8, bit_pos,
+                    // bits.bytes[j / 8] & (1 << bit_pos));
+
+                if (bits.bytes[j / 8] & (1 << bit_pos))
+                    val |= 1;
+
+                nbits++;
+
+                // fprintf(stderr, "val(%c) = 0x%x, nbits = %zu\n", *str, val, nbits);
+
+                if (nbits > 0 && nbits % 8 == 0) {
+                    // fprintf(stderr, "writing val=0x%x\n", val);
+                    *msg++ = val;
+                    if (dst_sz < 1)
+                        return false;
+                    val = 0;
+                    dst_sz--;
+                }
+
+                val <<= 1;
+            }
+
+            if (*str == '\0')
+                break;
+        }
+
+        /* Pad last byte with zeroes and write it if needed */
+        if (nbits % 8 != 0) {
+            val >>= 1;
+            val <<= 8 - nbits % 8;
+            if (dst_sz < 1)
+                return false;
+            *msg++ = val;
+            dst_sz--;
+        }
+
+        // fprintf(stderr, "encoded as 0x%x\n", *(uint8_t*)(&msg_offsets[msg_offs]));
+        // fprintf(stderr, "Writing msg at offs 0x%x\n", msg_offs & 0xfff);
+    }
+
+    *nwritten = dst_sz_init - dst_sz;
+    return true;
 }

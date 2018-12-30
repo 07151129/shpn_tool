@@ -34,9 +34,9 @@ build/%.o: src/%.c
 	@mkdir -p $(dir $@)
 	$(VERBOSE) $(ENV) $(CC) $(CFLAGS) $(INC) $(DEF) -MMD -MT $@ -MF build/$*.d -o $@ -c $<
 
-$(TARGET).sym: $(OBJ) $(OBJ_PARSER)
+$(TARGET).sym: $(OBJ)
 ifeq ($(HAS_ICONV),0)
-	@echo iconv.h has not been found\; string decoding to UTF-8 will be unavailable. Set ICONV to \
+	@echo iconv.h has not been found\; string coding conversion will be unavailable. Set ICONV to \
 specify iconv installation prefix.
 endif
 
