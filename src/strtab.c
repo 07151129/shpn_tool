@@ -524,6 +524,6 @@ bool make_strtab(const char** strs, size_t nstrs, uint8_t* dst, size_t dst_sz, s
         // fprintf(stderr, "Writing msg at offs 0x%x\n", msg_offs & 0xfff);
     }
 
-    *nwritten = dst_sz_init - dst_sz;
+    *nwritten = dst_sz_init - dst_sz + 1;
     return true;
 }
