@@ -56,7 +56,8 @@ static bool strtab_print_str(char* buf, size_t sz, const uint8_t* strtab, uint16
     *nprinted = sprintf(buf,  "(%u)\"", line_idx);
     size_t dec_len = 0;
 
-    uint16_t ret = strtab_dec_str(strtab, line_idx, &buf[*nprinted], sz - *nprinted, &dec_len, conv);
+    uint16_t ret = strtab_dec_str(strtab, line_idx, &buf[*nprinted], sz - *nprinted, &dec_len, conv,
+        true);
     *nprinted += dec_len;
 
     if (!ret)

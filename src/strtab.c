@@ -85,6 +85,8 @@ err:
         }
 
 leaf:
+        assert(n->offs_l == UINT32_MAX && n->offs_r == UINT32_MAX &&
+            "Leaves must have UINT32_MAX offsets");
         /* NOTE: The original implementation replaces \n to \r\0 for rendering, but we don't care */
         if (n->val == '\0' || n->val == '\n') {
             /* Replace \n with \\n in SJIS (will be half-width YEN_SIGN in UTF-8) */
@@ -106,7 +108,7 @@ leaf:
 }
 
 bool strtab_dec_str(const uint8_t* strtab, uint32_t idx, char* out, size_t out_sz, size_t* nwritten,
-    iconv_t conv) {
+    iconv_t conv, bool should_conv) {
     const struct strtab_header* hdr = (const struct strtab_header*)strtab;
     assert(hdr->dict_offs == sizeof(struct strtab_header));
     assert(hdr->null == 0);
@@ -139,6 +141,11 @@ bool strtab_dec_str(const uint8_t* strtab, uint32_t idx, char* out, size_t out_s
     }
 
     buf[len] = 0;
+
+    if (!should_conv) {
+        memcpy(out, buf, len);
+        return true;
+    }
 
     /* return len > 0 && */ /* Apparently, they're OK with empty strings */
 
@@ -195,14 +202,14 @@ bool strtab_dump(const uint8_t* rom, uint32_t vma, uint32_t idx, bool has_idx, F
     size_t nwritten = 0;
     if (!has_idx)
         for (size_t i = 0; i < ((const struct strtab_header*)strtab)->nentries; i++)
-            if (!strtab_dec_str(strtab, i, buf, sizeof(buf), &nwritten, conv)) {
+            if (!strtab_dec_str(strtab, i, buf, sizeof(buf), &nwritten, conv, true)) {
                 fprintf(stderr, "Failed to decode string at %zu\n", i);
                 ret = false;
                 goto done;
             } else
                 fprintf(fout, "%zu: %s\n", i, buf);
     else {
-        if (!strtab_dec_str(strtab, idx, buf, sizeof(buf), &nwritten, conv)) {
+        if (!strtab_dec_str(strtab, idx, buf, sizeof(buf), &nwritten, conv, true)) {
             fprintf(stderr, "Failed to decode string at %u\n", idx);
             ret = false;
             goto done;
@@ -229,54 +236,6 @@ static struct dict_node_inter {
     size_t parent_idx;
 } dict [DICT_SZ_MAX];
 
-static void set_parent_child_ref(const struct dict_node_inter* child, size_t child_idx, size_t tgt) {
-    if (!child->has_parent)
-        return;
-    struct dict_node_inter* parent = &dict[child->parent_idx];
-
-    if (parent->node.offs_l == child_idx)
-        parent->node.offs_l = tgt;
-    else if (parent->node.offs_r == child_idx)
-        parent->node.offs_r = tgt;
-}
-
-static void set_child_parent_ref(struct dict_node_inter* parent, size_t tgt) {
-    if (is_leaf(&parent->node))
-        return;
-
-    dict[parent->node.offs_l].parent_idx = tgt;
-    dict[parent->node.offs_r].parent_idx = tgt;
-}
-
-static bool swap_nodes(struct dict_node_inter* lhs, struct dict_node_inter* rhs) {
-    size_t ilhs = lhs - dict, irhs = rhs - dict;
-
-    if (ilhs == irhs)
-        return false;
-
-    struct dict_node_inter nlhs = *lhs, nrhs = *rhs;
-
-    set_parent_child_ref(&nlhs, ilhs, irhs);
-    set_parent_child_ref(&nrhs, irhs, ilhs);
-
-    set_child_parent_ref(&nlhs, irhs);
-    set_child_parent_ref(&nrhs, ilhs);
-
-    nlhs.node = rhs->node;
-    nrhs.node = lhs->node;
-
-    nlhs.has_parent = rhs->has_parent;
-    nrhs.has_parent = lhs->has_parent;
-
-    nlhs.parent_idx = rhs->parent_idx;
-    nrhs.parent_idx = lhs->parent_idx;
-
-    *lhs = nlhs;
-    *rhs = nrhs;
-
-    return true;
-}
-
 static size_t cpy_pre_order(const struct dict_node_inter* root, struct dict_node_inter* dst,
     size_t idx) {
     dst[idx] = *root;
@@ -299,7 +258,8 @@ static size_t cpy_pre_order(const struct dict_node_inter* root, struct dict_node
 
 static bool make_dict(const uint8_t** strs, size_t nstrs, size_t* nentries) {
     /* We use a temporary frequency array here to make sure the dictionary array isn't sparse */
-    static uint8_t char_freqs[UINT8_MAX + 1];
+    uint8_t char_freqs[UINT8_MAX + 1];
+    memset(char_freqs, 0, sizeof(char_freqs));
 
     /* First, make leaves for each char encountered in strs */
     for (size_t i = 0; i < nstrs; i++)
@@ -457,13 +417,12 @@ bool make_strtab(const uint8_t** strs, size_t nstrs, uint8_t* dst, size_t dst_sz
     if (dict_nentries * sizeof(struct dict_node) + sizeof(struct strtab_header) > dst_sz)
         return false;
 
-    static struct char_bits bits_for_chars[UINT8_MAX + 1];
+    struct char_bits bits_for_chars[UINT8_MAX + 1];
 
     for (size_t i = 0; i < nstrs; i++)
         for (const uint8_t* str = strs[i]; ; str++) {
-            if (!bits_for_chars[(size_t)*str].nbits && !bits_for_char(*str,
-                    &bits_for_chars[(size_t)*str], NBYTES_PER_CHAR_MAX, dict_nentries))
-            return false;
+            if (!bits_for_char(*str, &bits_for_chars[(size_t)*str], NBYTES_PER_CHAR_MAX, dict_nentries))
+                return false;
             if (!*str)
                 break;
         }
