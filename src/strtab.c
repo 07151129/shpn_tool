@@ -71,10 +71,10 @@ err:
             if (*bits & 0x80)
                 n = (struct dict_node*)&(((uint8_t*)dict)[n->offs_r]);
             else {
-                // assert(n + 1 == (struct dict_node*)&(((uint8_t*)dict)[n->offs_l]) &&
-                    // "Left child must follow its parent immediately");
-                // n++;
-                n = (struct dict_node*)&(((uint8_t*)dict)[n->offs_l]);
+                assert(n + 1 == (struct dict_node*)&(((uint8_t*)dict)[n->offs_l]) &&
+                    "Left child must follow its parent immediately");
+                n++;
+                // n = (struct dict_node*)&(((uint8_t*)dict)[n->offs_l]);
             }
 
             *bits <<= 1;
