@@ -20,5 +20,5 @@ bool strtab_dec_str(const uint8_t* strtab, uint32_t idx, char* out, size_t out_s
 #define SJIS_TO_U8_MIN_SZ(len) (3*(len) + 1) /* Bound for SJIS -> UTF8 */
 #define MSG_OFFS_MAX 0xffffff
 
-bool make_strtab(const char** strs, size_t nstrs, uint8_t* dst, size_t dst_sz, size_t* nwritten);
+bool make_strtab(const uint8_t** strs, size_t nstrs, uint8_t* dst, size_t dst_sz, size_t* nwritten);
 #endif

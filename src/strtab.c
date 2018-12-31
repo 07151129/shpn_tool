@@ -296,13 +296,13 @@ static size_t cpy_pre_order(const struct dict_node_inter* root, struct dict_node
     return idx;
 }
 
-static bool make_dict(const char** strs, size_t nstrs, size_t* nentries) {
+static bool make_dict(const uint8_t** strs, size_t nstrs, size_t* nentries) {
     /* We use a temporary frequency array here to make sure the dictionary array isn't sparse */
     static uint8_t char_freqs[UINT8_MAX + 1];
 
     /* First, make leaves for each char encountered in strs */
     for (size_t i = 0; i < nstrs; i++)
-        for (const char* str = strs[i]; *str; str++)
+        for (const uint8_t* str = strs[i]; *str; str++)
             char_freqs[(size_t)*str]++;
 
     /* Add NUL as well */
@@ -444,7 +444,7 @@ static bool bits_for_char(char c, struct char_bits* dst, size_t nbytes_max, size
 }
 
 /* FIXME: Need to check somewhere if strlen of each part until \n <= 512 */
-bool make_strtab(const char** strs, size_t nstrs, uint8_t* dst, size_t dst_sz, size_t* nwritten) {
+bool make_strtab(const uint8_t** strs, size_t nstrs, uint8_t* dst, size_t dst_sz, size_t* nwritten) {
     size_t dict_nentries;
     size_t dst_sz_init = dst_sz;
 
@@ -459,7 +459,7 @@ bool make_strtab(const char** strs, size_t nstrs, uint8_t* dst, size_t dst_sz, s
     static struct char_bits bits_for_chars[UINT8_MAX + 1];
 
     for (size_t i = 0; i < nstrs; i++)
-        for (const char* str = strs[i]; ; str++) {
+        for (const uint8_t* str = strs[i]; ; str++) {
             if (!bits_for_chars[(size_t)*str].nbits && !bits_for_char(*str,
                     &bits_for_chars[(size_t)*str], NBYTES_PER_CHAR_MAX, dict_nentries))
             return false;
@@ -515,7 +515,7 @@ bool make_strtab(const char** strs, size_t nstrs, uint8_t* dst, size_t dst_sz, s
         assert(strs[i]);
 
         /* For each char in str, make and write bytes out of its encoding bits */
-        for (const char* str = strs[i]; ; str++) {
+        for (const uint8_t* str = strs[i]; ; str++) {
             struct char_bits bits = bits_for_chars[(size_t)*str];
 
             for (size_t j = 0; j < bits.nbits; j++) {
