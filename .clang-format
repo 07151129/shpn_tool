@@ -1,0 +1,12 @@
+BasedOnStyle: WebKit
+AlignAfterOpenBracket: AlwaysBreak
+AlignOperands: true
+AllowShortIfStatementsOnASingleLine: true
+BreakBeforeBinaryOperators: None
+BreakBeforeBraces: Custom
+BreakBeforeInheritanceComma: true
+ConstructorInitializerIndentWidth: 0
+Cpp11BracedListStyle: true
+IndentCaseLabels: true
+SortIncludes: false
+ColumnLimit: 100
