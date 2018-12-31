@@ -276,7 +276,28 @@ static bool swap_nodes(struct dict_node_inter* lhs, struct dict_node_inter* rhs)
     return true;
 }
 
+static size_t cpy_pre_order(const struct dict_node_inter* root, struct dict_node_inter* dst,
+    size_t idx) {
+    dst[idx] = *root;
+
+    if (!is_leaf(&root->node)) {
+        size_t lidx = cpy_pre_order(&dict[root->node.offs_l], dst, idx + 1);
+        size_t ridx = cpy_pre_order(&dict[root->node.offs_r], dst, lidx + 1);
+
+        dst[idx].node.offs_l = idx + 1;
+        dst[idx].node.offs_r = lidx + 1;
+
+        dst[idx + 1].parent_idx = idx;
+        dst[lidx + 1].parent_idx = idx;
+
+        idx = ridx;
+    }
+
+    return idx;
+}
+
 static bool make_dict(const char** strs, size_t nstrs, size_t* nentries) {
+    /* We use a temporary frequency array here to make sure the dictionary array isn't sparse */
     static uint8_t char_freqs[UINT8_MAX + 1];
 
     /* First, make leaves for each char encountered in strs */
@@ -290,7 +311,10 @@ static bool make_dict(const char** strs, size_t nstrs, size_t* nentries) {
     size_t dict_nitems = 0;
     for (size_t i = 0; i < sizeof(char_freqs) / sizeof(*char_freqs); i++) {
         if (char_freqs[i]) {
-            dict[dict_nitems] = (struct dict_node_inter){{.val = i}, .freq = char_freqs[i]};
+            dict[dict_nitems] = (struct dict_node_inter){
+                {.val = i, .offs_l = UINT32_MAX, .offs_r = UINT32_MAX},
+                .freq = char_freqs[i]
+            };
             dict_nitems++;
         }
     }
@@ -339,9 +363,20 @@ static bool make_dict(const char** strs, size_t nstrs, size_t* nentries) {
         nroots = nroots - 2 + 1;
     }
 
-    /* Swap the actual root and the first element */
-    assert(dict[0].has_parent && is_leaf(&dict[0].node) && !dict[dict_nitems - 1].has_parent);
-    swap_nodes(&dict[0], &dict[dict_nitems - 1]);
+    assert(!dict[dict_nitems - 1].has_parent);
+
+    /**
+     * FIXME: Look into creating dictionary in pre-order immediately, or at least doing this in
+     * place
+     */
+    struct dict_node_inter* dict_pre_order = malloc(sizeof(struct dict_node_inter[dict_nitems]));
+    if (!dict_pre_order)
+        return false;
+
+    cpy_pre_order(&dict[dict_nitems - 1], dict_pre_order, 0);
+    memcpy(dict, dict_pre_order, sizeof(struct dict_node_inter[dict_nitems]));
+
+    free(dict_pre_order);
 
     *nentries = dict_nitems;
     return true;
@@ -443,12 +478,14 @@ bool make_strtab(const char** strs, size_t nstrs, uint8_t* dst, size_t dst_sz, s
     };
 
     for (size_t i = 0; i < dict_nentries; i++) {
-        /* Fix references to be byte offsets instead of offsets dict_node_inter[] */
-        dict[i].node.offs_l = dict[i].node.offs_l * sizeof(dict[i].node);
-        dict[i].node.offs_r = dict[i].node.offs_r * sizeof(dict[i].node);
+        if (!is_leaf(&dict[i].node)) {
+            /* Fix references to be byte offsets instead of offsets dict_node_inter[] */
+            dict[i].node.offs_l *= sizeof(dict[i].node);
+            dict[i].node.offs_r *= sizeof(dict[i].node);
+        }
 
         memcpy(dst + sizeof(struct strtab_header) + i * sizeof(struct dict_node), &dict[i].node,
-            sizeof(struct dict_node));
+                sizeof(struct dict_node));
     }
 
     dst_sz -= dict_nentries * sizeof(struct dict_node) + sizeof(struct strtab_header);
