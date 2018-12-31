@@ -23,7 +23,6 @@ static void make_and_cmp(const char** strs, size_t nstrs) {
             strtab_dec_str(strtab, i, dec_buf, sizeof(dec_buf), &nwritten, (iconv_t)-1, false) &&
             "Failed to decode string");
         assert(!strncmp(strs[i], dec_buf, nwritten) && "Strings mismatch");
-        memset(dec_buf, 0, nwritten);
     }
 }
 

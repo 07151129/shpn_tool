@@ -143,7 +143,7 @@ bool strtab_dec_str(const uint8_t* strtab, uint32_t idx, char* out, size_t out_s
     buf[len] = 0;
 
     if (!should_conv) {
-        memcpy(out, buf, len);
+        memcpy(out, buf, len + 1);
         return true;
     }
 
