@@ -14,7 +14,7 @@
 #include <unistd.h>
 
 #include "defs.h"
-#include "script.h"
+#include "script_disass.h"
 #include "strtab.h"
 
 static void usage() {

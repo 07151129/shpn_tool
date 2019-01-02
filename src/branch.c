@@ -9,7 +9,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "script.h"
+#include "script_disass.h"
 
 static uint32_t sub_800281C(char a1, int a2) {
     uint32_t result; // r0

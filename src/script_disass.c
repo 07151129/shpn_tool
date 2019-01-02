@@ -8,7 +8,7 @@
 #include <string.h>
 
 #include "defs.h"
-#include "script.h"
+#include "script_disass.h"
 #include "strtab.h"
 
 static struct script_desc scripts[] = {
@@ -61,8 +61,6 @@ static uint16_t dis_cmd(const union script_cmd* cmd, struct script_state* state,
 
     if (state->dumping && at_label)
         fprintf(fout, "L_0x%x:\n", state->cmd_offs);
-
-    /* FIXME: We should really dump all the variable args somehow */
 
     if (ret != UINT16_MAX && state->dumping) {
         if (handler->name)

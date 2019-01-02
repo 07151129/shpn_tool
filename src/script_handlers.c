@@ -9,7 +9,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "script.h"
+#include "script_disass.h"
 #include "strtab.h"
 
 struct script_cmd_handler script_handlers[SCRIPT_OP_MAX + 1];
