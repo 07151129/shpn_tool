@@ -36,5 +36,5 @@ int main() {
                                 "\x91\xe6\x88\xea\x8f\xcd\x81\x40\x81\x40\x81\x75\x95\xa1\x90\x94"
                                 "\x82\xcc\x91\xab\x89\xb9\x81\x76"};
 
-    make_and_cmp((void*)sjis_text, 2);
+    make_and_cmp((void*)sjis_text, 3);
 }
