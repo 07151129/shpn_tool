@@ -51,7 +51,8 @@ bool strtab_dec_msg(const struct dict_node* dict, const uint8_t** msg, uint8_t* 
     while (true) { /* While msg not decoded */
         const struct dict_node* n = dict;
 
-        assert(*len < maxlen);
+        if (*len >= maxlen)
+            return false;
 
 err:
         if (*len >= maxlen) {
