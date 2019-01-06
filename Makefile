@@ -13,24 +13,39 @@ SRC := \
 	src/crc32.c \
 	src/script_handlers.c \
 	src/strtab.c \
-	src/branch.c
+	src/branch.c \
+	src/script_as.c \
+	src/script_parse_ctx.c
 
 SRC_TEST := \
-	test/make_strtab.c
+	test/make_strtab.c \
+	test/script_as.c
+
+SRC_LEX := src/script_lex.l
+SRC_YACC := src/script_gram.y
+
+SRC_LEX := $(SRC_LEX:src/%.l=src/%.yy.c)
+SRC_YACC := $(SRC_YACC:src/%.y=src/%.tab.c)
+
+SRC_PARSER := $(SRC_LEX) $(SRC_YACC)
+
+SRC += $(OBJ_LEX)
+SRC += $(OBJ_YACC)
 
 OBJ := $(SRC:src/%.c=build/%.o)
+OBJ += $(SRC_PARSER:src/%.c=build/%.o)
 DEP := $(OBJ:%.o=%.d)
 
-OBJ_TEST := $(SRC_TEST:test/%.c=build/test/%.o)
-OBJ_TEST += $(wordlist 2,$(words $(OBJ)),$(OBJ))
+# all but main.o
+OBJ_TEST := $(wordlist 2,$(words $(OBJ)),$(OBJ))
 DEP_TEST := $(OBJ_TEST:%.o=%.d)
 
 TARGET := build/shpn_tool
-TARGETS_TEST := build/test/make_strtab.sym
+TARGETS_TEST := $(SRC_TEST:test/%.c=build/test/%.sym)
 
 all: $(TARGET) | build
 
-.PHONY: clean all test
+.PHONY: clean all test help distclean yyclean
 .SUFFIXES:
 
 -include $(DEP) $(DEP_TEST)
@@ -38,11 +53,23 @@ all: $(TARGET) | build
 build:
 	@mkdir -p build
 
+src/%.tab.c src/%.tab.h: src/%.y
+	@echo yacc $(notdir $<)
+	$(VERBOSE) $(ENV) $(YACC) $(YACC_FLAGS) -o $@ $<
+
+src/%.yy.c src/%.yy.h: src/%.l $(SRC_YACC)
+	@echo lex $(notdir $@)
+	$(VERBOSE) $(ENV) $(LEX) $(LEX_FLAGS) -o $@ $<
+
 $(eval $(call COMPILE_C,build,src))
 $(eval $(call COMPILE_C,build/test,test))
 
+$(OBJ): $(SRC_PARSER)
+
 $(eval $(call LINK_TARGET,$(TARGET).sym,$(OBJ)))
-$(eval $(call LINK_TARGET,$(TARGETS_TEST),$(OBJ_TEST)))
+
+# For each test target, link the objects from src/ (but main.o) and only the test .o we need
+$(foreach test,$(TARGETS_TEST),$(eval $(call LINK_TARGET,$(test),$(OBJ_TEST) $(test:%.sym=%.o))))
 
 $(TARGET): $(TARGET).sym
 	@echo strip $(notdir $@)
@@ -51,8 +78,27 @@ $(TARGET): $(TARGET).sym
 clean:
 	@rm -rf build
 
+yyclean:
+	@rm -f $(SRC_PARSER) $(SRC_PARSER:src/%.c=src/%.h)
+
+distclean: clean yyclean
+
 testdir:
 	@mkdir -p build/test
 
-test: $(OBJ) $(OBJ_TEST) $(TARGETS_TEST) | testdir
-	@$(foreach tgt,$(TARGETS_TEST),@echo $(tgt);$(tgt))
+test: $(TARGETS_TEST) | testdir
+	$(foreach tgt,$(TARGETS_TEST),$(tgt)$(\n))
+
+help:
+	$(info Supported targets:)
+	$(info all$(\t)$(\t)$(\t)compile everything but tests)
+	$(info $(TARGET)$(\t)$(\t)compile $(TARGET))
+	$(info $(TARGET).sym$(\t)compile symbolised $(TARGET))
+	$(info test$(\t)$(\t)$(\t)run unit tests)
+	$(info clean$(\t)$(\t)$(\t)remove build artefacts)
+	$(info yyclean$(\t)$(\t)$(\t)remove $(SRC_PARSER))
+	$(info distclean$(\t)$(\t)same as clean and yyclean)
+	$(info help$(\t)$(\t)$(\t)show this message)
+	$(info Supported environment variables:)
+	$(info ICONV$(\t)$(\t)$(\t)iconv installation prefix)
+	@:

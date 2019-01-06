@@ -2,6 +2,9 @@ CC ?= cc
 LD := $(CC)
 STRIP ?= strip
 
+YACC ?= bison
+LEX ?= flex
+
 CFLAGS_OPT := \
     -Os \
     -DNDEBUG
@@ -23,6 +26,12 @@ CFLAGS_DEBUG := \
     -O0 \
     -DDEBUG \
     -UNDEBUG
+
+YACC_FLAGS := \
+    -y \
+    -d
+
+LEX_FLAGS :=
 
 ifeq ($(DEBUG),1)
     CFLAGS += $(CFLAGS_DEBUG)
@@ -59,4 +68,11 @@ specify iconv installation prefix.
 endif
 	@echo ld $$(notdir $$@)
 	$$(VERBOSE) $$(ENV) $$(LD) $$(LDFLAGS) $$(LDLIBS) -o $$@ $2
+endef
+
+NUL :=
+\t := $(NUL)	$(NUL)
+define \n
+
+$(NUL)
 endef
