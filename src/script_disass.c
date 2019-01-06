@@ -246,7 +246,7 @@ bool has_label(uint16_t offs, const struct script_state* state) {
  * Because there are finitely many branch/jump instructions in a script, finitely many labels will be
  * created, so the procedure will terminate.
  */
-bool script_dump(const uint8_t* rom, size_t rom_sz, const struct script_desc* desc, FILE* fout) {
+bool script_dump(const uint8_t* rom, const struct script_desc* desc, FILE* fout) {
     const struct script_hdr* hdr = (void*)&rom[VMA2OFFS(desc->vma)];
     static_assert(sizeof(*hdr) == sizeof(uint16_t[3]), "");
 

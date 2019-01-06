@@ -199,7 +199,7 @@ static bool script_verbs(uint8_t* rom, size_t sz) {
     init_script_handlers();
 
     if (opts.script_verb == SCRIPT_DUMP)
-        ret = script_dump(rom, sz, desc, fout ? fout : stdout);
+        ret = script_dump(rom, desc, fout ? fout : stdout);
     /* FIXME: Embed */
 
 done:
