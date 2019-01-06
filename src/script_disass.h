@@ -8,7 +8,7 @@
 
 #include "strtab.h"
 
-#define SCRIPT_OP_MAX 117
+#define SCRIPT_NOPS 118
 #define STRTAB_MENU_VMA 0x857546C /* FIXME: Hardcoded for now */
 #define BRANCH_INFO_UMK_VMA 0x823149C
 

@@ -12,7 +12,7 @@
 #include "script_disass.h"
 #include "strtab.h"
 
-struct script_cmd_handler script_handlers[SCRIPT_OP_MAX + 1];
+struct script_cmd_handler script_handlers[SCRIPT_NOPS];
 
 /* FIXME: Improve error handling: signal error instead of aborting at asserts */
 
@@ -245,7 +245,11 @@ static uint16_t handler_0x30(uint16_t a1, uint16_t a2, struct script_state* stat
 }
 
 void init_script_handlers() {
-    for (size_t i = 0; i < SCRIPT_OP_MAX; i++) {
+    static bool did_init;
+    if (did_init)
+        return;
+
+    for (size_t i = 0; i < SCRIPT_NOPS; i++) {
         script_handlers[i] = (struct script_cmd_handler){.name = NULL, .handler = handler_stub,
             .has_va = false/*, .nargs = 2*/};
     }
@@ -309,6 +313,12 @@ void init_script_handlers() {
     script_handlers[0x63].name = "Stop";
     // script_handlers[0x63].nargs = 0;
     // script_handlers[0x63].handler = handler_Stop;
+
+    did_init = true;
+}
+
+bool cmd_is_jump(const union script_cmd* cmd) {
+    return cmd->op == 1;
 }
 
 bool cmd_is_branch(const union script_cmd* cmd) {

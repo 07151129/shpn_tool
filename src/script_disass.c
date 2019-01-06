@@ -28,10 +28,10 @@ static struct script_desc scripts[] = {
     }
 };
 
-extern struct script_cmd_handler script_handlers[SCRIPT_OP_MAX];
+extern struct script_cmd_handler script_handlers[SCRIPT_NOPS];
 
 static bool is_valid_cmd(const union script_cmd* cmd) {
-    return cmd->op <= SCRIPT_OP_MAX;
+    return cmd->op < SCRIPT_NOPS;
 }
 
 static uint16_t dis_cmd(const union script_cmd* cmd, struct script_state* state, FILE* fout,
