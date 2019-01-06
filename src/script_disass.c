@@ -312,8 +312,6 @@ phase:
             bool is_valid = is_valid_cmd(cmd);
             uint16_t dis_ret = is_valid ? dis_cmd(cmd, &state, fout, at_label) : UINT16_MAX;
 
-            // if (state.cmd_offs == 0x9e2)
-            //     __asm__ ("int $3");
             /* Cannot disassemble at this address */
             if (dis_ret == UINT16_MAX || state.cmd_offs_next < state.cmd_offs) {
                 /* Just dump it as uint32, we don't really care what it does */
