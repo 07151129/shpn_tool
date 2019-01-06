@@ -302,7 +302,7 @@ phase:
             bool at_label = has_label(state.cmd_offs, &state);
             bool past_label = state.dumping &&
                 state.label_ctx.curr_label + 1 < state.label_ctx.nlabels &&
-                state.label_ctx.labels[state.label_ctx.curr_label + 1] <= state.cmd_offs_next;
+                state.label_ctx.labels[state.label_ctx.curr_label + 1] <= state.cmd_offs;
 
             if (cmd == cmd_end || /* Reached end of command buffer */
                 (chk_label && at_label) || /* Encountered a label at this address  */
