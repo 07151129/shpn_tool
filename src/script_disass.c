@@ -203,7 +203,7 @@ static bool has_labels(const struct script_state* state) {
     return state->label_ctx.curr_label < state->label_ctx.nlabels;
 }
 
-static uint16_t next_label(struct script_state* state) {
+static uint16_t curr_label(struct script_state* state) {
     assert(has_labels(state));
 
     return state->label_ctx.labels[state->label_ctx.curr_label];
@@ -277,7 +277,7 @@ bool script_dump(const uint8_t* rom, size_t rom_sz, const struct script_desc* de
     size_t ninst = 0;
 phase:
     while (has_labels(&state)) {
-        state.cmd_offs_next = next_label(&state);
+        state.cmd_offs_next = curr_label(&state);
 
         /* Should we check if there is a label at cmd_offs? Omit for first cmd at label */
         bool chk_label = false;
@@ -300,15 +300,22 @@ phase:
             }
 
             bool at_label = has_label(state.cmd_offs, &state);
+            bool past_label = state.dumping &&
+                state.label_ctx.curr_label + 1 < state.label_ctx.nlabels &&
+                state.label_ctx.labels[state.label_ctx.curr_label + 1] <= state.cmd_offs_next;
+
             if (cmd == cmd_end || /* Reached end of command buffer */
-                (chk_label && at_label)) /* Encountered a label at this address  */
+                (chk_label && at_label) || /* Encountered a label at this address  */
+                past_label) /* When dumping, we would have disassembled past next label */
                 break; /* Stop and pick another unprocessed label */
 
             bool is_valid = is_valid_cmd(cmd);
             uint16_t dis_ret = is_valid ? dis_cmd(cmd, &state, fout, at_label) : UINT16_MAX;
 
+            // if (state.cmd_offs == 0x9e2)
+            //     __asm__ ("int $3");
             /* Cannot disassemble at this address */
-            if (dis_ret == UINT16_MAX) {
+            if (dis_ret == UINT16_MAX || state.cmd_offs_next < state.cmd_offs) {
                 /* Just dump it as uint32, we don't really care what it does */
                 if (state.dumping)
                     dump_uint32(cmd, &state, fout);
