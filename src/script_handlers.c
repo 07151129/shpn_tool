@@ -263,25 +263,22 @@ void init_script_handlers() {
     script_handlers[1].name = "Jump";
     script_handlers[1].handler = handler_Jump;
     script_handlers[1].has_va = true;
-    // script_handlers[1].nargs = 0;
 
-    script_handlers[4].name = "Branch";
-    script_handlers[4].handler = handler_Branch;
-    script_handlers[4].has_va = true;
-    // script_handlers[4].nargs = 0;
+    for (int i = 4; i < 7; i++) {
+        script_handlers[i].name = "Branch";
+        script_handlers[i].handler = handler_Branch;
+        script_handlers[i].has_va = true;
+    }
 
     script_handlers[0xc].name = "ShowText";
     script_handlers[0xc].handler = handler_ShowText;
     script_handlers[0xc].has_va = true;
-    // script_handlers[0xc].nargs = 0;
 
     script_handlers[0xd].name = "ShowMovie";
     script_handlers[0xd].handler = handler_ShowMovie;
     // script_handlers[0xd].has_va = true;
-    // script_handlers[0xd].nargs = 0;
 
     script_handlers[0x10].name = "HandleInput";
-    // script_handlers[0x10].nargs = 0;
 
     script_handlers[0x69].name = "LoadBackground";
     // script_handlers[0x69].has_va = true;
