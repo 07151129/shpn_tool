@@ -180,10 +180,8 @@ static uint16_t handler_Stop(uint16_t arg0, uint16_t arg1, struct script_state* 
     return UINT16_MAX;
 }
 
-uint32_t branch_dst(char* arg0, uint32_t arg1, uint32_t arg2, uint32_t arg3,
-    struct script_state* state, uint16_t* dst);
+uint32_t branch_dst(struct script_state* state, uint16_t* dst);
 uint32_t is_branch_taken(const char* info, const struct script_state* state);
-uint16_t sub_8002704(struct script_state* state, uint16_t* dst);
 
 static uint16_t handler_Branch(uint16_t arg0, uint16_t arg1, struct script_state* state) {
     assert(arg0 == 0);
@@ -209,9 +207,7 @@ static uint16_t handler_Branch(uint16_t arg0, uint16_t arg1, struct script_state
 #endif
 
     uint16_t dst = state->cmd_offs_next;
-    uint16_t val = branch_dst((char[]){0x05, 0x00, 0x06, 0x00, 0x07, 0x00}, 3, 0, 4, state, &dst);
-    if (val == 7)
-        sub_8002704(state, &dst);
+    branch_dst(state, &dst);
 
     if (!state->dumping)
         make_label(dst, state);
