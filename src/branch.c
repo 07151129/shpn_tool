@@ -272,9 +272,7 @@ int32_t sub_802C828(uint32_t a1, uint32_t a2) {
     return result;
 }
 
-static uint32_t __ROR4__(uint32_t v, uint32_t n) {
-    return (v >> n | v << (8 * sizeof(v) - n));
-}
+static uint32_t __ROR4__(uint32_t v, uint32_t n) { return (v >> n | v << (8 * sizeof(v) - n)); }
 
 static uint32_t sub_802C8C0(unsigned int result, unsigned int a2) {
     unsigned int v2; // r3
@@ -484,10 +482,12 @@ static const char* sub_80063B8(const char* info, uint16_t* retb, const struct sc
     retb[2] = 0xf1;
 
     const char* ret = sub_80063FC(info, retb, state);
-    if (!ret) return 0;
+    if (!ret)
+        return 0;
 
     uint16_t idx = retb[1];
-    if (state->branch_info_unk[idx] & 8 || idx == 0x29) return NULL;
+    if (state->branch_info_unk[idx] & 8 || idx == 0x29)
+        return NULL;
 
     return ret;
 }
@@ -495,13 +495,15 @@ static const char* sub_80063B8(const char* info, uint16_t* retb, const struct sc
 uint32_t is_branch_taken(const char* info, const struct script_state* state) {
     uint16_t ret[3];
 
-    if (sub_80063B8(info, ret, state)) return ret[0] & UINT16_MAX;
+    if (sub_80063B8(info, ret, state))
+        return ret[0] & UINT16_MAX;
     return UINT32_MAX;
 }
 
 void skip_cmd(const struct script_state* state, uint16_t* dst) {
     unsigned nargs = *((uint8_t*)state->cmds + *dst + 1);
-    *dst += 2 + 2 + 2 * ((union script_cmd*)((uint8_t*)state->cmds + *dst))->arg; /* Skip 2 MSB of cmd */
+    *dst += 2 + 2 +
+            2 * ((union script_cmd*)((uint8_t*)state->cmds + *dst))->arg; /* Skip 2 MSB of cmd */
 }
 
 uint32_t branch_dst(const struct script_state* state, uint16_t* dst) {

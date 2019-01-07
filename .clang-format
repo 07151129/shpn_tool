@@ -1,7 +1,7 @@
 BasedOnStyle: WebKit
 AlignAfterOpenBracket: AlwaysBreak
 AlignOperands: true
-AllowShortIfStatementsOnASingleLine: true
+AllowShortIfStatementsOnASingleLine: false
 BreakBeforeBinaryOperators: None
 BreakBeforeBraces: Custom
 BreakBeforeInheritanceComma: true
