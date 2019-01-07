@@ -290,25 +290,21 @@ void init_script_handlers() {
 
     script_handlers[0x11].name = "Choice";
     script_handlers[0x11].has_va = true;
-    // script_handlers[0x11].nargs = 0;
     script_handlers[0x11].handler = handler_Choice;
 
     script_handlers[0x30].handler = handler_0x30;
 
     script_handlers[0x35].name = "ChoiceIdx";
     script_handlers[0x35].has_va = true;
-    // script_handlers[0x35].nargs = 0;
     script_handlers[0x35].handler = handler_ChoiceIdx;
 
     script_handlers[0x5f].name = "PlayCredits";
-    // script_handlers[0x5f].nargs = 0;
 
     script_handlers[0x60].name = "GiveCard";
 
     script_handlers[0x61].name = "Puzzle";
 
     script_handlers[0x63].name = "Stop";
-    // script_handlers[0x63].nargs = 0;
     // script_handlers[0x63].handler = handler_Stop;
 
     did_init = true;
