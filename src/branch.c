@@ -501,9 +501,7 @@ uint32_t is_branch_taken(const char* info, const struct script_state* state) {
 }
 
 void skip_cmd(const struct script_state* state, uint16_t* dst) {
-    unsigned nargs = *((uint8_t*)state->cmds + *dst + 1);
-    *dst += 2 + 2 +
-            2 * ((union script_cmd*)((uint8_t*)state->cmds + *dst))->arg; /* Skip 2 MSB of cmd */
+    *dst += 2 + 2 + 2 * ((union script_cmd*)((uint8_t*)state->cmds + *dst))->arg;
 }
 
 uint32_t branch_dst(const struct script_state* state, uint16_t* dst) {
