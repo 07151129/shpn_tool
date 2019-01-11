@@ -500,7 +500,7 @@ uint32_t is_branch_taken(const char* info, const struct script_state* state) {
     return UINT32_MAX;
 }
 
-void skip_cmd(const struct script_state* state, uint16_t* dst) {
+static void skip_cmd(const struct script_state* state, uint16_t* dst) {
     *dst += 2 + 2 + 2 * ((union script_cmd*)((uint8_t*)state->cmds + *dst))->arg;
 }
 
