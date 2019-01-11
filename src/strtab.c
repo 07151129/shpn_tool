@@ -88,7 +88,7 @@ err:
 leaf:
         assert(n->offs_l == UINT32_MAX && n->offs_r == UINT32_MAX &&
             "Leaves must have UINT32_MAX offsets");
-        /* NOTE: The original implementation replaces \n to \r\0 for rendering, but we don't care */
+        /* NOTE: The original implementation replaces \n with \r for rendering, but we don't care */
         if (n->val == '\0' || n->val == '\n') {
             /* Replace \n with \\n in SJIS (will be half-width YEN_SIGN in UTF-8) */
             if (n->val == '\n') {
