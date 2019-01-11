@@ -251,20 +251,22 @@ void init_script_handlers() {
     }
 
     script_handlers[0].handler = handler_Nop;
-    script_handlers[0].name = "Nop";
+    script_handlers[0].name = "Nop0";
 
     script_handlers[7].handler = handler_Nop;
-    script_handlers[7].name = "Nop";
+    script_handlers[7].name = "Nop7";
 
     script_handlers[1].name = "Jump";
     script_handlers[1].handler = handler_Jump;
     script_handlers[1].has_va = true;
 
     for (int i = 4; i < 7; i++) {
-        script_handlers[i].name = "Branch";
         script_handlers[i].handler = handler_Branch;
         script_handlers[i].has_va = true;
     }
+    script_handlers[4].name = "Branch4";
+    script_handlers[5].name = "Branch5";
+    script_handlers[6].name = "Branch6";
 
     script_handlers[0xc].name = "ShowText";
     script_handlers[0xc].handler = handler_ShowText;
