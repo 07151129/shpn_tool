@@ -87,12 +87,16 @@ static uint16_t dis_cmd(const union script_cmd* cmd, struct script_state* state,
 bool has_label(uint16_t offs, const struct script_state* state);
 
 static void dump_uint32(const union script_cmd* cmd, const struct script_state* state, FILE* fout) {
-    /* Allow dumping valing code as bytes as well as interpretation doesn't matter at that point */
+    /* Allow dumping valid code as bytes as well as interpretation doesn't matter at that point */
     // assert(!is_valid_cmd(cmd) && "Trying to dump valid cmd as uint32");
 
     /* Some dead code might perform jumps that make no sense, so ignore this for now */
     // assert(!has_label(state->cmd_offs, state) && "Branch to unrecognised cmd");
     fprintf(fout, ".4byte 0x%x // 0x%x: %08x\n", cmd->ival, state->cmd_offs, cmd->op);
+}
+
+static void dump_uint8(const uint8_t* b, const struct script_state* state, FILE* fout) {
+    fprintf(fout, ".byte 0x%x // 0x%x\n", *b, state->cmd_offs);
 }
 
 #define SCRIPT_CKSUM_SEED 0x5678
@@ -246,7 +250,7 @@ bool has_label(uint16_t offs, const struct script_state* state) {
  * Because there are finitely many branch/jump instructions in a script, finitely many labels will be
  * created, so the procedure will terminate.
  */
-bool script_dump(const uint8_t* rom, const struct script_desc* desc, FILE* fout) {
+bool script_dump(const uint8_t* rom, size_t rom_sz, const struct script_desc* desc, FILE* fout) {
     const struct script_hdr* hdr = (void*)&rom[VMA2OFFS(desc->vma)];
     static_assert(sizeof(*hdr) == sizeof(uint16_t[3]), "");
 
@@ -332,6 +336,20 @@ phase:
 
     /* Second phase complete */
     if (state.dumping) {
+        /* Dump branch info and remaining bytes */
+        const uint8_t* end = (uint8_t*)cmd_end + hdr->branch_info_sz+ hdr->bytes_to_end;
+        for (const uint8_t* cmd = (uint8_t*)cmds + state.cmd_offs; cmd < end; ) {
+            if (end - cmd >= (ptrdiff_t)sizeof(union script_cmd)) {
+                dump_uint32((union script_cmd*)cmd, &state, fout);
+                cmd += sizeof(union script_cmd);
+                state.cmd_offs += sizeof(union script_cmd);
+            } else {
+                dump_uint8(cmd, &state, fout);
+                cmd++;
+                state.cmd_offs++;
+            }
+        }
+
         script_state_free(&state);
         return true;
     }
