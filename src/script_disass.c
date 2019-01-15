@@ -257,13 +257,16 @@ bool script_dump(const uint8_t* rom, const struct script_desc* desc, FILE* fout)
 
     const union script_cmd* cmds = (void*)&((uint8_t*)hdr)[sizeof(*hdr)];
 
-    /* FIXME: We should definitely skip the branch info buffer, but should we also skip the bytes
-    afterwards? */
-    const void* cmd_end = &((uint8_t*)cmds)[hdr->branch_info_offs /* + hdr->branch_info_sz
-        + hdr->bytes_to_end */];
+    /* We'll dump everything past cmd buffer as bytes */
+    const void* cmd_end = &((uint8_t*)cmds)[hdr->branch_info_offs];
 
     if ((void*)cmds >= cmd_end) {
         fprintf(stderr, "Script is too short\n");
+        return false;
+    }
+
+    if ((uint8_t*)cmd_end + hdr->branch_info_sz+ hdr->bytes_to_end >= rom_sz + rom) {
+        fprintf(stderr, "Script ends past EOF (incorrect script header?)\n");
         return false;
     }
 

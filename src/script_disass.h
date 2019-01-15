@@ -104,7 +104,7 @@ struct script_cmd_handler {
 };
 
 void init_script_handlers();
-bool script_dump(const uint8_t* rom, const struct script_desc* desc, FILE* fout);
+bool script_dump(const uint8_t* rom, size_t rom_sz, const struct script_desc* desc, FILE* fout);
 const struct script_desc* script_for_name(const char* name);
 
 /**
