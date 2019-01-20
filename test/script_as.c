@@ -10,7 +10,11 @@
 int main() {
     struct script_parse_ctx* ctx = malloc(sizeof(*ctx));
 
-    script_parse_ctx_init(ctx, "ShowText(1, \"blah\");");
+    script_parse_ctx_init(ctx, u8"SomeLabel:ShowText(1, \"bl\\\"ah\"); ShowText(\"\"); \
+        Jump(SomeLabel);");
+    assert(script_parse_ctx_parse(ctx));
+
+    script_parse_ctx_init(ctx, u8"SomeLabel:ShowText(1, \"bl¥nah\"); Jump(SomeLabel);");
     assert(script_parse_ctx_parse(ctx));
 
     script_parse_ctx_free(ctx);

@@ -18,12 +18,7 @@
 
 blank [ \t]
 dquote "\""
-unesc_char [ -!#-\[\]-~]
-esc_char \\[n\\]
-hexd [0-9a-f]
-hex_char \\x{hexd}{hexd}
-char {unesc_char}|{esc_char}|{hex_char}
-chars {char}+
+chars (\\.|[^\\"])*
 
 uint [[:digit:]]+|0[xX][[:xdigit::]]+
 %%
@@ -38,8 +33,8 @@ uint [[:digit:]]+|0[xX][[:xdigit::]]+
 
 
 {uint} {yylval->uval = strtoumax(yytext, NULL, 0); return SCRIPT_NUM;}
-{dquote}{dquote}|{dquote}{chars}{dquote} {
-    assert(yyleng > 2);
+{dquote}{chars}{dquote} {
+    assert(yyleng >= 2);
 
     /* Drop the quotes */
     char* s = strdup(&yytext[1]);
