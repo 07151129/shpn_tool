@@ -87,7 +87,7 @@ testdir:
 	@mkdir -p build/test
 
 test: $(TARGETS_TEST) | testdir
-	$(foreach tgt,$(TARGETS_TEST),$(tgt)$(\n))
+	-$(foreach tgt,$(TARGETS_TEST),$(tgt)$(\n))
 
 help:
 	$(info Supported targets:)
