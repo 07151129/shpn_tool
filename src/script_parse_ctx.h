@@ -13,7 +13,7 @@ struct script_parse_ctx {
 
 #define SCRIPT_PARSE_DIAGS_SZ 10
     struct script_diag {
-        enum {DIAG_WARN, DIAG_ERR} kind;
+        enum {/*DIAG_WARN,*/ DIAG_ERR} kind;
         size_t line, col;
         const char* msg;
     } diags[SCRIPT_PARSE_DIAGS_SZ];
