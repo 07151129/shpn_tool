@@ -1,8 +1,10 @@
 %{
+    #include <stdbool.h>
+
     #include "script_gram.tab.h"
 
     void script_error();
-    static void comment(void* llocp, void* ctx, yyscan_t scanner);
+    static bool comment(void* llocp, void* ctx, yyscan_t scanner);
 
     #undef YY_DECL
     #define YY_DECL \
@@ -17,20 +19,21 @@
 %option extra-type="void *"
 
 blank [ \t]
-dquote "\""
-chars (\\.|[^\\"])*
+dquote \"
+chars (\\.|[^\\"])*|(¥.|[^¥"])*
 
-uint [[:digit:]]+|0[xX][[:xdigit::]]+
+uint 0[xX][[:xdigit:]]+|[[:digit:]]+
 %%
 
-[():.,;] {return yytext[0];}
+[():.,;\"] {return yytext[0];}
 
-"/*" {comment(yylloc, yyextra, yyscanner);}
+"/*" {if (!comment(yylloc, yyextra, yyscanner)) return yytext[0];}
 "//".* { }
 
 [ \t\n]+ { }
 "byte" return SCRIPT_BYTE;
-
+"begin" return SCRIPT_BEGIN;
+"end" return SCRIPT_END;
 
 {uint} {yylval->uval = strtoumax(yytext, NULL, 0); return SCRIPT_NUM;}
 {dquote}{chars}{dquote} {
@@ -53,7 +56,7 @@ uint [[:digit:]]+|0[xX][[:xdigit::]]+
 
 %%
 
-static void comment(void* llocp, void* ctx, yyscan_t scanner) {
+static bool comment(void* llocp, void* ctx, yyscan_t scanner) {
     int c;
 
     while ((c = input(scanner)))
@@ -62,10 +65,11 @@ static void comment(void* llocp, void* ctx, yyscan_t scanner) {
                 ;
 
             if (c == '/')
-                return;
+                return true;
 
             if (c == 0)
                 break;
         }
-    script_error(llocp, ctx, "Unterminated comment");
+    script_error(llocp, ctx, scanner, "Unterminated comment");
+    return false;
 }

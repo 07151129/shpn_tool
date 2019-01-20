@@ -77,12 +77,13 @@ int yyerror(YYLTYPE* llocp, struct script_parse_ctx* ctx, yyscan_t scanner, cons
     struct script_arg_list arg_list;
     struct script_arg arg;
     struct script_byte_stmt byte;
+    struct script_begin_end_stmt begin_end;
 }
 
 %destructor {assert($$); free($$);} <sval>
 
 /* Terminals */
-%token BYTE
+%token BYTE BEGIN END
 %token <uval> OP
 %token <sval> ID STR
 %token <uval> NUM
@@ -92,6 +93,7 @@ int yyerror(YYLTYPE* llocp, struct script_parse_ctx* ctx, yyscan_t scanner, cons
 %type <arg_list> ARGS
 %type <arg> ARG
 %type <byte> BYTE_STMT;
+%type <begin_end> BEGIN_END_STMT;
 %%
 
 /* If we encounter an error here, keep parsing. We'll abort later if we see the diags */
@@ -113,7 +115,11 @@ STMTS:
             yyerror(&@$, ctx, scanner, "Too many statements");
     } | ';' ;
 
-STMT: BYTE_STMT {
+STMT: BEGIN_END_STMT {
+        $$ = (struct script_stmt){
+            .ty = STMT_TY_BEGIN_END, .label = NULL, .line = @$.first_line, .begin_end = $1
+        };
+    } | BYTE_STMT {
         $$ = (struct script_stmt){
             .ty = STMT_TY_BYTE, .label = NULL, .line = @$.first_line, .byte = $1
         };
@@ -124,10 +130,15 @@ STMT: BYTE_STMT {
         $$.op.args = $3;
     };
 
+BEGIN_END_STMT: '.' BEGIN ID {
+        $$ = (struct script_begin_end_stmt){.begin = true, .section = strdup($3)};
+    } | '.' END ID {
+        $$ = (struct script_begin_end_stmt){.begin = false, .section = strdup($3)};
+    };
+
 BYTE_STMT: '.' NUM BYTE NUM {
         $$ = (struct script_byte_stmt){.n = $2, .val = $4};
-    } |
-    '.' BYTE NUM {
+    } | '.' BYTE NUM {
         $$ = (struct script_byte_stmt){.n = 1, .val = $3};
     };
 
@@ -138,6 +149,8 @@ ARGS: ARGS ',' ARG {
         $$ = $1;
     } | ARG {
         $$ = (struct script_arg_list){.nargs = 1, .args = {$1}};
+    } | %empty {
+        $$ = (struct script_arg_list){.nargs = 0};
     };
 
 ARG: NUM {

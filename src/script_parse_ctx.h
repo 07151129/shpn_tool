@@ -21,7 +21,7 @@ struct script_parse_ctx {
 
 #define SCRIPT_PARSE_CTX_STMTS_SZ 20000
     struct script_stmt {
-        enum {STMT_TY_OP, STMT_TY_BYTE} ty;
+        enum {STMT_TY_OP, STMT_TY_BYTE, STMT_TY_BEGIN_END} ty;
 
         const char* label;
 
@@ -54,6 +54,11 @@ struct script_parse_ctx {
                 int n;
                 uint32_t val;
             } byte;
+
+            struct script_begin_end_stmt {
+                bool begin;
+                const char* section;
+            } begin_end;
         };
     } stmts[SCRIPT_PARSE_CTX_STMTS_SZ];
     size_t nstmts;
