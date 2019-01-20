@@ -14,12 +14,21 @@ typedef int iconv_t;
 #include <iconv.h>
 #endif
 
-
 /* TODO */
 #if 0
 struct rom_desc {
 
 };
+#endif
+
+#ifndef __has_attribute
+#define __has_attribute(x) 0
+#endif
+
+#if __has_attribute(format)
+#define FMT_PRINTF(fmt, va) __attribute__((format(printf, fmt, va)))
+#else
+#define FMT_PRINTF(fmt, va)
 #endif
 
 #endif
