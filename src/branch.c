@@ -513,8 +513,5 @@ void branch_dst(const struct script_state* state, uint16_t* dst) {
             skip_cmd(state, dst);
             continue;
         }
-        /* Step over nop */
-        if (cmd->op == 7)
-            skip_cmd(state, dst);;
     }
 }
