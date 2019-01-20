@@ -58,7 +58,7 @@ src/%.tab.c src/%.tab.h: src/%.y
 	$(VERBOSE) $(ENV) $(YACC) $(YACC_FLAGS) -o $@ $<
 
 src/%.yy.c src/%.yy.h: src/%.l $(SRC_YACC)
-	@echo lex $(notdir $@)
+	@echo lex $(notdir $<)
 	$(VERBOSE) $(ENV) $(LEX) $(LEX_FLAGS) -o $@ $<
 
 $(eval $(call COMPILE_C,build,src))
