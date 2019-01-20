@@ -38,15 +38,6 @@ static uint16_t dis_cmd(const union script_cmd* cmd, struct script_state* state,
     bool at_label) {
     assert(is_valid_cmd(cmd));
 
-#if 0
-    /**
-     * FIXME: If a handler returns value other than UINT16_MAX, we don't need to run it at this
-     * stage, as cmd_offs_next has already been computed.
-     */
-    if (!state->dumping && !cmd_is_branch(cmd))
-        return 0;
-#endif
-
     const struct script_cmd_handler* handler = &script_handlers[cmd->op];
 
     uint16_t ret = handler->handler(cmd->arg >> 16, cmd->arg, state);
@@ -92,7 +83,7 @@ static void dump_uint32(const union script_cmd* cmd, const struct script_state* 
 
     /* Some dead code might perform jumps that make no sense, so ignore this for now */
     // assert(!has_label(state->cmd_offs, state) && "Branch to unrecognised cmd");
-    fprintf(fout, ".4byte 0x%x // 0x%x: %08x\n", cmd->ival, state->cmd_offs, cmd->op);
+    fprintf(fout, ".4byte 0x%x // 0x%x\n", cmd->ival, state->cmd_offs);
 }
 
 static void dump_uint8(const uint8_t* b, const struct script_state* state, FILE* fout) {
