@@ -501,23 +501,20 @@ uint32_t is_branch_taken(const char* info, const struct script_state* state) {
 }
 
 static void skip_cmd(const struct script_state* state, uint16_t* dst) {
-    *dst += 2 + 2 + 2 * ((union script_cmd*)((uint8_t*)state->cmds + *dst))->arg;
+    *dst += 2 + 2 + sizeof(uint16_t) * ((union script_cmd*)((uint8_t*)state->cmds + *dst))->arg;
 }
 
-uint32_t branch_dst(const struct script_state* state, uint16_t* dst) {
-    uint16_t result;
-
+void branch_dst(const struct script_state* state, uint16_t* dst) {
     while (1) {
-        result = ((union script_cmd*)((uint8_t*)state->cmds + *dst))->op;
+        union script_cmd* cmd = (void*)((uint8_t*)state->cmds + *dst);
 
         /* Seek until next branch (op 5 or 6) or nop (7) */
-        if (result < 5 || result > 7) {
+        if (cmd_can_be_branched_to(cmd)) {
             skip_cmd(state, dst);
             continue;
         }
         /* Step over nop */
-        if (result == 7)
-            skip_cmd(state, dst);
-        return result;
+        if (cmd->op == 7)
+            skip_cmd(state, dst);;
     }
 }

@@ -180,7 +180,7 @@ static uint16_t handler_Stop(uint16_t arg0, uint16_t arg1, struct script_state* 
     return UINT16_MAX;
 }
 
-uint32_t branch_dst(struct script_state* state, uint16_t* dst);
+void branch_dst(struct script_state* state, uint16_t* dst);
 uint32_t is_branch_taken(const char* info, const struct script_state* state);
 
 static uint16_t handler_Branch(uint16_t arg0, uint16_t arg1, struct script_state* state) {
@@ -313,6 +313,13 @@ bool cmd_is_jump(const union script_cmd* cmd) {
 }
 
 bool cmd_is_branch(const union script_cmd* cmd) {
-    assert(cmd->op != 0x2 && cmd->op != 0x8);
-    return cmd->op == 1 || cmd->op == 4;
+    return (cmd->op >= 4 && cmd->op <= 6);
+}
+
+bool cmd_can_be_branched_to(const union script_cmd* cmd) {
+    return 5 <= cmd->op && cmd->op <= 7;
+}
+
+bool cmd_uses_menu_strtab(const union script_cmd* cmd) {
+    return cmd->op == 0x11 || cmd->op == 0x35;
 }
