@@ -31,8 +31,8 @@ static void test_syntax(struct script_parse_ctx* ctx) {
             for (size_t j = 0; j < ctx->ndiags; j++) {
                 fprintf(stderr, "%zu: %zu: %s\n", ctx->diags[j].line, ctx->diags[j].col,
                     ctx->diags[j].msg);
-                assert(false);
             }
+            assert(false);
         }
 
         script_parse_ctx_free(ctx);
@@ -54,8 +54,8 @@ static void test_syntax(struct script_parse_ctx* ctx) {
             for (size_t j = 0; j < ctx->ndiags; j++) {
                 fprintf(stderr, "%zu: %zu: %s\n", ctx->diags[j].line, ctx->diags[j].col,
                     ctx->diags[j].msg);
-                assert(false);
             }
+            assert(false);
         }
 
         script_parse_ctx_free(ctx);
