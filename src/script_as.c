@@ -273,6 +273,26 @@ static bool branch_src(const struct script_stmt* stmt,
     return false;
 }
 
+static bool section_stmt(const struct script_stmt* stmt, struct script_as_ctx* actx) {
+    assert(stmt->ty == STMT_TY_BEGIN_END);
+
+    if (!stmt->begin_end.section) {
+        log(true, stmt, actx->pctx, "missing section name");
+        return false;
+    }
+
+    if (!strcmp(stmt->begin_end.section, "branch_info")) {
+        if (stmt->begin_end.begin)
+            actx->branch_info_begin = actx->dst;
+        else
+            actx->branch_info_end = actx->dst;
+        return true;
+    }
+
+    log(true, stmt, actx->pctx, "unsupported section %s", stmt->begin_end.section);
+    return false;
+}
+
 static bool emit_stmt(const struct script_stmt* stmt, struct script_as_ctx* actx) {
     /* There's a label at this statement and it's referenced by a Branch/Jump op */
     if (stmt->label) {
@@ -347,6 +367,9 @@ next_src:
         case STMT_TY_BYTE:
             return emit_byte(stmt, actx);
 
+        case STMT_TY_BEGIN_END:
+            return section_stmt(stmt, actx);
+
         default:
             assert(false && "Unsupported stmt type");
     }
@@ -384,6 +407,11 @@ bool script_assemble(const struct script_parse_ctx* pctx, uint8_t* dst, size_t d
             ret = false;
             break;
         }
+
+    if (!actx.branch_info_begin || !actx.branch_info_end) {
+        log(true, NULL, pctx, "missing branch_info section");
+        ret = false;
+    }
 
     free(refs);
     return ret;

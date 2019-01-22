@@ -27,7 +27,8 @@ static void usage() {
                     "Supported verbs:\n"
                     "script <name> <dump | embed>\n"
                     "\tdump [out] -- Dump script to file at \"out\" or to stdout\n"
-                    "\tembed in [out] -- Embed script at \"in\" into ROM at \"out\" or into \"ROM\""
+                    "\tembed in [strtab] [out] -- Embed script at \"in\" with strtab at \"strtab\" \
+                    into ROM at \"out\" or into\"ROM\""
                     "\n\n"
                     "strtab <name> <dump | embed>\n"
                     "\tdump [idx] [out] -- Dump strtab entry at \"idx\" or all entries to file at"
