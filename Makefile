@@ -15,11 +15,13 @@ SRC := \
 	src/strtab.c \
 	src/branch.c \
 	src/script_as.c \
-	src/script_parse_ctx.c
+	src/script_parse_ctx.c \
+	src/embed.c
 
 SRC_TEST := \
 	test/make_strtab.c \
-	test/script_as.c
+	test/script_as.c \
+	test/mk_strtab_str.c
 
 SRC_LEX := src/script_lex.l
 SRC_YACC := src/script_gram.y

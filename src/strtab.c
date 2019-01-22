@@ -405,7 +405,6 @@ static bool bits_for_char(char c, struct char_bits* dst, size_t nbytes_max, size
     return true;
 }
 
-/* FIXME: Need to check somewhere if strlen of each part until \n <= 512 */
 bool make_strtab(const uint8_t** strs, size_t nstrs, uint8_t* dst, size_t dst_sz, size_t* nwritten) {
     size_t dict_nentries;
     size_t dst_sz_init = dst_sz;
@@ -524,4 +523,119 @@ bool make_strtab(const uint8_t** strs, size_t nstrs, uint8_t* dst, size_t dst_sz
 
     *nwritten = dst_sz_init - dst_sz + 1;
     return true;
+}
+
+static bool is_esc(const char* s) {
+    return *s == '\\' || !strncmp(s, u8"¥", 2);
+}
+
+static size_t esclen(const char* s) {
+    if (*s == '\\')
+        return 1;
+    return 2;
+}
+
+/* Offset of NUL if not found */
+static size_t next_esc(const char* str) {
+    size_t i = 0;
+    for (; str[i]; i++)
+        if (is_esc(&str[i]))
+            return i;
+    return i;
+}
+
+static const char* buf_for_esc(const char* esc, size_t* cons, size_t* prod) {
+    size_t el = esclen(esc);
+    esc += el;
+    if (*esc == '\0')
+        return NULL;
+
+    if (*esc == 'n') {
+        *cons = 1 + el;
+        *prod = 1;
+        return "\n";
+    } else if (*esc == 'r') {
+        *cons = 1 + el;
+        *prod = 1;
+        return "\r";
+    } else if (*esc == 'x') {
+        static char hbuf[4];
+        char* end = 0;
+        uint32_t val = strtoul(esc + 1, &end, 16);
+        *cons = end - esc + el;
+
+        for (size_t i = 0; i < 4; i++) {
+            hbuf[i] = val & (0xff << (8 * i));
+            if (hbuf[i])
+                *prod += 1;
+        }
+        return hbuf;
+    }
+    return NULL;
+}
+
+/* Limited by buffer size at 0x3002140 */
+#define SJIS_LEN_UNTIL_NEWLINE_MAX 512
+
+char* mk_strtab_str(const char* u8str, iconv_t conv) {
+    assert(conv != (iconv_t)-1);
+
+    assert(!strncmp(u8"¥", "\xc2\xa5", 2));
+
+    size_t u8len = strlen(u8str);
+    size_t sjislen = u8len;
+    char* sjis = malloc(sjislen);
+    if (!sjis) {
+        perror("malloc");
+        return NULL;
+    }
+
+    if (u8len == 0) {
+        sjis[0] = '\0';
+        return sjis;
+    }
+
+    const char* u8iter = u8str;
+    char* sjisiter = sjis;
+    size_t until_newline = 0;
+
+    while (true) {
+        size_t esc = next_esc(u8iter);
+        u8len = esc;
+
+        const char* sjisiter_old = sjisiter;
+        /* Try to convert starting at u8iter until esc */
+        size_t cstatus = iconv(conv, (void*)&u8iter, &u8len, &sjisiter, &sjislen);
+        if (cstatus == (size_t)-1)
+            goto fail_iconv;
+
+        until_newline = sjisiter - sjisiter_old;
+
+        /* We would have converted either until escape char or end of string*/
+        if (*u8iter) {
+            size_t cons, prod;
+            const char* escb = buf_for_esc(u8iter, &cons, &prod);
+            if (!escb)
+                goto fail;
+            if (*escb == '\n' && until_newline > SJIS_LEN_UNTIL_NEWLINE_MAX)
+                goto fail;
+
+            u8iter += cons;
+
+            cstatus = iconv(conv, (void*)&escb, &prod, &sjisiter, &sjislen);
+            if (cstatus == (size_t)-1)
+                goto fail_iconv;
+        } else /* Reached end of string */
+            break;
+    }
+
+    *sjisiter = '\0';
+
+    return sjis;
+
+fail_iconv:
+    perror("iconv");
+fail:
+    free(sjis);
+    return NULL;
 }

@@ -387,6 +387,7 @@ bool script_assemble(const struct script_parse_ctx* pctx, uint8_t* dst, size_t d
     struct jump_refs_ctx* refs = malloc(sizeof(struct jump_refs_ctx));
     if (!refs) {
         fprintf(stderr, "Failed to allocate jump_refs_ctx\n");
+        perror("malloc");
         return false;
     }
 
