@@ -18,6 +18,17 @@ struct strtab_embed_ctx {
     char* strs[EMBED_STRTAB_SZ];
 };
 
+struct script_as_ctx {
+    const struct script_parse_ctx* pctx;
+    uint8_t* dst;
+    const uint8_t* dst_start;
+    size_t dst_sz;
+    struct strtab_embed_ctx* strs_sc;
+    struct strtab_embed_ctx* strs_menu;
+    struct jump_refs_ctx* refs;
+    const uint8_t* branch_info_begin, * branch_info_end;
+};
+
 FMT_PRINTF(4, 5)
 static void log(bool err, const struct script_stmt* stmt, const struct script_parse_ctx* pctx,
         const char* msg, ...) {
@@ -53,38 +64,36 @@ static bool jump_refs_add(struct jump_refs_ctx* refs, const struct script_stmt* 
     return true;
 }
 
-static bool emit_byte(const struct script_stmt* stmt, const struct script_parse_ctx* pctx,
-    uint8_t** dst, size_t* dst_sz) {
+static bool emit_byte(const struct script_stmt* stmt, struct script_as_ctx* actx) {
     assert(stmt->ty == STMT_TY_BYTE);
 
-    if ((size_t)stmt->byte.n > *dst_sz) {
-        log(true, stmt, pctx, "too many bytes to emit");
+    if ((size_t)stmt->byte.n > actx->dst_sz) {
+        log(true, stmt, actx->pctx, "too many bytes to emit");
         return false;
     }
     if ((1 << (8 * stmt->byte.n)) - 1 < stmt->byte.val) {
-        log(true, stmt, pctx, "0x%x takes more than %d bytes to store", stmt->byte.val,
+        log(true, stmt, actx->pctx, "0x%x takes more than %d bytes to store", stmt->byte.val,
             stmt->byte.n);
         return false;
     }
-    *(uint32_t*)*dst = stmt->byte.val;
-    *dst += stmt->byte.n;
-    *dst_sz -= stmt->byte.n;
+    *(uint32_t*)actx->dst = stmt->byte.val;
+    actx->dst += stmt->byte.n;
+    actx->dst_sz -= stmt->byte.n;
     return true;
 }
 
 static bool emit_arg_num(const struct script_stmt* stmt, const struct script_arg* arg,
-        const struct script_parse_ctx* pctx,
-        uint8_t** dst, size_t* dst_sz) {
+        struct script_as_ctx* actx) {
     assert(arg->type == ARG_TY_NUM);
 
-    if (*dst_sz < sizeof(uint16_t)) {
-        log(true, stmt, pctx, "too many bytes to emit argument 0x%x", arg->num);
+    if (actx->dst_sz < sizeof(uint16_t)) {
+        log(true, stmt, actx->pctx, "too many bytes to emit argument 0x%x", arg->num);
         return false;
     }
 
-    *(uint16_t*)*dst = arg->num;
-    *dst += sizeof(uint16_t);
-    *dst_sz -= sizeof(uint16_t);
+    *(uint16_t*)actx->dst = arg->num;
+    actx->dst += sizeof(uint16_t);
+    actx->dst_sz -= sizeof(uint16_t);
     return true;
 }
 
@@ -97,9 +106,7 @@ static const struct script_stmt* find_labeled_stmt(const struct script_parse_ctx
 }
 
 static bool emit_arg_label(const struct script_stmt* stmt, const struct script_arg* arg,
-        const struct script_parse_ctx* pctx,
-        uint8_t** dst, size_t* dst_sz,
-        struct jump_refs_ctx* refs) {
+        struct script_as_ctx* actx) {
     assert(arg->type == ARG_TY_LABEL && stmt->ty == STMT_TY_OP);
 
     if (!cmd_is_jump(&(union script_cmd){.op = stmt->op.idx}))
@@ -111,9 +118,9 @@ static bool emit_arg_label(const struct script_stmt* stmt, const struct script_a
      * Check if destination label occured before the jump. In that case, it must have been added
      * to the refs already.
      */
-    for (size_t i = 0; i < refs->nrefs; i++) {
-        if (stmt == refs->refs[i].jump) {
-            bdst = refs->refs[i].emitted_label;
+    for (size_t i = 0; i < actx->refs->nrefs; i++) {
+        if (stmt == actx->refs->refs[i].jump) {
+            bdst = actx->refs->refs[i].emitted_label;
             break;
         }
     }
@@ -121,35 +128,33 @@ static bool emit_arg_label(const struct script_stmt* stmt, const struct script_a
      * If destination label is somewhere ahead, write zero for now and overwrite the value when we
      * try to emit statement at that label.
      */
-    *(uint16_t*)*dst = bdst;
+    *(uint16_t*)actx->dst = bdst;
     if (bdst == 0) {
-        const struct script_stmt* labeled_stmt = find_labeled_stmt(pctx, arg->label);
+        const struct script_stmt* labeled_stmt = find_labeled_stmt(actx->pctx, arg->label);
         if (!labeled_stmt) {
-            log(true, stmt, pctx, "label %s not found", arg->label);
+            log(true, stmt, actx->pctx, "label %s not found", arg->label);
             return false;
         }
-        if (!jump_refs_add(refs, stmt, labeled_stmt, *dst, 0))
-            log(true, stmt, pctx, "too many jumps in the script");
+        if (!jump_refs_add(actx->refs, stmt, labeled_stmt, actx->dst, 0))
+            log(true, stmt, actx->pctx, "too many jumps in the script");
     }
 
-    if (*dst_sz < sizeof(uint16_t)) {
-        log(true, stmt, pctx, "no space to write jump destination");
+    if (actx->dst_sz < sizeof(uint16_t)) {
+        log(true, stmt, actx->pctx, "no space to write jump destination");
         return false;
     }
 
-    *dst_sz -= sizeof(uint16_t);
-    *dst += sizeof(uint16_t);
+    actx->dst_sz -= sizeof(uint16_t);
+    actx->dst += sizeof(uint16_t);
     return true;
 }
 
 static bool emit_arg_str(const struct script_stmt* stmt, const struct script_arg* arg,
-        const struct script_parse_ctx* pctx,
-        uint8_t** dst, size_t* dst_sz,
-        struct strtab_embed_ctx* strs) {
+    struct strtab_embed_ctx* strs, struct script_as_ctx* actx) {
     assert(arg->type == ARG_TY_STR);
 
     if (strs->nstrs >= EMBED_STRTAB_SZ) {
-        log(true, stmt, pctx, "too many strings in program");
+        log(true, stmt, actx->pctx, "too many strings in program");
         return false;
     }
 
@@ -158,18 +163,18 @@ static bool emit_arg_str(const struct script_stmt* stmt, const struct script_arg
         if (!strs->strs[i])
             break;
 
-    if (*dst_sz < sizeof(i)) {
-        log(true, stmt, pctx, "no space to write string table index");
+    if (actx->dst_sz < sizeof(i)) {
+        log(true, stmt, actx->pctx, "no space to write string table index");
         return false;
     }
 
-    *(uint16_t*)*dst = i;
-    *dst += sizeof(i);
-    *dst_sz -= sizeof(i);
+    *(uint16_t*)actx->dst = i;
+    actx->dst += sizeof(i);
+    actx->dst_sz -= sizeof(i);
 
     strs->strs[i] = strdup(arg->str);
     if (!strs->strs[i]) {
-        log(true, stmt, pctx, "failed to allocate memory for string");
+        log(true, stmt, actx->pctx, "failed to allocate memory for string");
         return false;
     }
     strs->nstrs++;
@@ -178,26 +183,24 @@ static bool emit_arg_str(const struct script_stmt* stmt, const struct script_arg
 }
 
 static bool emit_arg_numbered_str(const struct script_stmt* stmt, const struct script_arg* arg,
-        const struct script_parse_ctx* pctx,
-        uint8_t** dst, size_t* dst_sz,
-        struct strtab_embed_ctx* strs) {
+        struct strtab_embed_ctx* strs, struct script_as_ctx* actx) {
     assert(arg->type == ARG_TY_NUMBERED_STR);
 
     if (strs->strs[arg->numbered_str.num])
-        log(false, stmt, pctx, "overwriting existing string table entry");
-    if (*dst_sz < sizeof(arg->numbered_str.num)) {
-        log(true, stmt, pctx, "no space to write string table index");
+        log(false, stmt, actx->pctx, "overwriting existing string table entry");
+    if (actx->dst_sz < sizeof(arg->numbered_str.num)) {
+        log(true, stmt, actx->pctx, "no space to write string table index");
         return false;
     }
-    *(uint16_t*)*dst = arg->numbered_str.num;
-    *dst += sizeof(arg->numbered_str.num);
-    *dst_sz -= sizeof(arg->numbered_str.num);
+    *(uint16_t*)actx->dst = arg->numbered_str.num;
+    actx->dst += sizeof(arg->numbered_str.num);
+    actx->dst_sz -= sizeof(arg->numbered_str.num);
 
     if (strs->strs[arg->numbered_str.num])
         free(strs->strs[arg->numbered_str.num]);
     strs->strs[arg->numbered_str.num] = strdup(arg->numbered_str.str);
     if (!strs->strs[arg->numbered_str.num]) {
-        log(true, stmt, pctx, "failed to allocate memory for string");
+        log(true, stmt, actx->pctx, "failed to allocate memory for string");
         return false;
     }
 
@@ -205,51 +208,45 @@ static bool emit_arg_numbered_str(const struct script_stmt* stmt, const struct s
 }
 
 static bool emit_arg(const struct script_stmt* stmt, const struct script_arg* arg,
-        const struct script_parse_ctx* pctx,
-        uint8_t** dst, size_t* dst_sz,
-        struct strtab_embed_ctx* strs_sc, struct strtab_embed_ctx* strs_menu,
-        struct jump_refs_ctx* refs) {
+        struct script_as_ctx* actx) {
     assert(stmt->ty == STMT_TY_OP);
 
     struct strtab_embed_ctx* strs = cmd_uses_menu_strtab(&(union script_cmd){.op = stmt->op.idx}) ?
-        strs_menu : strs_sc;
+        actx->strs_menu : actx->strs_sc;
 
     switch (arg->type) {
         case ARG_TY_NUM:
-            return emit_arg_num(stmt, arg, pctx, dst, dst_sz);
+            return emit_arg_num(stmt, arg, actx);
         case ARG_TY_LABEL:
-            return emit_arg_label(stmt, arg, pctx, dst, dst_sz, refs);
+            return emit_arg_label(stmt, arg, actx);
         case ARG_TY_STR:
-            return emit_arg_str(stmt, arg, pctx, dst, dst_sz, strs);
+            return emit_arg_str(stmt, arg, strs, actx);
         case ARG_TY_NUMBERED_STR:
-            return emit_arg_numbered_str(stmt, arg, pctx, dst, dst_sz, strs);
+            return emit_arg_numbered_str(stmt, arg, strs, actx);
         default:
             assert(false);
     }
     return false;
 }
 
-static bool emit_op(const struct script_stmt* stmt, const struct script_parse_ctx* pctx,
-        uint8_t** dst, size_t* dst_sz,
-        struct strtab_embed_ctx* strs_sc, struct strtab_embed_ctx* strs_menu,
-        struct jump_refs_ctx* refs) {
+static bool emit_op(const struct script_stmt* stmt, struct script_as_ctx* actx) {
     assert(stmt->ty == STMT_TY_OP);
 
     union script_cmd cmd = {.op = stmt->op.idx, .arg = stmt->op.args.nargs};
-    if (sizeof(cmd) + cmd.arg * sizeof(uint16_t) > *dst_sz) {
-        log(true, stmt, pctx, "command too large to store");
+    if (sizeof(cmd) + cmd.arg * sizeof(uint16_t) > actx->dst_sz) {
+        log(true, stmt, actx->pctx, "command too large to store");
         return false;
     }
-    *(union script_cmd*)*dst = cmd;
-    *dst += sizeof(union script_cmd);
-    *dst_sz -= sizeof(union script_cmd);
+    *(union script_cmd*)actx->dst = cmd;
+    actx->dst += sizeof(union script_cmd);
+    actx->dst_sz -= sizeof(union script_cmd);
 
     /* For branch the second argument is not emitted */
     if (cmd_is_branch(&cmd))
         cmd.arg--;
 
     for (size_t i = 0; i < cmd.arg; i++)
-        if (!emit_arg(stmt, &stmt->op.args.args[i], pctx, dst, dst_sz, strs_sc, strs_menu, refs))
+        if (!emit_arg(stmt, &stmt->op.args.args[i], actx))
             return false;
 
     return true;
@@ -274,41 +271,39 @@ static bool branch_src(const struct script_stmt* stmt,
     return false;
 }
 
-static bool emit_stmt(const struct script_stmt* stmt, const struct script_parse_ctx* pctx,
-        uint8_t** dst, uint8_t* dst_start, size_t* dst_sz,
-        struct strtab_embed_ctx* strs_sc, struct strtab_embed_ctx* strs_menu,
-        struct jump_refs_ctx* refs) {
+static bool emit_stmt(const struct script_stmt* stmt, struct script_as_ctx* actx) {
     /* There's a label at this statement and it's referenced by a Branch/Jump op */
     if (stmt->label) {
         /* For all jumps to stmt emitted before stmt, set their dst to stmt emitted loc */
-        for (size_t i = 0; i < refs->nrefs; i++) {
-            if (refs->refs[i].label == stmt) {
-                if (*dst - dst_start > UINT16_MAX) {
-                    log(true, stmt, pctx, "jump to this location from line %zu cannot be encoded",
-                        refs->refs[i].jump->line);
+        for (size_t i = 0; i < actx->refs->nrefs; i++) {
+            if (actx->refs->refs[i].label == stmt) {
+                if (actx->dst - actx->dst_start > UINT16_MAX) {
+                    log(true, stmt, actx->pctx,
+                        "jump to this location from line %zu cannot be encoded",
+                        actx->refs->refs[i].jump->line);
                 }
-                *(uint16_t*)(refs->refs[i].emitted_jump + sizeof(union script_cmd)) =
-                    (uint16_t)(*dst - dst_start);
+                *(uint16_t*)(actx->refs->refs[i].emitted_jump + sizeof(union script_cmd)) =
+                    (uint16_t)(actx->dst - actx->dst_start);
             }
         }
 
         size_t bsrc_idx = 0;
 
 next_src:
-        if (!branch_src(stmt, pctx, &bsrc_idx) && !bsrc_idx)
-            log(false, stmt, pctx, "label %s unreferenced", stmt->label);
-        else if (cmd_is_branch(&(union script_cmd){.op = pctx->stmts[bsrc_idx].op.idx})) {
+        if (!branch_src(stmt, actx->pctx, &bsrc_idx) && !bsrc_idx)
+            log(false, stmt, actx->pctx, "label %s unreferenced", stmt->label);
+        else if (cmd_is_branch(&(union script_cmd){.op = actx->pctx->stmts[bsrc_idx].op.idx})) {
             /* Check if stmt is reachable for branching from src */
-            if (stmt <= &pctx->stmts[bsrc_idx]) {
-                log(true, stmt, pctx, "cannot branch from line %zu backwards to label here",
-                    pctx->stmts[bsrc_idx].line);
+            if (stmt <= &actx->pctx->stmts[bsrc_idx]) {
+                log(true, stmt, actx->pctx, "cannot branch from line %zu backwards to label here",
+                    actx->pctx->stmts[bsrc_idx].line);
                 return false;
             }
-            for (size_t i = bsrc_idx + 1; i < (size_t)(stmt - &pctx->stmts[bsrc_idx]); i++) {
-                if (cmd_can_be_branched_to(&(union script_cmd){.op = pctx->stmts[i].op.idx})) {
-                    log(true, stmt, pctx, "branching to label here from line %zu would branch \
+            for (size_t i = bsrc_idx + 1; i < (size_t)(stmt - &actx->pctx->stmts[bsrc_idx]); i++) {
+                if (cmd_can_be_branched_to(&(union script_cmd){.op = actx->pctx->stmts[i].op.idx})) {
+                    log(true, stmt, actx->pctx, "branching to label here from line %zu would branch \
                         to line %zu instead",
-                        pctx->stmts[bsrc_idx].line, pctx->stmts[i].line);
+                        actx->pctx->stmts[bsrc_idx].line, actx->pctx->stmts[i].line);
                     return false;
                 }
             }
@@ -317,41 +312,41 @@ next_src:
                 struct script_stmt nop = {.ty = STMT_TY_OP, .line = stmt->line,
                     .op = {.idx = 7, .args = {.nargs = 0}}
                 };
-                if (!emit_op(&nop, pctx, dst, dst_sz, strs_sc, strs_menu, refs)) {
-                    log(true, stmt, pctx, "failed to emit nop for branching here");
+                if (!emit_op(&nop, actx)) {
+                    log(true, stmt, actx->pctx, "failed to emit nop for branching here");
                     return false;
                 }
             }
-        } else if (cmd_is_jump(&(union script_cmd){.op = pctx->stmts[bsrc_idx].op.idx})) {
-            const struct script_stmt* jump = &pctx->stmts[bsrc_idx];
+        } else if (cmd_is_jump(&(union script_cmd){.op = actx->pctx->stmts[bsrc_idx].op.idx})) {
+            const struct script_stmt* jump = &actx->pctx->stmts[bsrc_idx];
             /* Label occurs before a jump to it; create source-dst entry to be handled by jump later */
             if (stmt < jump) {
-                if ((*dst - dst_start) > UINT16_MAX) {
-                    log(true, stmt, pctx, "jump to this location from line %zu cannot be encoded",
+                if ((actx->dst - actx->dst_start) > UINT16_MAX) {
+                    log(true, stmt, actx->pctx, "jump to this location from line %zu cannot be encoded",
                         jump->line);
                     return false;
                 }
-                if (!jump_refs_add(refs, jump, stmt, NULL, (uint16_t)(*dst - dst_start))) {
-                    log(true, stmt, pctx, "too many jumps in the script");
+                if (!jump_refs_add(actx->refs, jump, stmt, NULL, (uint16_t)(actx->dst - actx->dst_start))) {
+                    log(true, stmt, actx->pctx, "too many jumps in the script");
                     return false;
                 }
             }
         }
 
         /* Keep looking for more refs to the label */
-        if (++bsrc_idx < pctx->nstmts)
+        if (++bsrc_idx < actx->pctx->nstmts)
             goto next_src;
     }
 
     switch (stmt->ty) {
         case STMT_TY_OP:
-            return emit_op(stmt, pctx, dst, dst_sz, strs_sc, strs_menu, refs);
+            return emit_op(stmt, actx);
 
         case STMT_TY_BYTE:
-            return emit_byte(stmt, pctx, dst, dst_sz);
+            return emit_byte(stmt, actx);
 
         default:
-            assert(false);
+            assert(false && "Unsupported stmt type");
     }
     return false;
 }
@@ -370,9 +365,20 @@ bool script_assemble(const struct script_parse_ctx* pctx, uint8_t* dst, size_t d
         return false;
     }
 
+    struct script_as_ctx actx = {
+        .pctx = pctx,
+        .dst = dst,
+        .dst_sz = dst_sz,
+        .dst_start = dst,
+        .strs_sc = strs_sc,
+        .strs_menu = strs_menu,
+        .branch_info_begin = NULL,
+        .branch_info_end = NULL
+    };
+
     bool ret = true;
     for (size_t i = 0; i < pctx->nstmts; i++)
-        if (!emit_stmt(&pctx->stmts[i], pctx, &dst, dst, &dst_sz, strs_sc, strs_menu, refs)) {
+        if (!emit_stmt(&pctx->stmts[i], &actx)) {
             ret = false;
             break;
         }
