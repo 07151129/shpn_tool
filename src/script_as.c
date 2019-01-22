@@ -34,7 +34,9 @@ static void log(bool err, const struct script_stmt* stmt, const struct script_pa
         const char* msg, ...) {
     if (pctx->filename)
         fprintf(stderr, "%s: ", pctx->filename);
-    fprintf(stderr, "%zu: %s: ", stmt->line, err ? "error" : "warning");
+    if (stmt)
+        fprintf(stderr, "%zu: ", stmt->line);
+    fprintf(stderr, "%s: ", err ? "error" : "warning");
 
     va_list va;
     va_start(va, msg);
