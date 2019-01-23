@@ -28,12 +28,13 @@ static bool ctx_conv(iconv_t conv, struct strtab_embed_ctx* ctx) {
     for (size_t i = 0; i < ctx->nstrs; i++) {
         assert(ctx->strs[i]);
 
-        char* res = mk_strtab_str(ctx->strs[i], conv);
-        if (!res)
-            return false;
-
-        free(ctx->strs[i]);
-        ctx->strs[i] = res;
+        if (ctx->allocated[i]) {
+            char* res = mk_strtab_str(ctx->strs[i], conv);
+            if (!res)
+                return false;
+            free(ctx->strs[i]);
+            ctx->strs[i] = res;
+        }
     }
     return true;
 }
@@ -46,7 +47,7 @@ bool embed_strtabs(uint8_t* rom, size_t rom_sz, struct strtab_embed_ctx* ectx_sc
     assert(HAS_ICONV);
     assert(ectx_menu->rom_vma > ectx_script->rom_vma);
 
-    if (rom_sz - VMA2OFFS(ectx_menu->rom_vma) < (size_t)(STRTAB_MENU_SZ - STRTAB_SCRIPT_SZ)) {
+    if (rom_sz - VMA2OFFS(ectx_script->rom_vma) < (size_t)(STRTAB_MENU_SZ + STRTAB_SCRIPT_SZ)) {
         fprintf(stderr, "ROM too small for the tables\n");
         return false;
     }
@@ -142,7 +143,7 @@ struct strtab_embed_ctx* strtab_embed_ctx_with_file(const char* path) {
         fclose(f);
     }
 
-    struct strtab_embed_ctx* ret = malloc(sizeof(struct strtab_embed_ctx));
+    struct strtab_embed_ctx* ret = calloc(sizeof(struct strtab_embed_ctx), 1);
     if (!ret) {
         perror("malloc");
         free(fbuf);
@@ -207,6 +208,8 @@ struct strtab_embed_ctx* strtab_embed_ctx_with_file(const char* path) {
      * would be much better if we could shuffle the actual strings. However, it would require us
      * to keep track of strings being relocated so that the script doesn't break, and is probably
      * not worth the effort, given the fact the original tables are full of placeholders anyway.
+     *
+     * Alternatively, we could pass struct strtab_embed_ctx to make_strtab
      */
     for (size_t i = 0; i < ret->nstrs; i++)
         if (!ret->strs[i]) {
