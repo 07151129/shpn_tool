@@ -21,7 +21,8 @@ SRC := \
 SRC_TEST := \
 	test/make_strtab.c \
 	test/script_as.c \
-	test/mk_strtab_str.c
+	test/mk_strtab_str.c \
+	test/embed_strtab.c
 
 SRC_LEX := src/script_lex.l
 SRC_YACC := src/script_gram.y
