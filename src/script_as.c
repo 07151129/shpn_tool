@@ -374,7 +374,6 @@ next_src:
 }
 
 /* TODO: Check for parse errors somewhere in script_verbs */
-/* FIXME: Need to check somewhere if strlen of each part until \n <= 512 */
 
 bool script_assemble(const struct script_parse_ctx* pctx, uint8_t* dst, size_t dst_sz,
         struct strtab_embed_ctx* strs_sc, struct strtab_embed_ctx* strs_menu, iconv_t conv) {

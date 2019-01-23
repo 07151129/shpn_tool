@@ -25,7 +25,7 @@ static void usage() {
                     "\nusage: <ROM> <verb> [...]\n\n"
                     "ROM is the AGB-ASHJ ROM path\n"
                     "Supported verbs:\n"
-                    "script <name | addr> <dump | embed>\n"
+                    "script name <dump | embed>\n"
                     "\tdump [out] -- Dump script to file at \"out\" or to stdout\n"
                     "\tembed in [strtab] [menu] [out] -- Embed script at \"in\" with strtab at "
                     "\"strtab\", menu strtab at \"menu\" into \"out\" or into \"ROM\""
@@ -50,6 +50,10 @@ static struct {
         char* script_name;
         char* strtab_name;
     };
+    union {
+        uint32_t script_vma;
+        uint32_t strtab_vma;
+    };
     uint32_t strtab_idx;
     bool has_strtab_idx;
 } opts;
@@ -57,10 +61,10 @@ static struct {
 static bool parse_script_verb(int argc, char* const* argv, int i) {
     int j = i + 1;
 
-    if (j < argc) {
+    if (j < argc)
         opts.script_name = argv[j];
-    } else {
-        fprintf(stderr, "Missing script name\n");
+    else {
+        fprintf(stderr, "Missing script address or name\n");
         return false;
     }
 
@@ -98,9 +102,12 @@ static bool parse_strtab_verb(int argc, char* const* argv, int i) {
     int j = i + 1;
 
     if (j < argc) {
-        opts.strtab_name = argv[j];
+        char* end;
+        opts.strtab_vma = strtoul(argv[j], &end, 0);
+        if (end == argv[j])
+            opts.strtab_name = argv[j];
     } else {
-        fprintf(stderr, "Missing script name for strtab\n");
+        fprintf(stderr, "Missing address or script name for strtab\n");
         return false;
     }
 
@@ -120,11 +127,9 @@ static bool parse_strtab_verb(int argc, char* const* argv, int i) {
 
     if (++j < argc) {
         if (opts.strtab_verb == STRTAB_EMBED) {
-            opts.strtab_idx = strtoul(argv[j], NULL, 0);
-            if (errno != 0)
-                opts.has_strtab_idx = false; /* FIXME: Non-portable? */
-            else
-                opts.has_strtab_idx = true;
+            char* end;
+            opts.strtab_idx = strtoul(argv[j], &end, 0);
+            opts.has_strtab_idx = end > argv[j];
         }
 
         if (opts.strtab_verb == STRTAB_DUMP)
@@ -133,12 +138,9 @@ static bool parse_strtab_verb(int argc, char* const* argv, int i) {
 
     if (++j < argc) {
         if (opts.strtab_verb == STRTAB_DUMP) {
-            opts.strtab_idx = strtoul(argv[j], NULL, 0);
-
-            if (errno != 0)
-                opts.has_strtab_idx = false; /* FIXME: Non-portable? */
-            else
-                opts.has_strtab_idx = true;
+            char* end;
+            opts.strtab_idx = strtoul(argv[j], &end, 0);
+            opts.has_strtab_idx = end > argv[j];
         }
         else if (opts.strtab_verb == STRTAB_EMBED)
             opts.in_path = argv[j];
@@ -217,7 +219,9 @@ static bool strtab_verbs(const uint8_t* rom, size_t sz) {
     bool ret = false;
 
     uint32_t strtab_vma = 0;
-    if (!strcmp(opts.script_name, "Menu"))
+    if (!opts.script_name)
+        strtab_vma = opts.strtab_vma;
+    else if (!strcmp(opts.script_name, "Menu"))
         strtab_vma = STRTAB_MENU_VMA;
     else {
         const struct script_desc* desc = script_for_name(opts.script_name);
