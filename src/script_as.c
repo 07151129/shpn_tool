@@ -9,20 +9,17 @@
 #include <string.h>
 
 #include "defs.h"
+#include "embed.h"
 #include "script_disass.h"
 #include "script_parse_ctx.h"
-
-#define EMBED_STRTAB_SZ 10000
-struct strtab_embed_ctx {
-    size_t nstrs;
-    char* strs[EMBED_STRTAB_SZ];
-};
+#include "strtab.h"
 
 struct script_as_ctx {
     const struct script_parse_ctx* pctx;
     uint8_t* dst;
     const uint8_t* dst_start;
     size_t dst_sz;
+    iconv_t conv;
     struct strtab_embed_ctx* strs_sc;
     struct strtab_embed_ctx* strs_menu;
     struct jump_refs_ctx* refs;
@@ -174,9 +171,9 @@ static bool emit_arg_str(const struct script_stmt* stmt, const struct script_arg
     actx->dst += sizeof(i);
     actx->dst_sz -= sizeof(i);
 
-    strs->strs[i] = strdup(arg->str);
+    strs->strs[i] = mk_strtab_str(arg->str, actx->conv);
     if (!strs->strs[i]) {
-        log(true, stmt, actx->pctx, "failed to allocate memory for string");
+        log(true, stmt, actx->pctx, "failed to encode string");
         return false;
     }
     strs->nstrs++;
@@ -200,9 +197,9 @@ static bool emit_arg_numbered_str(const struct script_stmt* stmt, const struct s
 
     if (strs->strs[arg->numbered_str.num])
         free(strs->strs[arg->numbered_str.num]);
-    strs->strs[arg->numbered_str.num] = strdup(arg->numbered_str.str);
+    strs->strs[arg->numbered_str.num] = mk_strtab_str(arg->numbered_str.str, actx->conv);
     if (!strs->strs[arg->numbered_str.num]) {
-        log(true, stmt, actx->pctx, "failed to allocate memory for string");
+        log(true, stmt, actx->pctx, "failed to encode string");
         return false;
     }
 
@@ -380,9 +377,9 @@ next_src:
 /* FIXME: Need to check somewhere if strlen of each part until \n <= 512 */
 
 bool script_assemble(const struct script_parse_ctx* pctx, uint8_t* dst, size_t dst_sz,
-        struct strtab_embed_ctx* strs_sc, struct strtab_embed_ctx* strs_menu) {
+        struct strtab_embed_ctx* strs_sc, struct strtab_embed_ctx* strs_menu, iconv_t conv) {
     assert(pctx->ndiags == 0 && "Trying to assemble script with parse errors");
-    assert(HAS_ICONV);
+    assert(HAS_ICONV && conv != (iconv_t)-1);
 
     struct jump_refs_ctx* refs = malloc(sizeof(struct jump_refs_ctx));
     if (!refs) {
@@ -399,7 +396,8 @@ bool script_assemble(const struct script_parse_ctx* pctx, uint8_t* dst, size_t d
         .strs_sc = strs_sc,
         .strs_menu = strs_menu,
         .branch_info_begin = NULL,
-        .branch_info_end = NULL
+        .branch_info_end = NULL,
+        .conv = conv
     };
 
     bool ret = true;
