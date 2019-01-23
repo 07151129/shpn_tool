@@ -6,6 +6,8 @@
 
 #include <stdbool.h>
 
+#include "defs.h"
+
 #define EMBED_STRTAB_SZ 10000
 struct strtab_embed_ctx {
     size_t nstrs;
@@ -14,6 +16,8 @@ struct strtab_embed_ctx {
     bool allocated[EMBED_STRTAB_SZ];
 };
 
+bool embed_strtabs(uint8_t* rom, size_t rom_sz, struct strtab_embed_ctx* ectx_script,
+    struct strtab_embed_ctx* ectx_menu, iconv_t conv);
 struct strtab_embed_ctx* strtab_embed_ctx_with_file(const char* path);
 void strtab_embed_ctx_free(const struct strtab_embed_ctx* ctx);
 
