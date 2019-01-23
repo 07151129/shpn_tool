@@ -591,7 +591,7 @@ char* mk_strtab_str(const char* u8str, iconv_t conv) {
 
     size_t u8len = strlen(u8str);
     size_t sjislen = u8len;
-    char* sjis = malloc(sjislen);
+    char* sjis = malloc(sjislen + 1);
     if (!sjis) {
         perror("malloc");
         return NULL;
