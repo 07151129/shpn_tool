@@ -110,6 +110,16 @@ fail_script:
     return ret;
 }
 
+struct strtab_embed_ctx* strtab_embed_ctx_new() {
+    struct strtab_embed_ctx* ret = malloc(sizeof(struct strtab_embed_ctx));
+    if (!ret) {
+        perror("malloc");
+        return NULL;
+    }
+    memset(ret->allocated, '\0', sizeof(ret->allocated));
+    return ret;
+}
+
 struct strtab_embed_ctx* strtab_embed_ctx_with_file(const char* path) {
     if (!path)
         return NULL;
@@ -143,13 +153,11 @@ struct strtab_embed_ctx* strtab_embed_ctx_with_file(const char* path) {
         fclose(f);
     }
 
-    struct strtab_embed_ctx* ret = malloc(sizeof(struct strtab_embed_ctx));
+    struct strtab_embed_ctx* ret = strtab_embed_ctx_new();
     if (!ret) {
-        perror("malloc");
         free(fbuf);
         return NULL;
     }
-    memset(ret->allocated, '\0', sizeof(ret->allocated));
 
     bool at_nl = true;
     size_t line = 0;
