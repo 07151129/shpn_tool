@@ -46,7 +46,9 @@ void test_embed_strtabs() {
 
     assert(embed_strtabs(buf, EMBED_BUF_SZ, ectx_script, ectx_menu, (iconv_t)-1));
 
+    strtab_embed_ctx_free(ectx_script);
     free(ectx_script);
+    strtab_embed_ctx_free(ectx_menu);
     free(ectx_menu);
     free(buf);
 }
