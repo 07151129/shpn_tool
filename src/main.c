@@ -25,16 +25,16 @@ static void usage() {
                     "\nusage: <ROM> <verb> [...]\n\n"
                     "ROM is the AGB-ASHJ ROM path\n"
                     "Supported verbs:\n"
-                    "script <name> <dump | embed>\n"
+                    "script <name | addr> <dump | embed>\n"
                     "\tdump [out] -- Dump script to file at \"out\" or to stdout\n"
-                    "\tembed in [strtab] [out] -- Embed script at \"in\" with strtab at \"strtab\" \
-                    into ROM at \"out\" or into\"ROM\""
+                    "\tembed in [strtab] [menu] [out] -- Embed script at \"in\" with strtab at "
+                    "\"strtab\", menu strtab at \"menu\" into \"out\" or into \"ROM\""
                     "\n\n"
-                    "strtab <name> <dump | embed>\n"
-                    "\tdump [idx] [out] -- Dump strtab entry at \"idx\" or all entries to file at"
-                        " \"out\" or stdout.\n"
+                    "strtab <name | addr> <dump | embed>\n"
+                    "\tdump [out] [idx] -- Dump strtab entry at \"idx\" or all entries to file at"
+                        " \"out\" or stdout\n"
                     "\tembed [idx] [in] -- Embed strtab entry at \"idx\" or all entries from file"
-                        " \"in\" or stdin."
+                        " \"in\" or stdin"
                     "\n\n");
 }
 
@@ -134,6 +134,7 @@ static bool parse_strtab_verb(int argc, char* const* argv, int i) {
     if (++j < argc) {
         if (opts.strtab_verb == STRTAB_DUMP) {
             opts.strtab_idx = strtoul(argv[j], NULL, 0);
+
             if (errno != 0)
                 opts.has_strtab_idx = false; /* FIXME: Non-portable? */
             else
