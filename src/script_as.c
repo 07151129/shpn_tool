@@ -159,7 +159,7 @@ static bool emit_arg_str(const struct script_stmt* stmt, const struct script_arg
 
     uint16_t i = 0;
     for (; i < EMBED_STRTAB_SZ; i++)
-        if (!strs->strs[i])
+        if (!strs->allocated[i])
             break;
 
     if (actx->dst_sz < sizeof(i)) {
@@ -185,6 +185,10 @@ static bool emit_arg_numbered_str(const struct script_stmt* stmt, const struct s
         struct strtab_embed_ctx* strs, struct script_as_ctx* actx) {
     assert(arg->type == ARG_TY_NUMBERED_STR);
 
+    if (arg->numbered_str.num >= EMBED_STRTAB_SZ) {
+        log(true, stmt, actx->pctx, "string index too large");
+        return false;
+    }
     if (strs->strs[arg->numbered_str.num])
         log(false, stmt, actx->pctx, "overwriting existing string table entry");
     if (actx->dst_sz < sizeof(arg->numbered_str.num)) {
@@ -195,7 +199,7 @@ static bool emit_arg_numbered_str(const struct script_stmt* stmt, const struct s
     actx->dst += sizeof(arg->numbered_str.num);
     actx->dst_sz -= sizeof(arg->numbered_str.num);
 
-    if (strs->strs[arg->numbered_str.num])
+    if (strs->allocated[arg->numbered_str.num] && strs->strs[arg->numbered_str.num])
         free(strs->strs[arg->numbered_str.num]);
     strs->strs[arg->numbered_str.num] = mk_strtab_str(arg->numbered_str.str, actx->conv);
     if (!strs->strs[arg->numbered_str.num]) {
@@ -376,10 +380,12 @@ next_src:
 /* TODO: Check for parse errors somewhere in script_verbs */
 
 bool script_assemble(const struct script_parse_ctx* pctx, uint8_t* dst, size_t dst_sz,
-        struct strtab_embed_ctx* strs_sc, struct strtab_embed_ctx* strs_menu, iconv_t conv) {
+        struct strtab_embed_ctx* strs_sc, struct strtab_embed_ctx* strs_menu, size_t* nwritten,
+        struct script_hdr* hdr, iconv_t conv) {
     assert(pctx->ndiags == 0 && "Trying to assemble script with parse errors");
     assert(HAS_ICONV && conv != (iconv_t)-1);
 
+    *nwritten = 0;
     struct jump_refs_ctx* refs = malloc(sizeof(struct jump_refs_ctx));
     if (!refs) {
         fprintf(stderr, "Failed to allocate jump_refs_ctx\n");
@@ -410,6 +416,12 @@ bool script_assemble(const struct script_parse_ctx* pctx, uint8_t* dst, size_t d
         log(true, NULL, pctx, "missing branch_info section");
         ret = false;
     }
+    *nwritten = actx.dst - actx.dst_start;
+    *hdr = (struct script_hdr){
+        .branch_info_offs = actx.branch_info_begin - actx.dst_start,
+        .branch_info_sz = actx.branch_info_end - actx.branch_info_begin,
+        .bytes_to_end = actx.dst - actx.branch_info_begin
+    };
 
     free(refs);
     return ret;
