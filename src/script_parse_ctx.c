@@ -15,6 +15,7 @@ void script_parse_ctx_init(struct script_parse_ctx* ctx, const char* script) {
     ctx->ndiags = 0;
     ctx->nstmts = 0;
     ctx->script = script;
+    ctx->filename = NULL;
     init_script_handlers();
 }
 
