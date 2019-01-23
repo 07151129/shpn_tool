@@ -589,6 +589,8 @@ char* mk_strtab_str(const char* u8str, iconv_t conv) {
     assert(conv != (iconv_t)-1);
     assert(!strncmp(u8"¥", (char[]){0xc2, 0xa5}, 2));
 
+    iconv(conv, NULL, NULL, NULL, NULL);
+
     size_t u8len = strlen(u8str);
     size_t sjislen = u8len;
     char* sjis = malloc(sjislen + 1);
