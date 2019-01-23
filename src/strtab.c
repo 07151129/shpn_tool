@@ -114,7 +114,7 @@ bool strtab_dec_str(const uint8_t* strtab, uint32_t idx, char* out, size_t out_s
     assert(hdr->dict_offs == sizeof(struct strtab_header));
     assert(hdr->null == 0);
 
-    if (idx > hdr->nentries)
+    if (idx >= hdr->nentries)
         return false;
 
     char buf[DEC_BUF_SZ_SJIS];
@@ -220,8 +220,13 @@ bool strtab_dump(const uint8_t* rom, uint32_t vma, uint32_t idx, bool has_idx, F
 
 done:
     if (conv != (iconv_t)-1) {
-        if (!ret)
-            perror("iconv");
+        if (!ret) {
+            if (idx >= ((const struct strtab_header*)strtab)->nentries)
+                fprintf(stderr, "Index %u is too large (table has %u entries)\n", idx,
+                    ((const struct strtab_header*)strtab)->nentries);
+            else
+                perror("iconv");
+        }
         iconv_close(conv);
     }
     return ret;
@@ -530,6 +535,8 @@ static bool is_esc(const char* s) {
 }
 
 static size_t esclen(const char* s) {
+    assert(is_esc(s));
+
     if (*s == '\\')
         return 1;
     return 2;
@@ -578,9 +585,9 @@ static const char* buf_for_esc(const char* esc, size_t* cons, size_t* prod) {
 #define SJIS_LEN_UNTIL_NEWLINE_MAX 512
 
 char* mk_strtab_str(const char* u8str, iconv_t conv) {
+#ifdef HAS_ICONV
     assert(conv != (iconv_t)-1);
-
-    assert(!strncmp(u8"¥", "\xc2\xa5", 2));
+    assert(!strncmp(u8"¥", (char[]){0xc2, 0xa5}, 2));
 
     size_t u8len = strlen(u8str);
     size_t sjislen = u8len;
@@ -617,7 +624,7 @@ char* mk_strtab_str(const char* u8str, iconv_t conv) {
             const char* escb = buf_for_esc(u8iter, &cons, &prod);
             if (!escb)
                 goto fail;
-            if (*escb == '\n' && until_newline > SJIS_LEN_UNTIL_NEWLINE_MAX)
+            if (*escb == '\n' && until_newline >= SJIS_LEN_UNTIL_NEWLINE_MAX)
                 goto fail;
 
             u8iter += cons;
@@ -638,4 +645,7 @@ fail_iconv:
 fail:
     free(sjis);
     return NULL;
+#else
+    return NULL;
+#endif
 }
