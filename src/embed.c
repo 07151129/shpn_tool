@@ -143,12 +143,13 @@ struct strtab_embed_ctx* strtab_embed_ctx_with_file(const char* path) {
         fclose(f);
     }
 
-    struct strtab_embed_ctx* ret = calloc(sizeof(struct strtab_embed_ctx), 1);
+    struct strtab_embed_ctx* ret = malloc(sizeof(struct strtab_embed_ctx));
     if (!ret) {
         perror("malloc");
         free(fbuf);
         return NULL;
     }
+    memset(ret->allocated, '\0', sizeof(ret->allocated));
 
     bool at_nl = true;
     size_t line = 0;
@@ -212,10 +213,8 @@ struct strtab_embed_ctx* strtab_embed_ctx_with_file(const char* path) {
      * Alternatively, we could pass struct strtab_embed_ctx to make_strtab
      */
     for (size_t i = 0; i < ret->nstrs; i++)
-        if (!ret->strs[i]) {
+        if (!ret->allocated[i])
             ret->strs[i] = "";
-            ret->allocated[i] = false;
-        }
     ret->nstrs++;
 
 done:
