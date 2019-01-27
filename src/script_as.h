@@ -10,7 +10,7 @@
 #include "script_parse_ctx.h"
 
 bool script_assemble(const struct script_parse_ctx* pctx, uint8_t* dst, size_t dst_sz,
-        struct strtab_embed_ctx* strs_sc, struct strtab_embed_ctx* strs_menu, size_t* nwritten,
-        struct script_hdr* hdr, iconv_t conv);
+        struct strtab_embed_ctx* strs_sc, struct strtab_embed_ctx* strs_menu, struct script_hdr* hdr,
+        iconv_t conv);
 
 #endif

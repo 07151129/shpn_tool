@@ -120,4 +120,7 @@ bool has_label(uint16_t offs, const struct script_state* state);
 
 uint32_t script_next_cmd_arg(uint16_t a1, uint16_t w, const struct script_state* state);
 
+/* minus sizeof(*hdr) */
+size_t script_sz(const struct script_hdr* hdr);
+
 #endif

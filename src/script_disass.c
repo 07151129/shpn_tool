@@ -356,3 +356,7 @@ phase:
 
     assert(false); /* Unreachable */
 }
+
+size_t script_sz(const struct script_hdr* hdr) {
+    return hdr->branch_info_sz + hdr->branch_info_offs + hdr->bytes_to_end;
+}

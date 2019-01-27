@@ -380,12 +380,11 @@ next_src:
 /* TODO: Check for parse errors somewhere in script_verbs */
 
 bool script_assemble(const struct script_parse_ctx* pctx, uint8_t* dst, size_t dst_sz,
-        struct strtab_embed_ctx* strs_sc, struct strtab_embed_ctx* strs_menu, size_t* nwritten,
+        struct strtab_embed_ctx* strs_sc, struct strtab_embed_ctx* strs_menu,
         struct script_hdr* hdr, iconv_t conv) {
     assert(pctx->ndiags == 0 && "Trying to assemble script with parse errors");
     assert(HAS_ICONV && conv != (iconv_t)-1);
 
-    *nwritten = 0;
     struct jump_refs_ctx* refs = malloc(sizeof(struct jump_refs_ctx));
     if (!refs) {
         fprintf(stderr, "Failed to allocate jump_refs_ctx\n");
@@ -416,11 +415,10 @@ bool script_assemble(const struct script_parse_ctx* pctx, uint8_t* dst, size_t d
         log(true, NULL, pctx, "missing branch_info section");
         ret = false;
     }
-    *nwritten = actx.dst - actx.dst_start;
     *hdr = (struct script_hdr){
         .branch_info_offs = actx.branch_info_begin - actx.dst_start,
         .branch_info_sz = actx.branch_info_end - actx.branch_info_begin,
-        .bytes_to_end = actx.dst - actx.branch_info_begin
+        .bytes_to_end = actx.dst - actx.branch_info_end
     };
 
     free(refs);
