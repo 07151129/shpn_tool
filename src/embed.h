@@ -1,10 +1,11 @@
 #ifndef EMBED_H
 #define EMBED_H
 
+#include <assert.h>
+#include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
-
-#include <stdbool.h>
+#include <stdio.h>
 
 #include "defs.h"
 
@@ -16,9 +17,18 @@ struct strtab_embed_ctx {
     bool allocated[EMBED_STRTAB_SZ];
 };
 
+#define STRTAB_SCRIPT_SZ 0x36b64ul
+#define STRTAB_MENU_SZ 0xcf0ul
+
+static_assert(STRTAB_MENU_SZ <= STRTAB_SCRIPT_SZ, "Unexpected strtab sizes");
+
+iconv_t conv_for_embedding();
+bool embed_strtab(uint8_t* rom, size_t rom_sz, struct strtab_embed_ctx* ectx, size_t max_sz,
+    iconv_t conv);
 bool embed_strtabs(uint8_t* rom, size_t rom_sz, struct strtab_embed_ctx* ectx_script,
     struct strtab_embed_ctx* ectx_menu, iconv_t conv);
-struct strtab_embed_ctx* strtab_embed_ctx_with_file(const char* path);
-void strtab_embed_ctx_free(const struct strtab_embed_ctx* ctx);
+struct strtab_embed_ctx* strtab_embed_ctx_with_file(FILE* fin, size_t sz);
+void strtab_embed_ctx_free(struct strtab_embed_ctx* ctx);
+size_t strtab_embed_min_rom_sz();
 
 #endif

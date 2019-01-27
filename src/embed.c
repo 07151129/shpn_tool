@@ -18,10 +18,11 @@
  * TODO: Embedding strtab, script, fonts, patching addresses, checksums etc...
  */
 
-void strtab_embed_ctx_free(const struct strtab_embed_ctx* ctx) {
+void strtab_embed_ctx_free(struct strtab_embed_ctx* ctx) {
     for (size_t i = 0; i < ctx->nstrs; i++)
         if (ctx->strs[i] && ctx->allocated[i])
             free(ctx->strs[i]);
+    free(ctx);
 }
 
 static bool ctx_conv(iconv_t conv, struct strtab_embed_ctx* ctx) {
@@ -39,75 +40,60 @@ static bool ctx_conv(iconv_t conv, struct strtab_embed_ctx* ctx) {
     return true;
 }
 
-#define STRTAB_SCRIPT_SZ 0x36b64
-#define STRTAB_MENU_SZ 0xcf0
+size_t strtab_embed_min_rom_sz() {
+    return STRTAB_SCRIPT_SZ + STRTAB_MENU_SZ;
+}
+
+iconv_t conv_for_embedding() {
+    iconv_t ret = (iconv_t)-1;
+#ifdef HAS_ICONV
+    ret = iconv_open("SJIS", "UTF-8");
+#endif
+    if (ret == (iconv_t)-1)
+        perror("iconv");
+    return ret;
+}
+
+bool embed_strtab(uint8_t* rom, size_t rom_sz, struct strtab_embed_ctx* ectx, size_t max_sz,
+    iconv_t conv) {
+    assert(HAS_ICONV && conv != (iconv_t)-1);
+
+    size_t space_left;
+    if (max_sz > 0)
+        space_left = max_sz;
+    else
+        space_left = rom_sz >= VMA2OFFS(ectx->rom_vma) ? rom_sz - VMA2OFFS(ectx->rom_vma) : 0;
+
+    if (space_left < STRTAB_MENU_SZ) {
+        fprintf(stderr, "ROM too small for the table (%zu < %zu)\n", space_left,
+            strtab_embed_min_rom_sz());
+        return false;
+    }
+
+    if (!ctx_conv(conv, ectx))
+        return false;
+
+    size_t nwritten;
+    if (!make_strtab((void*)ectx->strs, ectx->nstrs, &rom[VMA2OFFS(ectx->rom_vma)], space_left,
+        &nwritten))
+        return false;
+
+    return true;
+}
 
 bool embed_strtabs(uint8_t* rom, size_t rom_sz, struct strtab_embed_ctx* ectx_script,
     struct strtab_embed_ctx* ectx_menu, iconv_t conv) {
-    assert(HAS_ICONV);
+    assert(HAS_ICONV && conv != (iconv_t)-1);
     assert(ectx_menu->rom_vma > ectx_script->rom_vma);
 
-    if (rom_sz - VMA2OFFS(ectx_script->rom_vma) < (size_t)(STRTAB_MENU_SZ + STRTAB_SCRIPT_SZ)) {
-        fprintf(stderr, "ROM too small for the tables\n");
+    /**
+     * FIXME: Maximum sizes hardcoded for now. If strtab doesn't fit in the ROM, we should
+     * try to embed strtab at some other location and patch pointers to it instead of aborting.
+     */
+    if (!embed_strtab(rom, rom_sz, ectx_script, STRTAB_SCRIPT_SZ, conv) ||
+        !embed_strtab(rom, rom_sz, ectx_menu, STRTAB_MENU_SZ, conv))
         return false;
-    }
-
-    bool had_iconv = conv != (iconv_t)-1;
-#ifdef HAS_ICONV
-    if (!had_iconv)
-        conv = iconv_open("SJIS", "UTF-8");
-#endif
-    if (conv == (iconv_t)-1) {
-        perror("iconv");
-        return false;
-    }
-
-    if (!ctx_conv(conv, ectx_script) || !ctx_conv(conv, ectx_menu))
-        return false;
-
-    bool ret = true;
-    uint8_t* strtab_script = malloc(STRTAB_SCRIPT_SZ);
-    if (!strtab_script) {
-        perror("malloc");
-        ret = false;
-        goto fail_script;
-    }
-
-    uint8_t* strtab_menu = malloc(STRTAB_MENU_SZ);
-    if (!strtab_menu) {
-        perror("malloc");
-        ret = false;
-        goto fail_menu;
-    }
-
-    size_t nwritten_script, nwritten_menu;
-    if (!make_strtab((void*)ectx_script->strs, ectx_script->nstrs, strtab_script, STRTAB_SCRIPT_SZ,
-        &nwritten_script)) {
-        fprintf(stderr, "Failed to make script strtab\n");
-        ret = false;
-        goto fail;
-    }
-
-    if (!make_strtab((void*)ectx_menu->strs, ectx_menu->nstrs, strtab_menu, STRTAB_MENU_SZ,
-        &nwritten_menu)) {
-        fprintf(stderr, "Failed to make menu strtab\n");
-        ret = false;
-        goto fail;
-    }
-
-    memcpy(&rom[VMA2OFFS(ectx_script->rom_vma)], strtab_script, nwritten_script);
-    memcpy(&rom[VMA2OFFS(ectx_menu->rom_vma)], strtab_menu, nwritten_menu);
-
-fail:
-    free(strtab_menu);
-fail_menu:
-    free(strtab_script);
-fail_script:
-#ifdef HAS_ICONV
-    if (!had_iconv)
-        iconv_close(conv);
-#endif
-    return ret;
+    return true;
 }
 
 struct strtab_embed_ctx* strtab_embed_ctx_new() {
@@ -120,37 +106,22 @@ struct strtab_embed_ctx* strtab_embed_ctx_new() {
     return ret;
 }
 
-struct strtab_embed_ctx* strtab_embed_ctx_with_file(const char* path) {
-    if (!path)
+struct strtab_embed_ctx* strtab_embed_ctx_with_file(FILE* fin, size_t sz) {
+    if (!fin)
         return NULL;
 
-    struct stat st;
-    if (stat(path, &st) == -1) {
-        perror("stat");
-        return NULL;
-    }
+    rewind(fin);
 
-    char* fbuf = malloc(st.st_size);
+    char* fbuf = malloc(sz);
     if (!fbuf) {
         perror("malloc");
         return NULL;
     }
 
-    {
-        FILE* f = fopen(path, "rb");
-        if (!f) {
-            perror("fopen");
-            free(fbuf);
-            return NULL;
-        }
-
-        if (fread(fbuf, 1, st.st_size, f) < (size_t)st.st_size) {
-            fprintf(stderr, "Failed to fread %s (error %d)\n", path, ferror(f));
-            fclose(f);
-            free(fbuf);
-            return NULL;
-        }
-        fclose(f);
+    if (fread(fbuf, 1, sz, fin) < (size_t)sz) {
+        fprintf(stderr, "Failed to fread (error %d)\n", ferror(fin));
+        free(fbuf);
+        return NULL;
     }
 
     struct strtab_embed_ctx* ret = strtab_embed_ctx_new();
@@ -165,7 +136,7 @@ struct strtab_embed_ctx* strtab_embed_ctx_with_file(const char* path) {
     size_t cidx = 0;
     ret->nstrs = 0;
 
-    for (off_t i = 0; i < st.st_size;) {
+    for (size_t i = 0; i < sz;) {
         if (at_nl) {
             char* end;
             sidx = strtoul(&fbuf[i], &end, 0);
@@ -177,7 +148,7 @@ struct strtab_embed_ctx* strtab_embed_ctx_with_file(const char* path) {
             }
 
             if (*end != ':') {
-                fprintf(stderr, "Failed to parse %s at line %zu\n", path, line);
+                fprintf(stderr, "Failed to parse input at line %zu\n", line);
                 free(ret);
                 ret = NULL;
                 goto done;
@@ -208,6 +179,7 @@ struct strtab_embed_ctx* strtab_embed_ctx_with_file(const char* path) {
 
                 i++;
                 at_nl = true;
+                line++;
             }
         }
     }

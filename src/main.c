@@ -14,6 +14,8 @@
 #include <unistd.h>
 
 #include "defs.h"
+#include "embed.h"
+#include "script_as.h"
 #include "script_disass.h"
 #include "strtab.h"
 
@@ -33,8 +35,7 @@ static void usage() {
                     "strtab <name | addr> <dump | embed>\n"
                     "\tdump [out] [idx] -- Dump strtab entry at \"idx\" or all entries to file at"
                         " \"out\" or stdout\n"
-                    "\tembed [idx] [in] -- Embed strtab entry at \"idx\" or all entries from file"
-                        " \"in\" or stdin"
+                    "\tembed <in> <out> -- Embed all strtab entries from file \"in\" to file \"out\""
                     "\n\n");
 }
 
@@ -126,11 +127,8 @@ static bool parse_strtab_verb(int argc, char* const* argv, int i) {
     }
 
     if (++j < argc) {
-        if (opts.strtab_verb == STRTAB_EMBED) {
-            char* end;
-            opts.strtab_idx = strtoul(argv[j], &end, 0);
-            opts.has_strtab_idx = end > argv[j];
-        }
+        if (opts.strtab_verb == STRTAB_EMBED)
+            opts.in_path = argv[j];
 
         if (opts.strtab_verb == STRTAB_DUMP)
             opts.out_path = argv[j];
@@ -143,7 +141,7 @@ static bool parse_strtab_verb(int argc, char* const* argv, int i) {
             opts.has_strtab_idx = end > argv[j];
         }
         else if (opts.strtab_verb == STRTAB_EMBED)
-            opts.in_path = argv[j];
+            opts.out_path = argv[j];
     }
 
     return true;
@@ -218,28 +216,38 @@ done:
 static bool strtab_verbs(const uint8_t* rom, size_t sz) {
     bool ret = false;
 
+    /* FIXME: Should try to dynamically compute strtab size instead of harcoding... */
     uint32_t strtab_vma = 0;
+    size_t strtab_sz = 0;
     if (!opts.script_name)
         strtab_vma = opts.strtab_vma;
-    else if (!strcmp(opts.script_name, "Menu"))
+    else if (!strcmp(opts.script_name, "Menu")) {
+        strtab_sz = STRTAB_MENU_SZ;
         strtab_vma = STRTAB_MENU_VMA;
+    }
     else {
         const struct script_desc* desc = script_for_name(opts.script_name);
         if (!desc) {
             fprintf(stderr, "Unrecognized strtab name %s\n", opts.script_name);
             return false;
         }
+        strtab_sz = STRTAB_SCRIPT_SZ;
         strtab_vma = desc->strtab_vma;
     }
 
     FILE* fin = NULL, * fout = NULL;
+    size_t in_sz = 0;
     if (opts.in_path) {
         fin = fopen(opts.in_path, "rb");
         if (!fin) {
             perror("fopen");
             goto done;
         }
+        struct stat st;
+        stat(opts.in_path, &st);
+        in_sz = st.st_size;
     }
+
     if (opts.out_path) {
         fout = fopen(opts.out_path, "wb");
         if (!fout) {
@@ -248,10 +256,49 @@ static bool strtab_verbs(const uint8_t* rom, size_t sz) {
         }
     }
 
-    if (opts.strtab_verb == SCRIPT_DUMP)
+    if (opts.strtab_verb == STRTAB_DUMP)
         ret = strtab_dump(rom, strtab_vma, opts.strtab_idx, opts.has_strtab_idx,
             fout ? fout : stdout);
-    /* FIXME: Embed */
+    else if (opts.strtab_verb == STRTAB_EMBED) {
+#if !HAS_ICONV
+        fprintf(stderr, "shpn_tool needs to be built with iconv support for this operation\n");
+        goto done;
+#endif
+        if (!opts.in_path) {
+            fprintf(stderr, "Missing strtab in file arg\n");
+            goto done;
+        }
+        if (!opts.out_path) {
+            fprintf(stderr, "Missing strtab out file arg\n");
+            goto done;
+        }
+
+        struct strtab_embed_ctx* ectx = strtab_embed_ctx_with_file(fin, in_sz);
+        if (!ectx) {
+            fprintf(stderr, "Failed to process %s for embedding\n", opts.in_path);
+            goto done;
+        }
+
+        uint8_t* rom_cpy = malloc(sz);
+        if (!rom_cpy)
+            perror("malloc");
+        else {
+            memcpy(rom_cpy, rom, sz);
+            iconv_t conv = conv_for_embedding();
+            if (!embed_strtab(rom_cpy, sz, ectx, strtab_sz, conv))
+                fprintf(stderr, "Failed to embed strtab from %s\n", opts.in_path);
+            else if (fwrite(rom_cpy, 1, sz, fout) < sz)
+                perror("fwrite");
+#ifdef HAS_ICONV
+            iconv_close(conv);
+#endif
+        }
+
+        if (rom_cpy)
+            free(rom_cpy);
+        if (ectx)
+            strtab_embed_ctx_free(ectx);
+    }
 
 done:
     if (fin && fclose(fin))
