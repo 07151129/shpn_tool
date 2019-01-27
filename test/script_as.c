@@ -4,7 +4,11 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <sys/stat.h>
+
 #include "defs.h"
+#include "embed.h"
+#include "script_as.h"
 #include "script_parse_ctx.h"
 
 static void test_syntax(struct script_parse_ctx* ctx) {
@@ -62,10 +66,55 @@ static void test_syntax(struct script_parse_ctx* ctx) {
     }
 }
 
+size_t fsz(const char* path) {
+    struct stat st;
+    assert(stat(path, &st) != -1);
+    return st.st_size;
+}
+
+#define PATH_GOOD "test/strtab.good"
+
+void test_as(struct script_parse_ctx* pctx) {
+    assert(HAS_ICONV);
+    FILE* good;
+    good = fopen(PATH_GOOD, "rb");
+    assert(good);
+
+    struct strtab_embed_ctx* ectx_script = strtab_embed_ctx_with_file(good, fsz(PATH_GOOD));
+    struct strtab_embed_ctx* ectx_menu = strtab_embed_ctx_with_file(good, fsz(PATH_GOOD));
+
+    iconv_t conv = (iconv_t)-1;
+#ifdef HAS_ICONV
+    conv = iconv_open("SJIS", "UTF-8");
+#endif
+    assert(conv != (iconv_t)-1);
+
+    uint8_t* rom = malloc(2048);
+    assert(rom);
+
+    struct script_hdr hdr;
+
+    script_parse_ctx_init(pctx, u8"ShowText((1001)\"Ｈｅｌｌｏ ｗｏｒｌｄ\");"
+        ".begin branch_info .byte 0 .end branch_info");
+    assert(script_parse_ctx_parse(pctx));
+    assert(script_assemble(pctx, rom, 2048, ectx_script, ectx_menu, &hdr, conv));
+
+    // fprintf(stderr, "nwritten %zu\n", nwritten);
+    // for (size_t i = 0; i < nwritten; i++)
+    //     fprintf(stderr, "%02x", rom[i]);
+    // fprintf(stderr, "\n");
+
+    strtab_embed_ctx_free(ectx_script);
+    strtab_embed_ctx_free(ectx_menu);
+    free(rom);
+    iconv_close(conv);
+}
+
 int main() {
     struct script_parse_ctx* ctx = malloc(sizeof(*ctx));
 
     test_syntax(ctx);
+    test_as(ctx);
 
     free(ctx);
 }
