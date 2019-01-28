@@ -289,6 +289,8 @@ static bool strtab_verbs(const uint8_t* rom, size_t sz) {
                 fprintf(stderr, "Failed to embed strtab from %s\n", opts.in_path);
             else if (fwrite(rom_cpy, 1, sz, fout) < sz)
                 perror("fwrite");
+            else
+                ret = true;
 #ifdef HAS_ICONV
             iconv_close(conv);
 #endif
