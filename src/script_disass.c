@@ -140,7 +140,9 @@ void script_state_init(struct script_state* state, const uint8_t* strtab, const 
 
     state->branch_info = branch_info;
     state->branch_info_unk = branch_info_unk;
-    assert(state->branch_info > state->cmds && "branch_info is expected to terminate cmds");
+
+    assert(state->branch_info > (char*)state->cmds &&
+        "branch_info is expected to terminate cmds");
 
     state->choice_ctx.choices = choices;
 
