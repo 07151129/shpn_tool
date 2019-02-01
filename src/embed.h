@@ -31,4 +31,10 @@ struct strtab_embed_ctx* strtab_embed_ctx_with_file(FILE* fin, size_t sz);
 void strtab_embed_ctx_free(struct strtab_embed_ctx* ctx);
 size_t strtab_embed_min_rom_sz();
 
+bool embed_script(uint8_t* rom, size_t rom_sz, size_t script_sz_max, size_t script_offs,
+        FILE* fscript, FILE* strtab_scr, FILE* strtab_menu,
+        const char* script_path,
+        size_t script_fsz, size_t strtab_scr_fsz, size_t strtab_menu_fsz,
+        uint32_t sz_to_patch_vma);
+
 #endif

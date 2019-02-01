@@ -12,6 +12,9 @@
 
 #include "defs.h"
 #include "embed.h"
+#include "script_as.h"
+#include "script_disass.h"
+#include "script_parse_ctx.h"
 #include "strtab.h"
 
 /**
@@ -199,5 +202,96 @@ struct strtab_embed_ctx* strtab_embed_ctx_with_file(FILE* fin, size_t sz) {
 
 done:
     free(fbuf);
+    return ret;
+}
+
+static bool patch_cksum_sz(uint8_t* rom, size_t rom_sz, size_t script_sz, uint32_t sz_to_patch_vma) {
+    if (VMA2OFFS(sz_to_patch_vma) + sizeof(uint32_t) > rom_sz) {
+        fprintf(stderr, "ROM too small for patching at 0x%x\n", sz_to_patch_vma);
+        return false;
+    }
+    if (script_sz > UINT32_MAX) {
+        fprintf(stderr, "Assembled script is too large for embedding\n");
+        return false;
+    }
+    *(uint32_t*)&rom[OFFS2VMA(sz_to_patch_vma)] = (uint32_t)rom_sz;
+    return true;
+}
+
+bool embed_script(uint8_t* rom, size_t rom_sz, size_t script_sz_max, size_t script_offs,
+        FILE* fscript, FILE* strtab_scr, FILE* strtab_menu,
+        const char* script_path,
+        size_t script_fsz, size_t strtab_scr_fsz, size_t strtab_menu_fsz,
+        uint32_t sz_to_patch_vma) {
+    bool ret = false;
+    struct script_parse_ctx* pctx = NULL;
+    iconv_t conv = (iconv_t)-1;
+    struct strtab_embed_ctx* ectx_scr = NULL, * ectx_menu = NULL;
+
+    if (!fscript)
+        return false;
+
+    rewind(fscript);
+
+    char* fbuf = malloc(script_fsz + 1);
+    if (!fbuf) {
+        perror("malloc");
+        goto done;
+    }
+
+    if (fread(fbuf, 1, script_fsz, fscript) < script_fsz) {
+        fprintf(stderr, "Failed to fread (error %d)\n", ferror(fscript));
+        goto done;
+    }
+    fbuf[script_fsz] = '\0';
+
+    pctx = malloc(sizeof(*pctx));
+    if (!pctx) {
+        perror("malloc");
+        goto done;
+    }
+
+    script_parse_ctx_init(pctx, fbuf);
+    pctx->filename = script_path;
+
+    bool parsed = script_parse_ctx_parse(pctx);
+    for (size_t i = 0; i < pctx->ndiags; i++)
+        fprintf(stderr, "%s: %zu: %zu: %s\n", script_path, pctx->diags[i].line, pctx->diags[i].col,
+            pctx->diags[i].msg);
+
+    if (!parsed)
+        goto done;
+
+    conv = conv_for_embedding();
+    if (conv == (iconv_t)-1)
+        goto done;
+
+    ectx_scr = strtab_embed_ctx_with_file(strtab_scr, strtab_scr_fsz);
+    ectx_menu = strtab_embed_ctx_with_file(strtab_menu, strtab_menu_fsz);
+    if (!ectx_scr || !ectx_menu)
+        goto done;
+
+    ret &= script_assemble(pctx, &rom[script_offs], script_sz_max, ectx_scr, ectx_menu, conv);
+    if (ret)
+        ret &= patch_cksum_sz(rom, rom_sz, script_sz((void*)&rom[script_offs]), sz_to_patch_vma);
+    if (ret)
+        ret &= embed_strtabs(rom, rom_sz, ectx_scr, ectx_menu, conv);
+
+done:
+    if (conv != (iconv_t)-1) {
+#ifdef HAS_ICONV
+        iconv_close(conv);
+#endif
+    }
+    if (fbuf)
+        free(fbuf);
+    if (pctx) {
+        script_parse_ctx_free(pctx);
+        free(pctx);
+    }
+    if (ectx_scr)
+        strtab_embed_ctx_free(ectx_scr);
+    if (ectx_menu)
+        strtab_embed_ctx_free(ectx_menu);
     return ret;
 }

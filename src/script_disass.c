@@ -16,15 +16,15 @@ static struct script_desc scripts[] = {
         .name = "Harry",
         .vma = 0x82316DC,
         .strtab_vma = 0x853E908,
-        .sz = 0xd3e4,
-        .cksum = 0xba64
+        .cksum = 0xba64,
+        .patch_info = {.size_vma = 0x80126A0}
     },
     {
         .name = "Cybil",
         .vma = 0x823EAC0,
         .strtab_vma = 0x853E908,
-        .sz = 0x4b59,
-        .cksum = 0xb971
+        .cksum = 0xb971,
+        .patch_info = {.size_vma = 0x80126AC}
     }
 };
 
@@ -92,7 +92,7 @@ static void dump_uint8(const uint8_t* b, const struct script_state* state, FILE*
 
 #define SCRIPT_CKSUM_SEED 0x5678
 
-static uint16_t cksum(const uint8_t* buf, size_t sz, uint32_t seed) {
+uint16_t script_cksum(const uint8_t* buf, size_t sz, uint32_t seed) {
     uint64_t ret = (uint64_t)(seed & UINT16_MAX) << 24;
     ret = (ret & ~(uint64_t)UINT32_MAX) | ((ret & (uint64_t)UINT32_MAX) >> 24);
 

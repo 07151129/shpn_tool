@@ -377,28 +377,29 @@ next_src:
     return false;
 }
 
-/* TODO: Check for parse errors somewhere in script_verbs */
-
 bool script_assemble(const struct script_parse_ctx* pctx, uint8_t* dst, size_t dst_sz,
-        struct strtab_embed_ctx* strs_sc, struct strtab_embed_ctx* strs_menu,
-        struct script_hdr* hdr, iconv_t conv) {
+        struct strtab_embed_ctx* strs_sc, struct strtab_embed_ctx* strs_menu, iconv_t conv) {
     assert(pctx->ndiags == 0 && "Trying to assemble script with parse errors");
     assert(HAS_ICONV && conv != (iconv_t)-1);
 
+    if (dst_sz < sizeof(struct script_hdr))
+        return false;
+
     struct jump_refs_ctx* refs = malloc(sizeof(struct jump_refs_ctx));
     if (!refs) {
-        fprintf(stderr, "Failed to allocate jump_refs_ctx\n");
         perror("malloc");
         return false;
     }
+    refs->nrefs = 0;
 
     struct script_as_ctx actx = {
         .pctx = pctx,
-        .dst = dst,
-        .dst_sz = dst_sz,
-        .dst_start = dst,
+        .dst = dst + sizeof(struct script_hdr),
+        .dst_sz = dst_sz - sizeof(struct script_hdr),
+        .dst_start = dst + sizeof(struct script_hdr),
         .strs_sc = strs_sc,
         .strs_menu = strs_menu,
+        .refs = refs,
         .branch_info_begin = NULL,
         .branch_info_end = NULL,
         .conv = conv
@@ -411,15 +412,17 @@ bool script_assemble(const struct script_parse_ctx* pctx, uint8_t* dst, size_t d
             break;
         }
 
-    if (!actx.branch_info_begin || !actx.branch_info_end) {
+    if (ret && (!actx.branch_info_begin || !actx.branch_info_end)) {
         log(true, NULL, pctx, "missing branch_info section");
         ret = false;
     }
-    *hdr = (struct script_hdr){
-        .branch_info_offs = actx.branch_info_begin - actx.dst_start,
-        .branch_info_sz = actx.branch_info_end - actx.branch_info_begin,
-        .bytes_to_end = actx.dst - actx.branch_info_end
-    };
+
+    if (ret)
+        *(struct script_hdr*)dst = (struct script_hdr){
+            .branch_info_offs = actx.branch_info_begin - actx.dst_start,
+            .branch_info_sz = actx.branch_info_end - actx.branch_info_begin,
+            .bytes_to_end = actx.dst - actx.branch_info_end
+        };
 
     free(refs);
     return ret;

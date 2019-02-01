@@ -36,8 +36,10 @@ struct script_desc {
     const char* name;
     uint32_t vma;
     uint32_t strtab_vma;
-    size_t sz;
     uint16_t cksum;
+    struct {
+        uint32_t size_vma;
+    } patch_info;
 };
 
 struct script_state {
@@ -122,5 +124,6 @@ uint32_t script_next_cmd_arg(uint16_t a1, uint16_t w, const struct script_state*
 
 /* minus sizeof(*hdr) */
 size_t script_sz(const struct script_hdr* hdr);
+uint16_t script_cksum(const uint8_t* buf, size_t sz, uint32_t seed);
 
 #endif
