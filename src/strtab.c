@@ -572,7 +572,7 @@ static const char* buf_for_esc(const char* esc, size_t* cons, size_t* prod) {
         *cons = end - esc + el;
 
         for (size_t i = 0; i < 4; i++) {
-            hbuf[i] = val & (0xff << (8 * i));
+            hbuf[i] = val & (0xffu << (8 * i));
             if (hbuf[i])
                 *prod += 1;
         }
