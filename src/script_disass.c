@@ -140,6 +140,7 @@ void script_state_init(struct script_state* state, const uint8_t* strtab, const 
 
     state->branch_info = branch_info;
     state->branch_info_unk = branch_info_unk;
+    assert(state->branch_info > state->cmds && "branch_info is expected to terminate cmds");
 
     state->choice_ctx.choices = choices;
 
@@ -245,7 +246,8 @@ bool script_dump(const uint8_t* rom, size_t rom_sz, const struct script_desc* de
     const struct script_hdr* hdr = (void*)&rom[VMA2OFFS(desc->vma)];
     static_assert(sizeof(*hdr) == sizeof(uint16_t[3]), "");
 
-    uint16_t cks = cksum((uint8_t*)hdr, desc->sz, SCRIPT_CKSUM_SEED);
+    uint16_t cks = script_cksum((uint8_t*)hdr, script_sz(hdr) + sizeof(struct script_hdr),
+        SCRIPT_CKSUM_SEED);
     if (cks != desc->cksum)
         fprintf(stderr, "Ignoring script checksum mismatch (computed 0x%x != 0x%x)\n",
             cks, desc->cksum);
@@ -282,13 +284,6 @@ phase:
 
         /* Start disassembling instructions at this address */
         while (true) {
-            state.cmd_offs = state.cmd_offs_next;
-            const union script_cmd* cmd = (void*)&((uint8_t*)cmds)[state.cmd_offs];
-
-            /* Skip the args buffer */
-            state.cmd_offs_next += sizeof(*cmd) + 2 * cmd->arg;
-            state.args = cmd + 1;
-
             if (ninst == SCRIPT_DUMP_NCMDS_MAX) {
                 /* Stop adding labels at this point */
                 if (!state.dumping)
@@ -297,18 +292,25 @@ phase:
                 return false;
             }
 
+            state.cmd_offs = state.cmd_offs_next;
+            const union script_cmd* cmd = (void*)&((uint8_t*)cmds)[state.cmd_offs];
+
             bool at_label = has_label(state.cmd_offs, &state);
             bool past_label = state.dumping &&
                 state.label_ctx.curr_label + 1 < state.label_ctx.nlabels &&
                 state.label_ctx.labels[state.label_ctx.curr_label + 1] <= state.cmd_offs;
 
-            if (cmd == cmd_end || /* Reached end of command buffer */
+            if (cmd >= (union script_cmd*)cmd_end || /* Reached end of command buffer */
                 (chk_label && at_label) || /* Encountered a label at this address  */
                 past_label) /* When dumping, we would have disassembled past next label */
                 break; /* Stop and pick another unprocessed label */
 
-            bool is_valid = is_valid_cmd(cmd);
-            uint16_t dis_ret = is_valid ? dis_cmd(cmd, &state, fout, at_label) : UINT16_MAX;
+            /* Skip the args buffer */
+            state.cmd_offs_next += sizeof(*cmd) + 2 * cmd->arg;
+            state.args = cmd + 1;
+
+            uint16_t dis_ret = is_valid_cmd(cmd) ?
+                dis_cmd(cmd, &state, fout, at_label) : UINT16_MAX;
 
             /* Cannot disassemble at this address */
             if (dis_ret == UINT16_MAX || state.cmd_offs_next < state.cmd_offs) {

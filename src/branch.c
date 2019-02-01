@@ -508,10 +508,17 @@ void branch_dst(const struct script_state* state, uint16_t* dst) {
     while (1) {
         union script_cmd* cmd = (void*)((uint8_t*)state->cmds + *dst);
 
-        /* Seek until next branch (op 5 or 6) or nop (7) */
-        if (cmd_can_be_branched_to(cmd)) {
-            skip_cmd(state, dst);
-            continue;
+        /* This will place a label at branch_info, which will not be disassembled */
+        if ((char*)cmd >= state->branch_info) {
+            fprintf(stderr, "Cannot find branch destination for op at 0x%tx\n",
+                (uint8_t*)cmd - (uint8_t*)state->cmds);
+            break;
         }
+
+        /* Seek until next branch (op 5 or 6) or nop (7) */
+        if (!cmd_can_be_branched_to(cmd))
+            skip_cmd(state, dst);
+        else
+            break;
     }
 }
