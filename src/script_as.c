@@ -99,7 +99,7 @@ static bool emit_arg_num(const struct script_stmt* stmt, const struct script_arg
 static const struct script_stmt* find_labeled_stmt(const struct script_parse_ctx* pctx,
         const char* label) {
     for (size_t i = 0; i < pctx->nstmts; i++)
-        if (!strcmp(pctx->stmts[i].label, label))
+        if (pctx->stmts[i].label && !strcmp(pctx->stmts[i].label, label))
             return &pctx->stmts[i];
     return NULL;
 }
