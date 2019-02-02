@@ -62,10 +62,10 @@ int yyerror(YYLTYPE* llocp, struct script_parse_ctx* ctx, yyscan_t scanner, cons
 %locations
 
 %initial-action /* YYLOC @$ */ {
-    @$.first_column = 0;
-    @$.last_column = 0;
-    @$.first_line = 0;
-    @$.last_line = 0;
+    @$.first_column = 1;
+    @$.last_column = 1;
+    @$.first_line = 1;
+    @$.last_line = 1;
 }
 
 %param {struct script_parse_ctx* ctx} {yyscan_t scanner}
@@ -89,7 +89,7 @@ int yyerror(YYLTYPE* llocp, struct script_parse_ctx* ctx, yyscan_t scanner, cons
 %token <uval> NUM
 
 /* Non-terminals */
-%type <stmt> STMT
+%type <stmt> STMT ANY_STMT
 %type <arg_list> ARGS
 %type <arg> ARG
 %type <byte> BYTE_STMT;
@@ -99,21 +99,18 @@ int yyerror(YYLTYPE* llocp, struct script_parse_ctx* ctx, yyscan_t scanner, cons
 /* If we encounter an error here, keep parsing. We'll abort later if we see the diags */
 
 STMTS:
-    STMT {
-        if (!script_ctx_add_stmt(ctx, &$1)) {
-            yyerror(&@$, ctx, scanner, "Too many statements");
-            assert(false);
-        }
-    } |
-/* Labeled */
-    ID ':' STMT {
-        $3.label = strdup($1);
-        if (!script_ctx_add_stmt(ctx, &$3))
-            yyerror(&@$, ctx, scanner, "Too many statements");
-    } | STMTS STMT {
+    STMTS ANY_STMT {
         if (!script_ctx_add_stmt(ctx, &$2))
             yyerror(&@$, ctx, scanner, "Too many statements");
-    } | ';' ;
+    } | ';' | %empty ;
+
+ANY_STMT:
+    STMT {
+        $$ = $1;
+    } | ID ':' STMT { /* Labeled */
+        $3.label = strdup($1);
+        $$ = $3;
+    };
 
 STMT: BEGIN_END_STMT {
         $$ = (struct script_stmt){

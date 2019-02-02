@@ -28,7 +28,7 @@ uint 0[xX][[:xdigit:]]+|[[:digit:]]+
 [():.,;\"] {return yytext[0];}
 
 "/*" {if (!comment(yylloc, yyextra, yyscanner)) return yytext[0];}
-"//".* { }
+"//".* { };
 
 [ \t\n]+ { }
 "byte" return SCRIPT_BYTE;
