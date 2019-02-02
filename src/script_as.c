@@ -263,6 +263,8 @@ static bool emit_op(const struct script_stmt* stmt, struct script_as_ctx* actx) 
 static bool branch_src(const struct script_stmt* stmt,
     const struct script_parse_ctx* pctx, size_t* bsrc_idx) {
     for (size_t i = *bsrc_idx; i < pctx->nstmts; i++) {
+        *bsrc_idx = i;
+
         const struct script_stmt* src = &pctx->stmts[i];
         if (src->ty != STMT_TY_OP)
             continue;
@@ -271,7 +273,6 @@ static bool branch_src(const struct script_stmt* stmt,
             for (int j = 0; j < src->op.args.nargs; j++)
                 if (src->op.args.args[j].type == ARG_TY_LABEL &&
                     !strcmp(src->op.args.args[j].label, stmt->label)) {
-                *bsrc_idx = i;
                 return true;
             }
         }
