@@ -261,7 +261,7 @@ bool embed_script(uint8_t* rom, size_t rom_sz, size_t script_sz_max, size_t scri
 
     bool parsed = script_parse_ctx_parse(pctx);
     for (size_t i = 0; i < pctx->ndiags; i++)
-        fprintf(stderr, "%s: %zu: %zu: %s\n", script_path, pctx->diags[i].line, pctx->diags[i].col,
+        fprintf(stderr, "%s:%zu:%zu: %s\n", script_path, pctx->diags[i].line, pctx->diags[i].col,
             pctx->diags[i].msg);
 
     if (!parsed)

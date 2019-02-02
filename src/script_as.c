@@ -30,7 +30,7 @@ FMT_PRINTF(4, 5)
 static void log(bool err, const struct script_stmt* stmt, const struct script_parse_ctx* pctx,
         const char* msg, ...) {
     if (pctx->filename)
-        fprintf(stderr, "%s: ", pctx->filename);
+        fprintf(stderr, "%s:", pctx->filename);
     if (stmt)
         fprintf(stderr, "%zu: ", stmt->line);
     fprintf(stderr, "%s: ", err ? "error" : "warning");
