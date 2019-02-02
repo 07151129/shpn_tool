@@ -27,7 +27,7 @@ static void usage() {
                     "\nusage: <ROM> <verb> [...]\n\n"
                     "ROM is the AGB-ASHJ ROM path\n"
                     "Supported verbs:\n"
-                    "script name <dump | embed>\n"
+                    "script <name> <dump | embed>\n"
                     "\tdump [out] -- Dump script to file at \"out\" or to stdout\n"
                     "\tembed <in> <strtab> <menu> <out> -- Embed script at \"in\" with strtab at "
                     "\"strtab\", menu strtab at \"menu\" into \"out\" or into \"ROM\""

@@ -332,8 +332,26 @@ phase:
     /* Second phase complete */
     if (state.dumping) {
         /* Dump branch info and remaining bytes */
-        const uint8_t* end = (uint8_t*)cmd_end + hdr->branch_info_sz+ hdr->bytes_to_end;
-        for (const uint8_t* cmd = (uint8_t*)cmds + state.cmd_offs; cmd < end; ) {
+        const uint8_t* end = (uint8_t*)cmd_end + hdr->branch_info_sz + hdr->bytes_to_end;
+        const uint8_t* cmd = (uint8_t*)cmds + state.cmd_offs;
+
+        if (cmd < end)
+            fprintf(fout, ".begin branch_info\n");
+
+        bool past_info = false;
+        while (cmd < end) {
+            if (!past_info && cmd + sizeof(uint32_t) > end - hdr->bytes_to_end) {
+                while (cmd < end - hdr->bytes_to_end) {
+                    dump_uint8(cmd, &state, fout);
+                    state.cmd_offs++;
+                    cmd++;
+                }
+
+                fprintf(fout, ".end branch_info\n");
+                past_info = true;
+                continue;
+            }
+
             if (end - cmd >= (ptrdiff_t)sizeof(union script_cmd)) {
                 dump_uint32((union script_cmd*)cmd, &state, fout);
                 cmd += sizeof(union script_cmd);

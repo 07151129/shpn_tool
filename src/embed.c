@@ -279,9 +279,10 @@ bool embed_script(uint8_t* rom, size_t rom_sz, size_t script_sz_max, size_t scri
         goto done;
 
     ret = script_assemble(pctx, &rom[script_offs], script_sz_max, ectx_scr, ectx_menu, conv);
-    ret &= patch_cksum_sz(rom, rom_sz, script_sz((void*)&rom[script_offs]) + sizeof(struct script_hdr),
-        sz_to_patch_vma);
-    ret &= embed_strtabs(rom, rom_sz, ectx_scr, ectx_menu, conv);
+    ret = ret &&
+        patch_cksum_sz(rom, rom_sz, script_sz((void*)&rom[script_offs]) + sizeof(struct script_hdr),
+            sz_to_patch_vma) &&
+        embed_strtabs(rom, rom_sz, ectx_scr, ectx_menu, conv);
 
 done:
     if (conv != (iconv_t)-1) {
