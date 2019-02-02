@@ -17,6 +17,8 @@ bool strtab_dec_str(const uint8_t* strtab, uint32_t idx, char* out, size_t out_s
 #define U8_TO_SJIS_MIN_SZ(len) (2 * (len) - 2 * (len) / 3 + 1) /* Bound for U8 -> SJIS */
 #define MSG_OFFS_MAX 0xffffff
 
+#define STRTAB_MENU_VMA 0x857546C /* FIXME: Hardcoded for now */
+
 /**
  * Given a set of nstrs embeddable strings pointed to by strs, produce embeddable strtab at
  * dst of size *nwritten bytes.

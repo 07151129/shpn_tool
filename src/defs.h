@@ -9,8 +9,6 @@
 #define VMA2OFFS(vma) (assert((vma) >= ROM_BASE && (vma) - ROM_BASE <= 0x1ffffff), (vma) - ROM_BASE)
 #define OFFS2VMA(offs) (assert((offs) <= 0x1ffffff), (offs) + ROM_BASE)
 
-#define STRTAB_MENU_VMA 0x857546C /* FIXME: Hardcoded for now */
-
 #ifndef HAS_ICONV
 typedef int iconv_t;
 #else

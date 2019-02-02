@@ -362,7 +362,7 @@ static void dump_dict(const struct dict_node_inter* root) {
         fprintf(stderr, "%c\n", root->node.val);
 }
 
-#define NBYTES_PER_CHAR_MAX 2
+#define NBYTES_PER_CHAR_MAX 1
 struct char_bits {
     uint8_t bytes[NBYTES_PER_CHAR_MAX];
     size_t nbits;
@@ -370,7 +370,7 @@ struct char_bits {
 
 static_assert(CHAR_BIT == 8, "Where are we?");
 
-static bool bits_for_char(char c, struct char_bits* dst, size_t nbytes_max, size_t dict_sz) {
+static bool bits_for_char(char c, struct char_bits* dst, size_t dict_sz) {
     bool leaf_found = false;
     size_t leaf_idx = 0;
 
@@ -390,9 +390,6 @@ static bool bits_for_char(char c, struct char_bits* dst, size_t nbytes_max, size
     assert(dict[leaf_idx].has_parent);
 
     while (dict[leaf_idx].has_parent) {
-        if (dst->nbits / 8 > nbytes_max)
-            return false;
-
         size_t byte_idx = dst->nbits / 8;
 
         const struct dict_node_inter* parent = &dict[dict[leaf_idx].parent_idx];
@@ -403,9 +400,10 @@ static bool bits_for_char(char c, struct char_bits* dst, size_t nbytes_max, size
 
         leaf_idx = dict[leaf_idx].parent_idx;
         dst->nbits++;
-    }
 
-    // fprintf(stderr, "%c: 0x%x, nbits = %zu\n", c, dst->bytes[0], dst->nbits);
+        if (dst->nbits / 8 > NBYTES_PER_CHAR_MAX)
+            return false;
+    }
 
     return true;
 }
@@ -414,20 +412,29 @@ bool make_strtab(const uint8_t** strs, size_t nstrs, uint8_t* dst, size_t dst_sz
     size_t dict_nentries;
     size_t dst_sz_init = dst_sz;
 
+    if (nstrs == 0)
+        return false;
+
     if (!make_dict(strs, nstrs, &dict_nentries))
         return false;
 
     // dump_dict(dict);
 
-    if (dict_nentries * sizeof(struct dict_node) + sizeof(struct strtab_header) > dst_sz)
+    if (dict_nentries * sizeof(struct dict_node) + sizeof(struct strtab_header) > dst_sz) {
+        fprintf(stderr, "Out of space writing dictionary\n");
         return false;
+    }
 
     struct char_bits bits_for_chars[UINT8_MAX + 1];
+    for (size_t i = 0; i < sizeof(bits_for_chars) / sizeof(*bits_for_chars); i++)
+        bits_for_chars[i].nbits = 0;
 
     for (size_t i = 0; i < nstrs; i++)
         for (const uint8_t* str = strs[i]; ; str++) {
-            if (!bits_for_char(*str, &bits_for_chars[(size_t)*str], NBYTES_PER_CHAR_MAX, dict_nentries))
+            if (!bits_for_char(*str, &bits_for_chars[(size_t)*str], dict_nentries)) {
+                fprintf(stderr, "Failed to encode char 0x%x\n", *str);
                 return false;
+            }
             if (!*str)
                 break;
         }
@@ -455,8 +462,10 @@ bool make_strtab(const uint8_t** strs, size_t nstrs, uint8_t* dst, size_t dst_sz
 
     dst_sz -= dict_nentries * sizeof(struct dict_node) + sizeof(struct strtab_header);
 
-    if (3 * dict_nentries > dst_sz)
+    if (3 * dict_nentries > dst_sz) {
+        fprintf(stderr, "Out of space writing message offsets\n");
         return false;
+    }
 
     uint8_t* msg_offsets = dst + ((struct strtab_header*)dst)->msgs_offs;
     uint8_t* msg = msg_offsets + 3 * nstrs;
@@ -469,10 +478,12 @@ bool make_strtab(const uint8_t** strs, size_t nstrs, uint8_t* dst, size_t dst_sz
             return false;
 
         /* Write a three-byte offset from msgs to the message */
-        uint32_t msg_offs = (msg - msg_offsets) & 0xffffff;
+        uint32_t msg_offs = (msg - msg_offsets) & MSG_OFFS_MAX;
 
-        if (msg_offs > MSG_OFFS_MAX)
+        if (msg_offs > MSG_OFFS_MAX) {
+            fprintf(stderr, "Message offset 0x%x is too large to be encoded\n", msg_offs);
             return false;
+        }
 
         memcpy(msg_offsets + 3 * i, &msg_offs, 3);
         dst_sz -= 3;
@@ -485,6 +496,8 @@ bool make_strtab(const uint8_t** strs, size_t nstrs, uint8_t* dst, size_t dst_sz
 
             for (size_t j = 0; j < bits.nbits; j++) {
                 size_t bit_pos = bits.nbits - j % 8 - 1;
+
+                assert(j / 8 <= sizeof(bits.bytes));
 
                 // fprintf(stderr, "%c: bits.bytes[%zu] & (1 << %zu) = 0x%x\n", *str, j/8, bit_pos,
                     // bits.bytes[j / 8] & (1 << bit_pos));
@@ -499,8 +512,10 @@ bool make_strtab(const uint8_t** strs, size_t nstrs, uint8_t* dst, size_t dst_sz
                 if (nbits > 0 && nbits % 8 == 0) {
                     // fprintf(stderr, "writing val=0x%x\n", val);
                     *msg++ = val;
-                    if (dst_sz < 1)
+                    if (dst_sz < 1) {
+                        fprintf(stderr, "Out of space writing bits for string at %zu\n", i);
                         return false;
+                    }
                     val = 0;
                     dst_sz--;
                 }

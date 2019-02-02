@@ -18,7 +18,7 @@ struct strtab_embed_ctx {
 };
 
 #define STRTAB_SCRIPT_SZ 0x36b64ul
-#define STRTAB_MENU_SZ 0xcf0ul
+#define STRTAB_MENU_SZ 0x14b68ul /* FIXME: What's what actual size? */
 
 static_assert(STRTAB_MENU_SZ <= STRTAB_SCRIPT_SZ, "Unexpected strtab sizes");
 
@@ -35,6 +35,6 @@ bool embed_script(uint8_t* rom, size_t rom_sz, size_t script_sz_max, size_t scri
         FILE* fscript, FILE* strtab_scr, FILE* strtab_menu,
         const char* script_path,
         size_t script_fsz, size_t strtab_scr_fsz, size_t strtab_menu_fsz,
-        uint32_t sz_to_patch_vma);
+        uint32_t strtab_scr_vma, uint32_t sz_to_patch_vma);
 
 #endif

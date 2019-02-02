@@ -171,7 +171,9 @@ static bool emit_arg_str(const struct script_stmt* stmt, const struct script_arg
     actx->dst += sizeof(i);
     actx->dst_sz -= sizeof(i);
 
-    strs->strs[i] = mk_strtab_str(arg->str, actx->conv);
+    strs->strs[i] = strdup(arg->str);
+    strs->allocated[i] = true;
+
     if (!strs->strs[i]) {
         log(true, stmt, actx->pctx, "failed to encode string");
         return false;
@@ -201,7 +203,10 @@ static bool emit_arg_numbered_str(const struct script_stmt* stmt, const struct s
 
     if (strs->allocated[arg->numbered_str.num] && strs->strs[arg->numbered_str.num])
         free(strs->strs[arg->numbered_str.num]);
-    strs->strs[arg->numbered_str.num] = mk_strtab_str(arg->numbered_str.str, actx->conv);
+
+    strs->strs[arg->numbered_str.num] = strdup(arg->numbered_str.str);
+    strs->allocated[arg->numbered_str.num] = true;
+
     if (!strs->strs[arg->numbered_str.num]) {
         log(true, stmt, actx->pctx, "failed to encode string");
         return false;

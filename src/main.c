@@ -269,7 +269,8 @@ static bool script_verbs(uint8_t* rom, size_t sz) {
                 VMA2OFFS(desc->vma),
                 fin, strtab_scr, strtab_menu,
                 opts.in_path,
-                sz_script, sz_strtab_scr, sz_strtab_menu, desc->patch_info.size_vma);
+                sz_script, sz_strtab_scr, sz_strtab_menu,
+                desc->strtab_vma, desc->patch_info.size_vma);
 
         if (ret) {
             ret = fwrite(rom_cpy, 1, sz, fout) == sz;

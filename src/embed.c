@@ -93,9 +93,14 @@ bool embed_strtabs(uint8_t* rom, size_t rom_sz, struct strtab_embed_ctx* ectx_sc
      * FIXME: Maximum sizes hardcoded for now. If strtab doesn't fit in the ROM, we should
      * try to embed strtab at some other location and patch pointers to it instead of aborting.
      */
-    if (!embed_strtab(rom, rom_sz, ectx_script, STRTAB_SCRIPT_SZ, conv) ||
-        !embed_strtab(rom, rom_sz, ectx_menu, STRTAB_MENU_SZ, conv))
+    if (!embed_strtab(rom, rom_sz, ectx_script, STRTAB_SCRIPT_SZ, conv)) {
+        fprintf(stderr, "Failed to embed script strtab\n");
         return false;
+    }
+    if (!embed_strtab(rom, rom_sz, ectx_menu, STRTAB_MENU_SZ, conv)) {
+        fprintf(stderr, "Failed to embed menu strtab\n");
+        return false;
+    }
     return true;
 }
 
@@ -177,7 +182,7 @@ struct strtab_embed_ctx* strtab_embed_ctx_with_file(FILE* fin, size_t sz) {
 
                 memcpy(ret->strs[sidx], &fbuf[cidx], len);
                 ret->strs[sidx][len] = '\0';
-                ret->nstrs = sidx > ret->nstrs ? sidx : ret->nstrs;
+                ret->nstrs = sidx + 1 > ret->nstrs ? sidx + 1 : ret->nstrs;
                 ret->allocated[sidx] = true;
 
                 i++;
@@ -198,7 +203,6 @@ struct strtab_embed_ctx* strtab_embed_ctx_with_file(FILE* fin, size_t sz) {
     for (size_t i = 0; i < ret->nstrs; i++)
         if (!ret->allocated[i])
             ret->strs[i] = "";
-    ret->nstrs++;
 
 done:
     free(fbuf);
@@ -214,7 +218,8 @@ static bool patch_cksum_sz(uint8_t* rom, size_t rom_sz, size_t script_sz, uint32
         fprintf(stderr, "Assembled script is too large for embedding\n");
         return false;
     }
-    *(uint32_t*)&rom[OFFS2VMA(sz_to_patch_vma)] = (uint32_t)rom_sz;
+    // fprintf(stderr, "patching script sz to 0x%x at vma 0x%x\n", (uint32_t)script_sz, sz_to_patch_vma);
+    *(uint32_t*)&rom[VMA2OFFS(sz_to_patch_vma)] = (uint32_t)script_sz;
     return true;
 }
 
@@ -222,7 +227,7 @@ bool embed_script(uint8_t* rom, size_t rom_sz, size_t script_sz_max, size_t scri
         FILE* fscript, FILE* strtab_scr, FILE* strtab_menu,
         const char* script_path,
         size_t script_fsz, size_t strtab_scr_fsz, size_t strtab_menu_fsz,
-        uint32_t sz_to_patch_vma) {
+        uint32_t strtab_scr_vma, uint32_t sz_to_patch_vma) {
     bool ret = false;
     struct script_parse_ctx* pctx = NULL;
     iconv_t conv = (iconv_t)-1;
@@ -267,15 +272,16 @@ bool embed_script(uint8_t* rom, size_t rom_sz, size_t script_sz_max, size_t scri
         goto done;
 
     ectx_scr = strtab_embed_ctx_with_file(strtab_scr, strtab_scr_fsz);
+    ectx_scr->rom_vma = strtab_scr_vma;
     ectx_menu = strtab_embed_ctx_with_file(strtab_menu, strtab_menu_fsz);
+    ectx_menu->rom_vma = STRTAB_MENU_VMA;
     if (!ectx_scr || !ectx_menu)
         goto done;
 
-    ret &= script_assemble(pctx, &rom[script_offs], script_sz_max, ectx_scr, ectx_menu, conv);
-    if (ret)
-        ret &= patch_cksum_sz(rom, rom_sz, script_sz((void*)&rom[script_offs]), sz_to_patch_vma);
-    if (ret)
-        ret &= embed_strtabs(rom, rom_sz, ectx_scr, ectx_menu, conv);
+    ret = script_assemble(pctx, &rom[script_offs], script_sz_max, ectx_scr, ectx_menu, conv);
+    ret &= patch_cksum_sz(rom, rom_sz, script_sz((void*)&rom[script_offs]) + sizeof(struct script_hdr),
+        sz_to_patch_vma);
+    ret &= embed_strtabs(rom, rom_sz, ectx_scr, ectx_menu, conv);
 
 done:
     if (conv != (iconv_t)-1) {
