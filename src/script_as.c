@@ -70,7 +70,7 @@ static bool emit_byte(const struct script_stmt* stmt, struct script_as_ctx* actx
         log(true, stmt, actx->pctx, "too many bytes to emit");
         return false;
     }
-    if ((1 << (8 * stmt->byte.n)) - 1 < stmt->byte.val) {
+    if ((1ull << (8 * stmt->byte.n)) - 1 < stmt->byte.val) {
         log(true, stmt, actx->pctx, "0x%x takes more than %d bytes to store", stmt->byte.val,
             stmt->byte.n);
         return false;
