@@ -77,16 +77,22 @@ static uint16_t dis_cmd(const union script_cmd* cmd, struct script_state* state,
 
 bool has_label(uint16_t offs, const struct script_state* state);
 
-static void dump_uint32(const union script_cmd* cmd, const struct script_state* state, FILE* fout) {
+static void dump_uint32(const union script_cmd* cmd, bool at_label,
+        const struct script_state* state, FILE* fout) {
     /* Allow dumping valid code as bytes as well as interpretation doesn't matter at that point */
     // assert(!is_valid_cmd(cmd) && "Trying to dump valid cmd as uint32");
 
     /* Some dead code might perform jumps that make no sense, so ignore this for now */
     // assert(!has_label(state->cmd_offs, state) && "Branch to unrecognised cmd");
+    if (at_label)
+        fprintf(fout, "L_0x%x:\n", state->cmd_offs);
     fprintf(fout, ".4byte 0x%x // 0x%x\n", cmd->ival, state->cmd_offs);
 }
 
-static void dump_uint8(const uint8_t* b, const struct script_state* state, FILE* fout) {
+static void dump_uint8(const uint8_t* b, bool at_label,
+        const struct script_state* state, FILE* fout) {
+    if (at_label)
+        fprintf(fout, "L_0x%x:\n", state->cmd_offs);
     fprintf(fout, ".byte 0x%x // 0x%x\n", *b, state->cmd_offs);
 }
 
@@ -318,7 +324,7 @@ phase:
             if (dis_ret == UINT16_MAX || state.cmd_offs_next < state.cmd_offs) {
                 /* Just dump it as uint32, we don't really care what it does */
                 if (state.dumping)
-                    dump_uint32(cmd, &state, fout);
+                    dump_uint32(cmd, at_label, &state, fout);
                 /* In either phase, don't trust the encoded cmd_offs_next */
                 state.cmd_offs_next = state.cmd_offs + sizeof(*cmd);
             }
@@ -342,7 +348,7 @@ phase:
         while (cmd < end) {
             if (!past_info && cmd + sizeof(uint32_t) > end - hdr->bytes_to_end) {
                 while (cmd < end - hdr->bytes_to_end) {
-                    dump_uint8(cmd, &state, fout);
+                    dump_uint8(cmd, false, &state, fout);
                     state.cmd_offs++;
                     cmd++;
                 }
@@ -353,11 +359,11 @@ phase:
             }
 
             if (end - cmd >= (ptrdiff_t)sizeof(union script_cmd)) {
-                dump_uint32((union script_cmd*)cmd, &state, fout);
+                dump_uint32((union script_cmd*)cmd, false, &state, fout);
                 cmd += sizeof(union script_cmd);
                 state.cmd_offs += sizeof(union script_cmd);
             } else {
-                dump_uint8(cmd, &state, fout);
+                dump_uint8(cmd, false, &state, fout);
                 cmd++;
                 state.cmd_offs++;
             }
