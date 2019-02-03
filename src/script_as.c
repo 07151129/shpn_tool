@@ -245,13 +245,15 @@ static bool emit_op(const struct script_stmt* stmt, struct script_as_ctx* actx) 
         log(true, stmt, actx->pctx, "command too large to store");
         return false;
     }
-    *(union script_cmd*)actx->dst = cmd;
-    actx->dst += sizeof(union script_cmd);
-    actx->dst_sz -= sizeof(union script_cmd);
+    // fprintf(stderr, "OP at line %zu at offs 0x%tx\n", stmt->line, actx->dst - actx->dst_start);
 
     /* For branch the second argument is not emitted */
     if (cmd_is_branch(&cmd))
         cmd.arg--;
+
+    *(union script_cmd*)actx->dst = cmd;
+    actx->dst += sizeof(union script_cmd);
+    actx->dst_sz -= sizeof(union script_cmd);
 
     for (size_t i = 0; i < cmd.arg; i++)
         if (!emit_arg(stmt, &stmt->op.args.args[i], actx))
