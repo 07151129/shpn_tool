@@ -111,7 +111,7 @@ static bool emit_arg_label(const struct script_stmt* stmt, const struct script_a
     if (!cmd_is_jump(&(union script_cmd){.op = stmt->op.idx}))
         return true;
 
-    uint16_t bdst = 0;
+    uint16_t bdst = UINT16_MAX;
 
     /**
      * Check if destination label occured before the jump. In that case, it must have been added
@@ -128,7 +128,7 @@ static bool emit_arg_label(const struct script_stmt* stmt, const struct script_a
      * try to emit statement at that label.
      */
     *(uint16_t*)actx->dst = bdst;
-    if (bdst == 0) {
+    if (bdst == UINT16_MAX) {
         const struct script_stmt* labeled_stmt = find_labeled_stmt(actx->pctx, arg->label);
         if (!labeled_stmt) {
             log(true, stmt, actx->pctx, "label %s not found", arg->label);
