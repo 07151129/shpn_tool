@@ -385,6 +385,8 @@ static bool bits_for_char(char c, struct char_bits* dst, size_t dict_sz) {
 
     while (dict[leaf_idx].has_parent) {
         size_t byte_idx = dst->nbits / 8;
+        if (byte_idx >= NBYTES_PER_CHAR_MAX)
+            return false;
 
         const struct dict_node_inter* parent = &dict[dict[leaf_idx].parent_idx];
         if (parent->node.offs_l == leaf_idx)
@@ -394,14 +396,14 @@ static bool bits_for_char(char c, struct char_bits* dst, size_t dict_sz) {
 
         leaf_idx = dict[leaf_idx].parent_idx;
         dst->nbits++;
-
-        if (dst->nbits / 8 > NBYTES_PER_CHAR_MAX)
-            return false;
     }
 
     return true;
 }
 
+/**
+ * FIXME: String deduplication: equal strings should have equal msg entries and equal msg offsets.
+ */
 bool make_strtab(const uint8_t** strs, size_t nstrs, uint8_t* dst, size_t dst_sz, size_t* nwritten) {
     size_t dict_nentries;
     size_t dst_sz_init = dst_sz;
