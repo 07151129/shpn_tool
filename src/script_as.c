@@ -386,9 +386,8 @@ next_src:
 }
 
 bool script_assemble(const struct script_parse_ctx* pctx, uint8_t* dst, size_t dst_sz,
-        struct strtab_embed_ctx* strs_sc, struct strtab_embed_ctx* strs_menu, iconv_t conv) {
+        struct strtab_embed_ctx* strs_sc, struct strtab_embed_ctx* strs_menu) {
     assert(pctx->ndiags == 0 && "Trying to assemble script with parse errors");
-    assert(HAS_ICONV && conv != (iconv_t)-1);
 
     if (dst_sz < sizeof(struct script_hdr))
         return false;
@@ -409,8 +408,7 @@ bool script_assemble(const struct script_parse_ctx* pctx, uint8_t* dst, size_t d
         .strs_menu = strs_menu,
         .refs = refs,
         .branch_info_begin = NULL,
-        .branch_info_end = NULL,
-        .conv = conv
+        .branch_info_end = NULL
     };
 
     bool ret = true;
