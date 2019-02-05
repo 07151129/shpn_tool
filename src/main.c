@@ -361,6 +361,7 @@ static bool strtab_verbs(const uint8_t* rom, size_t sz) {
             fprintf(stderr, "Failed to process %s for embedding\n", opts.in_path);
             goto done;
         }
+        ectx->rom_vma = strtab_vma;
 
         uint8_t* rom_cpy = malloc(sz);
         if (!rom_cpy)
@@ -368,7 +369,7 @@ static bool strtab_verbs(const uint8_t* rom, size_t sz) {
         else {
             memcpy(rom_cpy, rom, sz);
             iconv_t conv = conv_for_embedding();
-            if (conv != (iconv_t)-1 || !embed_strtab(rom_cpy, sz, ectx, strtab_sz, conv))
+            if (conv == (iconv_t)-1 || !embed_strtab(rom_cpy, sz, ectx, strtab_sz, conv))
                 fprintf(stderr, "Failed to embed strtab from %s\n", opts.in_path);
             else if (fwrite(rom_cpy, 1, sz, fout) < sz)
                 perror("fwrite");
