@@ -313,15 +313,16 @@ static bool emit_stmt(const struct script_stmt* stmt, struct script_as_ctx* actx
                         "jump to this location from line %zu cannot be encoded",
                         actx->refs->refs[i].jump->line);
                 }
-                *(uint16_t*)(actx->refs->refs[i].emitted_jump + sizeof(union script_cmd)) =
+                *(uint16_t*)actx->refs->refs[i].emitted_jump =
                     (uint16_t)(actx->dst - actx->dst_start);
             }
         }
 
         size_t bsrc_idx = 0;
+        bool checked_refs = false;
 
 next_src:
-        if (!branch_src(stmt, actx->pctx, &bsrc_idx) && !bsrc_idx)
+        if (!branch_src(stmt, actx->pctx, &bsrc_idx) && !checked_refs)
             log(false, stmt, actx->pctx, "label %s unreferenced", stmt->label);
         else if (cmd_is_branch(&(union script_cmd){.op = actx->pctx->stmts[bsrc_idx].op.idx})) {
             /* Check if stmt is reachable for branching from src */
