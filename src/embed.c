@@ -167,9 +167,13 @@ struct strtab_embed_ctx* strtab_embed_ctx_with_file(FILE* fin, size_t sz) {
             for (cidx = i; fbuf[cidx] == ' '; cidx++)
                 ;
         } else {
-            if (fbuf[i] != '\n')
+            /* Seek until end of file or newline, whichever earlier */
+            if (i != sz - 1 && fbuf[i] != '\n')
                 i++;
             else {
+                /* If we haven't encountered newline, copy until end of file */
+                if (i == sz - 1)
+                    i = sz;
                 assert((size_t)i >= cidx);
                 size_t len = i - cidx;
                 ret->strs[sidx] = malloc(len + 1);
