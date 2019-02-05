@@ -10,8 +10,9 @@
 #include "defs.h"
 
 #define EMBED_STRTAB_SZ 10000
+#define EMBED_STR_PLACEHOLDER ""
 struct strtab_embed_ctx {
-    size_t nstrs;
+    size_t nstrs; /* in total incl. placeholders */
     char* strs[EMBED_STRTAB_SZ];
     uint32_t rom_vma;
     bool allocated[EMBED_STRTAB_SZ];

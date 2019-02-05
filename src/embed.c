@@ -206,7 +206,7 @@ struct strtab_embed_ctx* strtab_embed_ctx_with_file(FILE* fin, size_t sz) {
      */
     for (size_t i = 0; i < ret->nstrs; i++)
         if (!ret->allocated[i])
-            ret->strs[i] = "";
+            ret->strs[i] = EMBED_STR_PLACEHOLDER;
 
 done:
     free(fbuf);
