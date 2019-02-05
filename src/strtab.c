@@ -51,13 +51,9 @@ bool strtab_dec_msg(const struct dict_node* dict, const uint8_t** msg, uint8_t* 
     while (true) { /* While msg not decoded */
         const struct dict_node* n = dict;
 
-        if (*len >= maxlen)
-            return false;
-
 err:
         if (*len >= maxlen) {
             *err = 1;
-            *dst = '\0';
             return false;
         }
 
@@ -133,13 +129,11 @@ bool strtab_dec_str(const uint8_t* strtab, uint32_t idx, char* out, size_t out_s
     int err = 0;
 
     while (strtab_dec_msg((struct dict_node*)&strtab[hdr->dict_offs], &msg, &bits, &nbits, &buf[len],
-        &len, sizeof(buf), &err)) {
-        /* Do not continue if we're out of space */
-        if (err) {
-            buf[len] = 0;
-            return false;
-        }
-    }
+        &len, sizeof(buf), &err))
+        ;
+    /* Do not continue if we're out of space */
+    if (err)
+        return false;
 
     buf[len] = 0;
 
