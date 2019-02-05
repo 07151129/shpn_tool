@@ -75,7 +75,8 @@ static bool emit_byte(const struct script_stmt* stmt, struct script_as_ctx* actx
             stmt->byte.n);
         return false;
     }
-    *(uint32_t*)actx->dst = stmt->byte.val;
+
+    memcpy(actx->dst, &stmt->byte.val, stmt->byte.n);
     actx->dst += stmt->byte.n;
     actx->dst_sz -= stmt->byte.n;
     return true;
@@ -90,7 +91,7 @@ static bool emit_arg_num(const struct script_stmt* stmt, const struct script_arg
         return false;
     }
 
-    *(uint16_t*)actx->dst = arg->num;
+    memcpy(actx->dst, &arg->num, sizeof(arg->num));
     actx->dst += sizeof(uint16_t);
     actx->dst_sz -= sizeof(uint16_t);
     return true;
@@ -127,7 +128,7 @@ static bool emit_arg_label(const struct script_stmt* stmt, const struct script_a
      * If destination label is somewhere ahead, write zero for now and overwrite the value when we
      * try to emit statement at that label.
      */
-    *(uint16_t*)actx->dst = bdst;
+    memcpy(actx->dst, &bdst, sizeof(bdst));
     if (bdst == UINT16_MAX) {
         const struct script_stmt* labeled_stmt = find_labeled_stmt(actx->pctx, arg->label);
         if (!labeled_stmt) {
@@ -167,15 +168,16 @@ static bool emit_arg_str(const struct script_stmt* stmt, const struct script_arg
         return false;
     }
 
-    *(uint16_t*)actx->dst = i;
+    memcpy(actx->dst, &i, sizeof(i));
     actx->dst += sizeof(i);
     actx->dst_sz -= sizeof(i);
 
     strs->strs[i] = strdup(arg->str);
-    strs->allocated[i] = true;
+    strs->allocated[i] = strs->strs[i] != NULL;
 
     if (!strs->strs[i]) {
-        log(true, stmt, actx->pctx, "failed to encode string");
+        log(true, stmt, actx->pctx, "failed to copy string");
+        perror("strdup");
         return false;
     }
     strs->nstrs++;
@@ -191,13 +193,14 @@ static bool emit_arg_numbered_str(const struct script_stmt* stmt, const struct s
         log(true, stmt, actx->pctx, "string index too large");
         return false;
     }
-    if (strs->strs[arg->numbered_str.num])
-        log(false, stmt, actx->pctx, "overwriting existing string table entry");
+    if (strs->allocated[arg->numbered_str.num])
+        log(false, stmt, actx->pctx, "overwriting existing string table entry at %u",
+            arg->numbered_str.num);
     if (actx->dst_sz < sizeof(arg->numbered_str.num)) {
         log(true, stmt, actx->pctx, "no space to write string table index");
         return false;
     }
-    *(uint16_t*)actx->dst = arg->numbered_str.num;
+    memcpy(actx->dst, &arg->numbered_str.num, sizeof(arg->numbered_str.num));
     actx->dst += sizeof(arg->numbered_str.num);
     actx->dst_sz -= sizeof(arg->numbered_str.num);
 
@@ -205,10 +208,22 @@ static bool emit_arg_numbered_str(const struct script_stmt* stmt, const struct s
         free(strs->strs[arg->numbered_str.num]);
 
     strs->strs[arg->numbered_str.num] = strdup(arg->numbered_str.str);
-    strs->allocated[arg->numbered_str.num] = true;
+
+    /* If we're inserting at index past nstrs-1, add placeholders in between */
+    for (size_t i = strs->nstrs - 1; i < arg->numbered_str.num; i++) {
+        strs->strs[i] = EMBED_STR_PLACEHOLDER;
+        strs->allocated[i] = false;
+    }
+
+    // fprintf(stderr, "Adding %s at %d\n", arg->numbered_str.str, arg->numbered_str.num);
+    if (strs->nstrs < arg->numbered_str.num + 1)
+        strs->nstrs = arg->numbered_str.num + 1;
+
+    strs->allocated[arg->numbered_str.num] = strs->strs[arg->numbered_str.num] != NULL;
 
     if (!strs->strs[arg->numbered_str.num]) {
-        log(true, stmt, actx->pctx, "failed to encode string");
+        log(true, stmt, actx->pctx, "failed to copy string");
+        perror("strdup");
         return false;
     }
 
@@ -251,7 +266,7 @@ static bool emit_op(const struct script_stmt* stmt, struct script_as_ctx* actx) 
     if (cmd_is_branch(&cmd))
         cmd.arg--;
 
-    *(union script_cmd*)actx->dst = cmd;
+    memcpy(actx->dst, &cmd, sizeof(cmd));
     actx->dst += sizeof(union script_cmd);
     actx->dst_sz -= sizeof(union script_cmd);
 
@@ -275,10 +290,12 @@ static bool branch_src(const struct script_stmt* stmt,
             for (int j = 0; j < src->op.args.nargs; j++)
                 if (src->op.args.args[j].type == ARG_TY_LABEL &&
                     !strcmp(src->op.args.args[j].label, stmt->label)) {
+                // fprintf(stderr, "%zu -> %zu\n", src->line, stmt->line);
                 return true;
             }
         }
     }
+
     return false;
 }
 
@@ -364,6 +381,7 @@ next_src:
                 }
             }
         }
+        checked_refs = true;
 
         /* Keep looking for more refs to the label */
         if (++bsrc_idx < actx->pctx->nstmts)
@@ -425,11 +443,11 @@ bool script_assemble(const struct script_parse_ctx* pctx, uint8_t* dst, size_t d
     }
 
     if (ret)
-        *(struct script_hdr*)dst = (struct script_hdr){
+        memcpy(dst, &(struct script_hdr){
             .branch_info_offs = actx.branch_info_begin - actx.dst_start,
             .branch_info_sz = actx.branch_info_end - actx.branch_info_begin,
             .bytes_to_end = actx.dst - actx.branch_info_end
-        };
+        }, sizeof(struct script_hdr));
 
     free(refs);
     return ret;
