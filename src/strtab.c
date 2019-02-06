@@ -361,7 +361,7 @@ static void dump_dict(const struct dict_node_inter* root) {
 #define NBYTES_PER_CHAR_MAX 2
 struct char_bits {
     uint8_t bytes[NBYTES_PER_CHAR_MAX];
-    size_t nbits;
+    int nbits;
 };
 
 static_assert(CHAR_BIT == 8, "Where are we?");
@@ -430,9 +430,10 @@ bool make_strtab(const uint8_t** strs, size_t nstrs, uint8_t* dst, size_t dst_sz
     for (size_t i = 0; i < nstrs; i++)
         for (const uint8_t* str = strs[i]; ; str++) {
             if (!bits_for_char(*str, &bits_for_chars[(size_t)*str], dict_nentries)) {
-                fprintf(stderr, "Failed to encode char 0x%x\n", *str);
+                fprintf(stderr, "Failed to encode char 0x%x\n", *str & UINT8_MAX);
                 return false;
             }
+
             if (!*str)
                 break;
         }
@@ -492,20 +493,22 @@ bool make_strtab(const uint8_t** strs, size_t nstrs, uint8_t* dst, size_t dst_sz
         for (const uint8_t* str = strs[i]; ; str++) {
             struct char_bits bits = bits_for_chars[(size_t)*str];
 
-            for (size_t j = 0; j < bits.nbits; j++) {
-                size_t bit_pos = bits.nbits - j % 8 - 1;
+            assert(bits.nbits > 0 && "Invalid code for character");
 
-                assert(j / 8 <= sizeof(bits.bytes));
+            for (int j = 0; j < bits.nbits; j++) {
+                size_t bit_pos = (bits.nbits - j % 8 - 1) % 8;
+
+                assert((size_t)j / 8 <= sizeof(bits.bytes));
 
                 // fprintf(stderr, "%c: bits.bytes[%zu] & (1 << %zu) = 0x%x\n", *str, j/8, bit_pos,
                     // bits.bytes[j / 8] & (1 << bit_pos));
 
-                if (bits.bytes[j / 8] & (1 << bit_pos))
+                if (bits.bytes[(bits.nbits - 1 - j) / 8] & (1 << bit_pos))
                     val |= 1;
 
                 nbits++;
 
-                // fprintf(stderr, "val(%c) = 0x%x, nbits = %zu\n", *str, val, nbits);
+                // fprintf(stderr, "val(0x%x) = 0x%x, nbits = %zu\n", *str & UINT8_MAX, val, nbits);
 
                 if (nbits > 0 && nbits % 8 == 0) {
                     // fprintf(stderr, "writing val=0x%x\n", val);
@@ -532,6 +535,7 @@ bool make_strtab(const uint8_t** strs, size_t nstrs, uint8_t* dst, size_t dst_sz
             if (dst_sz < 1)
                 return false;
             *msg++ = val;
+            // fprintf(stderr, "writing (padded with %zu) val=0x%x\n", 8 - nbits % 8, val);
             dst_sz--;
         }
 
