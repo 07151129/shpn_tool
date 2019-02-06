@@ -591,6 +591,7 @@ static const char* buf_for_esc(const char* esc, size_t* cons, size_t* prod) {
         }
         return hbuf;
     }
+    fprintf(stderr, "Unrecognised escape sequence at %s\n", esc - el);
     return NULL;
 }
 
