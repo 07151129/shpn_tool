@@ -494,7 +494,7 @@ bool make_strtab(const uint8_t** strs, size_t nstrs, uint8_t* dst, size_t dst_sz
     }
 
     uint8_t* msg_offsets = dst + ((struct strtab_header*)dst)->msgs_offs;
-    uint8_t* msg = msg_offsets + MSG_OFFS_SZ * nstrs_unique;
+    uint8_t* msg = msg_offsets + MSG_OFFS_SZ * nstrs;
 
     for (size_t i = 0; i < nstrs; i++) {
         size_t nbits = 0;
