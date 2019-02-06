@@ -358,7 +358,7 @@ static void dump_dict(const struct dict_node_inter* root) {
         fprintf(stderr, "0x%x\n", root->node.val & UINT8_MAX);
 }
 
-#define NBYTES_PER_CHAR_MAX 1
+#define NBYTES_PER_CHAR_MAX 2
 struct char_bits {
     uint8_t bytes[NBYTES_PER_CHAR_MAX];
     size_t nbits;
