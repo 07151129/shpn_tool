@@ -43,8 +43,8 @@ static uint16_t dis_cmd(const union script_cmd* cmd, struct script_state* state,
     uint16_t ret = handler->handler(cmd->arg >> 16, cmd->arg, state);
 
     if (state->has_err) {
-        fprintf(stderr, "Error dumping op 0x%x at cmd_offs=0x%x, stopping\n", cmd->op,
-            state->cmd_offs);
+        // fprintf(stderr, "Error dumping op 0x%x at cmd_offs=0x%x, stopping\n", cmd->op,
+        //     state->cmd_offs);
         ret = UINT16_MAX;
 
         return ret;
