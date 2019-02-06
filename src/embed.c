@@ -17,10 +17,6 @@
 #include "script_parse_ctx.h"
 #include "strtab.h"
 
-/**
- * TODO: Embedding strtab, script, fonts, patching addresses, checksums etc...
- */
-
 void strtab_embed_ctx_free(struct strtab_embed_ctx* ctx) {
     for (size_t i = 0; i < ctx->nstrs; i++)
         if (ctx->strs[i] && ctx->allocated[i])
@@ -172,7 +168,7 @@ struct strtab_embed_ctx* strtab_embed_ctx_with_file(FILE* fin, size_t sz) {
                 i++;
             else {
                 /* If we haven't encountered newline, copy until end of file */
-                if (i == sz - 1)
+                if (i == sz - 1 && fbuf[i] != '\n')
                     i = sz;
                 assert((size_t)i >= cidx);
                 size_t len = i - cidx;
