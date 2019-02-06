@@ -274,7 +274,8 @@ static bool make_dict(const uint8_t** strs, size_t nstrs, size_t* nentries) {
         if (char_freqs[i]) {
             dict[dict_nitems] = (struct dict_node_inter){
                 {.val = i, .offs_l = UINT32_MAX, .offs_r = UINT32_MAX},
-                .freq = char_freqs[i]
+                .freq = char_freqs[i],
+                .has_parent = false
             };
             dict_nitems++;
         }
