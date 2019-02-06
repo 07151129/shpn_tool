@@ -260,18 +260,28 @@ static size_t cpy_pre_order(const struct dict_node_inter* root, struct dict_node
     return idx;
 }
 
+static uint32_t adds32(uint32_t a, uint32_t b) {
+    uint16_t c = a + b;
+
+    if (c < a)
+        c = -1;
+    return c;
+}
+
 static bool make_dict(const uint8_t** strs, size_t nstrs, size_t* nentries) {
     /* We use a temporary frequency array here to make sure the dictionary array isn't sparse */
-    uint8_t char_freqs[UINT8_MAX + 1];
+    static uint32_t char_freqs[UINT8_MAX + 1];
     memset(char_freqs, 0, sizeof(char_freqs));
 
     /* First, make leaves for each char encountered in strs */
-    for (size_t i = 0; i < nstrs; i++)
-        for (const uint8_t* str = strs[i]; *str; str++)
-            char_freqs[(size_t)*str]++;
-
-    /* Add NUL as well */
-    char_freqs[0]++;
+    for (size_t i = 0; i < nstrs; i++) {
+        for (const uint8_t* str = strs[i]; *str; str++) {
+            uint8_t freq = char_freqs[(size_t)*str];
+            char_freqs[(size_t)*str] = adds32(freq, 1);
+        }
+        /* Add NUL as well */
+        char_freqs[0] = adds32(char_freqs[0], 1);
+    }
 
     size_t dict_nitems = 0;
     for (size_t i = 0; i < sizeof(char_freqs) / sizeof(*char_freqs); i++) {
@@ -281,6 +291,8 @@ static bool make_dict(const uint8_t** strs, size_t nstrs, size_t* nentries) {
                 .freq = char_freqs[i],
                 .has_parent = false
             };
+            if (dict_nitems + 1 < dict_nitems)
+                return false;
             dict_nitems++;
         }
     }
