@@ -20,7 +20,7 @@ typedef int iconv_t;
 #endif
 
 #if __has_attribute(format)
-#define FMT_PRINTF(fmt, va) __attribute__((format(printf, fmt, va)))
+#define FMT_PRINTF(fmt, va) __attribute__ ((format(printf, fmt, va)))
 #else
 #define FMT_PRINTF(fmt, va)
 #endif

@@ -16,7 +16,8 @@ SRC := \
 	src/branch.c \
 	src/script_as.c \
 	src/script_parse_ctx.c \
-	src/embed.c
+	src/embed.c \
+	src/search.c
 
 SRC_TEST := \
 	test/make_strtab.c \

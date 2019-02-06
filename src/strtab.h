@@ -15,7 +15,6 @@ bool strtab_dec_str(const uint8_t* strtab, uint32_t idx, char* out, size_t out_s
 #define DEC_BUF_SZ_SJIS 512
 #define SJIS_TO_U8_MIN_SZ(len) (3 * (len) + 1) /* Bound for SJIS -> UTF8 */
 #define U8_TO_SJIS_MIN_SZ(len) (2 * (len) - 2 * (len) / 3 + 1) /* Bound for U8 -> SJIS */
-#define MSG_OFFS_MAX 0xffffff
 
 #define STRTAB_MENU_VMA 0x857546C /* FIXME: Hardcoded for now */
 

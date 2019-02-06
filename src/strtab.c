@@ -12,6 +12,9 @@
 #endif
 
 #include "defs.h"
+#define _GNU_SOURCE
+#include "search.h"
+#undef _GNU_SOURCE
 #include "strtab.h"
 
 /**
@@ -403,24 +406,32 @@ static bool bits_for_char(char c, struct char_bits* dst, size_t dict_sz) {
     return true;
 }
 
-/**
- * FIXME: String deduplication: equal strings should have equal msg entries and equal msg offsets.
- */
 bool make_strtab(const uint8_t** strs, size_t nstrs, uint8_t* dst, size_t dst_sz, size_t* nwritten) {
     size_t dict_nentries;
     size_t dst_sz_init = dst_sz;
 
-    if (nstrs == 0)
+    if (nstrs == 0) {
+        fprintf(stderr, "Cannot encode zero strings\n");
         return false;
+    }
 
-    if (!make_dict(strs, nstrs, &dict_nentries))
+    struct hsearch_data msgs_htab;
+    memset(&msgs_htab, '\0', sizeof(msgs_htab));
+    if (hcreate_r(nstrs /* worst case */, &msgs_htab) == 0) {
+        perror("hcreate");
         return false;
+    }
+
+    if (!make_dict(strs, nstrs, &dict_nentries)) {
+        fprintf(stderr, "Failed to create dictionary\n");
+        goto fail;
+    }
 
     // dump_dict(dict);
 
     if (dict_nentries * sizeof(struct dict_node) + sizeof(struct strtab_header) > dst_sz) {
         fprintf(stderr, "Out of space writing dictionary\n");
-        return false;
+        goto fail;
     }
 
     struct char_bits bits_for_chars[UINT8_MAX + 1];
@@ -431,7 +442,7 @@ bool make_strtab(const uint8_t** strs, size_t nstrs, uint8_t* dst, size_t dst_sz
         for (const uint8_t* str = strs[i]; ; str++) {
             if (!bits_for_char(*str, &bits_for_chars[(size_t)*str], dict_nentries)) {
                 fprintf(stderr, "Failed to encode char 0x%x\n", *str & UINT8_MAX);
-                return false;
+                goto fail;
             }
 
             if (!*str)
@@ -442,11 +453,11 @@ bool make_strtab(const uint8_t** strs, size_t nstrs, uint8_t* dst, size_t dst_sz
     if (dst_sz < sizeof(struct strtab_header) + sizeof(struct dict_node) * dict_nentries)
         return false;
 
-    *(struct strtab_header*)dst = (struct strtab_header){
-        .dict_offs = sizeof(struct strtab_header),
-        .msgs_offs = sizeof(struct strtab_header) + dict_nentries * sizeof(struct dict_node),
-        .nentries = nstrs
-    };
+    memcpy(dst, &(struct strtab_header){
+            .dict_offs = sizeof(struct strtab_header),
+            .msgs_offs = sizeof(struct strtab_header) + dict_nentries * sizeof(struct dict_node),
+            .nentries = nstrs
+        }, sizeof(struct strtab_header));
 
     for (size_t i = 0; i < dict_nentries; i++) {
         if (!is_leaf(&dict[i].node)) {
@@ -461,33 +472,61 @@ bool make_strtab(const uint8_t** strs, size_t nstrs, uint8_t* dst, size_t dst_sz
 
     dst_sz -= dict_nentries * sizeof(struct dict_node) + sizeof(struct strtab_header);
 
-    if (3 * dict_nentries > dst_sz) {
+    size_t nstrs_unique = 0;
+    for (size_t i = 0; i < nstrs; i++) {
+        ENTRY query = {.key = (void*)strs[i], .data = NULL};
+        ENTRY* entry;
+        hsearch_r(query, FIND, &entry, &msgs_htab);
+        if (!entry)
+            nstrs_unique++;
+        if (hsearch_r(query, ENTER, &entry, &msgs_htab) == 0) {
+            perror("hsearch");
+            goto fail;
+        }
+    }
+
+#define MSG_OFFS_SZ 3
+#define MSG_OFFS_MAX ((1 << (8 * MSG_OFFS_SZ)) - 1)
+
+    if (MSG_OFFS_SZ * nstrs_unique > dst_sz) {
         fprintf(stderr, "Out of space writing message offsets\n");
-        return false;
+        goto fail;
     }
 
     uint8_t* msg_offsets = dst + ((struct strtab_header*)dst)->msgs_offs;
-    uint8_t* msg = msg_offsets + 3 * nstrs;
+    uint8_t* msg = msg_offsets + MSG_OFFS_SZ * nstrs_unique;
 
     for (size_t i = 0; i < nstrs; i++) {
         size_t nbits = 0;
         uint8_t val = 0;
 
-        if (dst_sz < 3)
-            return false;
+        ENTRY query = {.key = (void*)strs[i], .data = NULL};
+        ENTRY* entry;
+        hsearch_r(query, FIND, &entry, &msgs_htab);
+
+        assert(entry && "String not found in msgs_htab");
 
         /* Write a three-byte offset from msgs to the message */
         uint32_t msg_offs = (msg - msg_offsets) & MSG_OFFS_MAX;
+        if (entry->data) /* Already encoded */
+            msg_offs = ((uint8_t*)entry->data - msg_offsets) & MSG_OFFS_MAX;
 
         if (msg_offs > MSG_OFFS_MAX) {
             fprintf(stderr, "Message offset 0x%x is too large to be encoded\n", msg_offs);
-            return false;
+            goto fail;
         }
 
-        memcpy(msg_offsets + 3 * i, &msg_offs, 3);
-        dst_sz -= 3;
+        memcpy(msg_offsets + MSG_OFFS_SZ * i, &msg_offs, MSG_OFFS_SZ);
+        dst_sz -= MSG_OFFS_SZ;
 
-        assert(strs[i]);
+        if (entry->data)
+            continue;
+
+        query.data = (void*)msg;
+        if (hsearch_r(query, FIND, &entry, &msgs_htab) == 0) {
+            perror("hsearch");
+            goto fail;
+        }
 
         /* For each char in str, make and write bytes out of its encoding bits */
         for (const uint8_t* str = strs[i]; ; str++) {
@@ -543,8 +582,15 @@ bool make_strtab(const uint8_t** strs, size_t nstrs, uint8_t* dst, size_t dst_sz
         // fprintf(stderr, "Writing msg at offs 0x%x\n", msg_offs & 0xfff);
     }
 
+#undef MSG_OFFS_SZ
+#undef MSG_OFFS_MAX
+
+    hdestroy_r(&msgs_htab);
     *nwritten = dst_sz_init - dst_sz + 1;
     return true;
+fail:
+    hdestroy_r(&msgs_htab);
+    return false;
 }
 
 static bool is_esc(const char* s) {
