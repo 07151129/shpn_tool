@@ -82,6 +82,7 @@ err:
         }
 
 leaf:
+        // fprintf(stderr, "decoded leaf 0x%x len %zu\n", n->val & 0xff, *len);
         assert(n->offs_l == UINT32_MAX && n->offs_r == UINT32_MAX &&
             "Leaves must have UINT32_MAX offsets");
         /* NOTE: The original implementation replaces \n with \r for rendering, but we don't care */
@@ -354,7 +355,7 @@ static void dump_dict(const struct dict_node_inter* root) {
         dump_dict(&dict[root->node.offs_r]);
     }
     else
-        fprintf(stderr, "%c\n", root->node.val);
+        fprintf(stderr, "0x%x\n", root->node.val & UINT8_MAX);
 }
 
 #define NBYTES_PER_CHAR_MAX 1
