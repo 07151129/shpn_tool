@@ -1,5 +1,6 @@
 #undef NDEBUG
 #include <assert.h>
+#include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -20,7 +21,8 @@ static void make_and_cmp(const char** strs, size_t nstrs) {
     static char dec_buf[10000];
     for (size_t i = 0; i < nstrs; i++) {
         assert(
-            strtab_dec_str(strtab, i, dec_buf, sizeof(dec_buf), &nwritten, (iconv_t)-1, false) &&
+            strtab_dec_str(strtab, (void*)UINTPTR_MAX, i, dec_buf, sizeof(dec_buf), &nwritten,
+                (iconv_t)-1, false) &&
             "Failed to decode string");
         assert(!strncmp(strs[i], dec_buf, nwritten) && "Strings mismatch");
     }
@@ -37,4 +39,10 @@ int main() {
                                 "\x82\xcc\x91\xab\x89\xb9\x81\x76"};
 
     make_and_cmp((void*)sjis_text, 3);
+
+    /* Some characters here are encoded by multiple bytes */
+    static char* multibyte_enc[] = {u8"「Выбираем」", u8"ВариантА", u8"ВариантБ", u8"ＤＥＢＵＧモードA",
+                                u8"ＤＥＢＵＧモード", u8"ＤＥＢＵＧモード", u8"ＤＥＢＵＧモード"
+                                u8"ＤＥＢＵＧモード", u8"ＤＥＢＵＧモード", u8"A"};
+    make_and_cmp((void*)multibyte_enc, sizeof(multibyte_enc) / sizeof(*multibyte_enc));
 }

@@ -121,7 +121,9 @@ const struct script_desc* script_for_name(const char* name) {
 
 #define VA_BUF_DEFAULT_SZ (SJIS_TO_U8_MIN_SZ(DEC_BUF_SZ_SJIS) * 4)
 
-void script_state_init(struct script_state* state, const uint8_t* strtab, const uint8_t* strtab_menu,
+static
+void script_state_init(struct script_state* state, const uint8_t* rom_end, const uint8_t* strtab,
+    const uint8_t* strtab_menu,
     const union script_cmd* cmds, uint16_t* labels, const char* branch_info,
     const uint8_t* branch_info_unk) {
     assert(state);
@@ -141,6 +143,7 @@ void script_state_init(struct script_state* state, const uint8_t* strtab, const 
     state->strtab_menu = strtab_menu;
 
     state->cmds = cmds;
+    state->rom_end = rom_end;
 
     state->label_ctx.labels = labels;
 
@@ -276,7 +279,8 @@ bool script_dump(const uint8_t* rom, size_t rom_sz, const struct script_desc* de
     }
 
     struct script_state state;
-    script_state_init(&state, &rom[VMA2OFFS(desc->strtab_vma)], &rom[VMA2OFFS(STRTAB_MENU_VMA)],
+    script_state_init(&state, rom + rom_sz,
+        &rom[VMA2OFFS(desc->strtab_vma)], &rom[VMA2OFFS(STRTAB_MENU_VMA)],
         cmds, labels, cmd_end, &rom[VMA2OFFS(BRANCH_INFO_UMK_VMA)]);
 
     /* Phase one: read code and create labels */

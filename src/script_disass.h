@@ -53,6 +53,8 @@ struct script_state {
 
     const union script_cmd* cmds;
 
+    const uint8_t* rom_end;
+
     struct {
         uint16_t* labels;
         size_t nlabels; /* amount of labels in buffer */

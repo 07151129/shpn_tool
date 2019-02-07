@@ -48,14 +48,14 @@ static bool is_leaf(const struct dict_node* n) {
 
 static
 bool strtab_dec_msg(const struct dict_node* dict, const uint8_t** msg, uint8_t* bits, int* nbits,
-    char* dst, size_t* len, size_t maxlen, int* err) {
+    char* dst, size_t* len, size_t maxlen, int* err, const uint8_t* rom_end) {
     assert(!is_leaf(dict));
 
     while (true) { /* While msg not decoded */
         const struct dict_node* n = dict;
 
-err:
         if (*len >= maxlen) {
+err:
             *err = 1;
             return false;
         }
@@ -64,6 +64,8 @@ err:
             if (*nbits == 8) {
                 *nbits = 0;
                 *msg = *msg + 1;
+                if (*msg > rom_end)
+                    goto err;
                 *bits = **msg;
             }
 
@@ -76,6 +78,9 @@ err:
                 n++;
                 // n = (struct dict_node*)&(((uint8_t*)dict)[n->offs_l]);
             }
+
+            if ((uint8_t*)n > rom_end - sizeof(struct dict_node))
+                goto err;
 
             *bits <<= 1;
             *nbits = *nbits + 1;
@@ -108,32 +113,59 @@ leaf:
     }
 }
 
-bool strtab_dec_str(const uint8_t* strtab, uint32_t idx, char* out, size_t out_sz, size_t* nwritten,
-    iconv_t conv, bool should_conv) {
-    const struct strtab_header* hdr = (const struct strtab_header*)strtab;
+#define MSG_OFFS_SZ 3
+
+static bool chk_hdr(const struct strtab_header* hdr, const uint8_t* rom_end) {
     assert(hdr->dict_offs == sizeof(struct strtab_header));
     assert(hdr->null == 0);
+
+    return (size_t)rom_end >= sizeof(*hdr) &&
+        (size_t)rom_end >= hdr->dict_offs &&
+        (size_t)rom_end >= hdr->msgs_offs &&
+        (uint8_t*)hdr < rom_end - sizeof(*hdr) &&
+        (uint8_t*)hdr < rom_end - hdr->dict_offs &&
+        (uint8_t*)hdr < rom_end - hdr->msgs_offs;
+}
+
+/**
+ * We don't know size of strtab until we have reached last byte of last msg, but for a malformed
+ * strtab finding it can lead to an out-of-bounds read. We thus use rom_end to at least ensure
+ * we stay within the ROM buffer.
+ */
+bool strtab_dec_str(const uint8_t* strtab, const uint8_t* rom_end, uint32_t idx, char* out,
+    size_t out_sz, size_t* nwritten, iconv_t conv, bool should_conv) {
+    const struct strtab_header* hdr = (const struct strtab_header*)strtab;
+
+    if (!chk_hdr(hdr, rom_end))
+        return false;
 
     if (idx >= hdr->nentries)
         return false;
 
     char buf[DEC_BUF_SZ_SJIS];
 
-    if (out_sz < 3 * sizeof(buf) + 1)
+    if (out_sz < SJIS_TO_U8_MIN_SZ(sizeof(buf)))
         return false;
 
     size_t len = 0;
 
-    uint32_t msg_idx = 0;
-    memcpy(&msg_idx, &strtab[hdr->msgs_offs + 3 * idx], 3);
+    const uint8_t* msg_offsp = &strtab[hdr->msgs_offs + MSG_OFFS_SZ * idx];
+    if (msg_offsp >= rom_end)
+        return false;
 
-    const uint8_t* msg = &strtab[hdr->msgs_offs + msg_idx];
+    uint32_t msg_offs = 0;
+    memcpy(&msg_offs, msg_offsp, MSG_OFFS_SZ);
+
+    const uint8_t* msg = &strtab[hdr->msgs_offs + msg_offs];
+    const struct dict_node* dict = (void*)&strtab[hdr->dict_offs];
+    if (msg > rom_end || (uint8_t*)dict > rom_end)
+        return false;
+
     uint8_t bits = *msg;
     int nbits = 0;
     int err = 0;
 
-    while (strtab_dec_msg((struct dict_node*)&strtab[hdr->dict_offs], &msg, &bits, &nbits, &buf[len],
-        &len, sizeof(buf), &err))
+    while (strtab_dec_msg(dict, &msg, &bits, &nbits, &buf[len], &len, sizeof(buf), &err, rom_end))
         ;
     /* Do not continue if we're out of space */
     if (err)
@@ -180,7 +212,8 @@ bool strtab_dec_str(const uint8_t* strtab, uint32_t idx, char* out, size_t out_s
     return cstatus != (size_t)-1;
 }
 
-bool strtab_dump(const uint8_t* rom, uint32_t vma, uint32_t idx, bool has_idx, FILE* fout) {
+bool strtab_dump(const uint8_t* rom, size_t rom_sz, uint32_t vma, uint32_t idx, bool has_idx,
+    FILE* fout) {
     const void* strtab = &rom[VMA2OFFS(vma)];
 
     iconv_t conv = (iconv_t)-1;
@@ -201,14 +234,14 @@ bool strtab_dump(const uint8_t* rom, uint32_t vma, uint32_t idx, bool has_idx, F
     size_t nwritten = 0;
     if (!has_idx)
         for (size_t i = 0; i < ((const struct strtab_header*)strtab)->nentries; i++)
-            if (!strtab_dec_str(strtab, i, buf, sizeof(buf), &nwritten, conv, true)) {
+            if (!strtab_dec_str(strtab, rom + rom_sz, i, buf, sizeof(buf), &nwritten, conv, true)) {
                 fprintf(stderr, "Failed to decode string at %zu\n", i);
                 ret = false;
                 goto done;
             } else
                 fprintf(fout, "%zu: %s\n", i, buf);
     else {
-        if (!strtab_dec_str(strtab, idx, buf, sizeof(buf), &nwritten, conv, true)) {
+        if (!strtab_dec_str(strtab, rom + rom_sz, idx, buf, sizeof(buf), &nwritten, conv, true)) {
             fprintf(stderr, "Failed to decode string at %u\n", idx);
             ret = false;
             goto done;
@@ -230,7 +263,8 @@ done:
     return ret;
 }
 
-#define DICT_SZ_MAX 1000
+/* Upper bound for the original script strtab */
+#define DICT_SZ_MAX 500
 
 /* Intermediate dict_node format used for building a dictionary */
 static struct dict_node_inter {
@@ -291,7 +325,7 @@ static bool make_dict(const uint8_t** strs, size_t nstrs, size_t* nentries) {
                 .freq = char_freqs[i],
                 .has_parent = false
             };
-            if (dict_nitems + 1 < dict_nitems)
+            if (dict_nitems + 1 >= DICT_SZ_MAX)
                 return false;
             dict_nitems++;
         }
@@ -497,7 +531,6 @@ bool make_strtab(const uint8_t** strs, size_t nstrs, uint8_t* dst, size_t dst_sz
         }
     }
 
-#define MSG_OFFS_SZ 3
 #define MSG_OFFS_MAX ((1 << (8 * MSG_OFFS_SZ)) - 1)
 
     if (MSG_OFFS_SZ * nstrs_unique > dst_sz) {
@@ -594,7 +627,6 @@ bool make_strtab(const uint8_t** strs, size_t nstrs, uint8_t* dst, size_t dst_sz
         // fprintf(stderr, "Writing msg at offs 0x%x\n", msg_offs & 0xfff);
     }
 
-#undef MSG_OFFS_SZ
 #undef MSG_OFFS_MAX
 
     hdestroy_r(&msgs_htab);
