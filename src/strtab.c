@@ -567,11 +567,7 @@ bool make_strtab(const uint8_t** strs, size_t nstrs, uint8_t* dst, size_t dst_sz
         if (entry->data)
             continue;
 
-        query.data = (void*)msg;
-        if (hsearch_r(query, FIND, &entry, &msgs_htab) == 0) {
-            perror("hsearch");
-            goto fail;
-        }
+        entry->data = (void*)msg;
 
         /* For each char in str, make and write bytes out of its encoding bits */
         for (const uint8_t* str = strs[i]; ; str++) {
