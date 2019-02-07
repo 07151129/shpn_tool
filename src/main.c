@@ -340,7 +340,7 @@ static bool strtab_verbs(const uint8_t* rom, size_t sz) {
     }
 
     if (opts.strtab_verb == STRTAB_DUMP)
-        ret = strtab_dump(rom, strtab_vma, opts.strtab_idx, opts.has_strtab_idx,
+        ret = strtab_dump(rom, sz, strtab_vma, opts.strtab_idx, opts.has_strtab_idx,
             fout ? fout : stdout);
     else if (opts.strtab_verb == STRTAB_EMBED) {
 #if !HAS_ICONV
