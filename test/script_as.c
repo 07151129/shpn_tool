@@ -95,7 +95,7 @@ void test_as(struct script_parse_ctx* pctx) {
     script_parse_ctx_init(pctx, u8"ShowText((1001)\"Ｈｅｌｌｏ ｗｏｒｌｄ\");"
         ".begin branch_info .byte 0 .end branch_info");
     assert(script_parse_ctx_parse(pctx));
-    assert(script_assemble(pctx, rom, 2048, ectx_script, ectx_menu, conv));
+    assert(script_assemble(pctx, rom, 2048, ectx_script, ectx_menu));
 
     // fprintf(stderr, "nwritten %zu\n", nwritten);
     // for (size_t i = 0; i < nwritten; i++)
