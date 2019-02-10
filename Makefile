@@ -25,11 +25,8 @@ SRC_TEST := \
 	test/mk_strtab_str.c \
 	test/embed_strtab.c
 
-SRC_LEX := src/script_lex.l
-SRC_YACC := src/script_gram.y
-
-SRC_LEX := $(SRC_LEX:src/%.l=src/%.yy.c)
-SRC_YACC := $(SRC_YACC:src/%.y=src/%.tab.c)
+SRC_LEX := src/script_lex.yy.c
+SRC_YACC := src/script_gram.tab.c
 
 SRC_PARSER := $(SRC_LEX) $(SRC_YACC)
 
@@ -59,16 +56,16 @@ build:
 
 src/%.tab.c src/%.tab.h: src/%.y
 	@echo yacc $(notdir $<)
-	$(VERBOSE) $(ENV) $(YACC) $(YACC_FLAGS) -o $@ $<
+	$(VERBOSE) $(ENV) $(YACC) $(YACC_FLAGS) -o $(@:%.h=%.c) $<
 
 src/%.yy.c src/%.yy.h: src/%.l $(SRC_YACC)
 	@echo lex $(notdir $<)
-	$(VERBOSE) $(ENV) $(LEX) $(LEX_FLAGS) -o $@ $<
+	$(VERBOSE) $(ENV) $(LEX) $(LEX_FLAGS) -o $(@:%.h=%.c) $<
 
 $(eval $(call COMPILE_C,build,src))
 $(eval $(call COMPILE_C,build/test,test))
 
-$(OBJ): $(SRC_PARSER)
+build/script_parse_ctx.o: $(SRC_PARSER)
 
 $(eval $(call LINK_TARGET,$(TARGET).sym,$(OBJ)))
 
