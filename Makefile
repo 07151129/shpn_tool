@@ -101,5 +101,8 @@ help:
 	$(info distclean$(\t)$(\t)same as clean and yyclean)
 	$(info help$(\t)$(\t)$(\t)show this message)
 	$(info Supported environment variables:)
+	$(info DEBUG$(\t)$(\t)$(\t)compile code with debug info, without optimisations)
 	$(info ICONV$(\t)$(\t)$(\t)iconv installation prefix)
+	$(info SANITIZE$(\t)$(\t)build with specified sanitizer (e.g. address))
+	$(info VERBOSE$(\t)$(\t)$(\t)verbose build command logging)
 	@:
