@@ -295,7 +295,7 @@ static size_t cpy_pre_order(const struct dict_node_inter* root, struct dict_node
 }
 
 static uint32_t adds32(uint32_t a, uint32_t b) {
-    uint16_t c = a + b;
+    uint32_t c = a + b;
 
     if (c < a)
         c = -1;
