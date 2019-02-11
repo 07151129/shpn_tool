@@ -180,7 +180,8 @@ static bool emit_arg_str(const struct script_stmt* stmt, const struct script_arg
         perror("strdup");
         return false;
     }
-    strs->nstrs++;
+    if (strs->nstrs <= i)
+        strs->nstrs++;
 
     return true;
 }
