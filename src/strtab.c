@@ -668,6 +668,10 @@ static const char* buf_for_esc(const char* esc, size_t* cons, size_t* prod) {
         *cons = 1 + el;
         *prod = 1;
         return "\r";
+    } else if (*esc == '"') {
+        *cons = 1 + el;
+        *prod = 1;
+        return "\"";
     } else if (*esc == 'x') {
         static char hbuf[4];
         char* end = 0;
