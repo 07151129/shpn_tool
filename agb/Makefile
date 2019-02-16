@@ -12,7 +12,7 @@ CFLAGS := \
 	-Wall \
 	-Wextra \
 	-pedantic \
-	-Oz \
+	-Os \
 	-std=c11 \
 	-mthumb \
 	-mcpu=arm7tdmi-s \
