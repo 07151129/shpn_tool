@@ -17,7 +17,7 @@ static uint16_t* new_keys = (void*)0x3002AE6;
 static uint32_t* text_col = (uint32_t*)0x300234C;
 static uint32_t* text_row = (uint32_t*)0x3002340;
 
-static struct oam_data {
+struct oam_data {
     uint32_t VPos:8;             // Y Coordinate
     uint32_t AffineMode:2;       // Affine Mode
     uint32_t ObjMode:2;          // OBJ Mode
@@ -35,8 +35,22 @@ static struct oam_data {
     uint16_t Priority:2;         // Display priority
     uint16_t Pltt:4;             // Palette No.
     uint16_t AffineParam;        // Affine Trasnformation Parameter
-} * oam_scratch = (void*)0x30024C0;
+};
 _Static_assert(sizeof(struct oam_data) == sizeof(uint64_t), "");
+
+struct dma_cnt {
+    uint16_t Count;              // Transfer Count
+    uint16_t Dummy_21_16:5;
+    uint16_t DestpCnt:2;         // Destination Address Control
+    uint16_t SrcpCnt:2;          // Source Address Control
+    uint16_t ContinuousON:1;     // Continuous Mode
+    uint16_t BusSize:1;          // Bus Size 16/32Bit Select
+    uint16_t DataRequest:1;      // Data Request Synchronize Mode
+    uint16_t Timming:2;          // Timing Select
+    uint16_t IF_Enable:1;        // Interrupt Request Enable
+    uint16_t Enable:1;           // DMA Enable
+};
+_Static_assert(sizeof(struct dma_cnt) == sizeof(uint32_t), "");
 
 static bool isdigit(char c) {
     return '0' <= c && c <= '9';
@@ -64,6 +78,64 @@ static uint16_t hw_to_fw(char c) {
 
 #define DELAY_DEFAULT 3
 #define NCOLS_PER_ROW 16
+#define NROWS_MAX 7
+
+#define TILE_DIM 8
+#define NTILES_GLYPH 4
+
+static void upload_glyph(const void* tiles, uint32_t x, uint32_t y, uint16_t xoffs, uint16_t yoffs) {
+    volatile struct dma_cnt* dma3_cnt = (void*)0x40000DC;
+    volatile uint32_t* dma3_src = (void*)0x40000D4;
+    volatile uint32_t* dma3_dst = (void*)0x40000D8;
+
+    uint32_t idx = x + y * NCOLS_PER_ROW;
+    void* glyph_tiles_vram = (void*)(128 * idx + 0x800 + 0x600F800);
+
+    while (dma3_cnt->Enable)
+        ;
+
+    union {
+        struct dma_cnt cnt;
+        uint32_t val;
+    } dma_cnt;
+    dma_cnt.val = 0;
+
+    dma_cnt.cnt.Enable = 1;
+    dma_cnt.cnt.Count = TILE_DIM * TILE_DIM * NTILES_GLYPH / sizeof(uint16_t);
+
+    *dma3_src = (uint32_t)tiles;
+    *dma3_dst = (uint32_t)glyph_tiles_vram;
+    *dma3_cnt = dma_cnt.cnt;
+
+    struct oam_data gly_obj = {
+        .VPos = y * 14 + 15,
+        .AffineMode = 0,
+        .ObjMode = 0,
+        .Mosaic = 0,
+        .ColorMode = 0,
+        .Shape = 0,
+        .HPos = x * 14 + xoffs,
+        .AffineParamNo_L = 0,
+        .HFlip = 0,
+        .VFlip = 0,
+        .Size = 1,
+        .CharNo = 4 * idx,
+        .Priority = 0,
+        .Pltt = 14,
+        .AffineParam = 0
+    };
+
+    while (dma3_cnt->Enable)
+        ;
+    struct oam_data* oam_scratch = (void*)0x30024C0;
+    oam_scratch[idx] = gly_obj;
+
+    *dma3_src = (uint32_t)&oam_scratch[idx];
+    *dma3_dst = (uint32_t)(0x7000000 + idx * sizeof(gly_obj));
+    dma_cnt.cnt.Enable = 1;
+    dma_cnt.cnt.Count = sizeof(struct oam_data) / sizeof(uint16_t);
+    *dma3_cnt = dma_cnt.cnt;
+}
 
 __attribute__ ((noinline))
 static
@@ -158,8 +230,7 @@ void render_sjis(const char* sjis, uint32_t len, uint16_t start_at_y, uint16_t c
         sub_8004CD4(csum, &buf[7]);
         sub_8004C34(&buf[7], &buf[0x47], color);
 
-        upload_glyph_obj(&buf[0x47], col, row, 0, col + NCOLS_PER_ROW * row, a6, a7);
-        oam_scratch[0].HPos += 4;
+        upload_glyph(&buf[0x47], col, row, a6, a7);
 
         *text_col = col;
         *text_row = row;
