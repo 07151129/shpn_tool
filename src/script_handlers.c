@@ -194,17 +194,6 @@ static uint16_t handler_Branch(uint16_t arg0, UNUSED uint16_t arg1, struct scrip
         nprinted += sprintf(state->va_ctx.buf, "0x%x", idx);
     }
 
-    /* Why do we need that again? */
-#if 0
-    uint32_t not_taken = is_branch_taken(&state->branch_info[idx], state);
-    fprintf(stderr, "branch @ 0x%x: 0x%x\n", state->cmd_offs, taken);
-
-    if ((int32_t)not_taken >> 16 == UINT32_MAX) {
-        state->has_err = true;
-        return UINT16_MAX;
-    }
-#endif
-
     uint16_t dst = state->cmd_offs_next;
     branch_dst(state, &dst);
 
