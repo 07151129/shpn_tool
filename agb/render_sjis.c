@@ -95,6 +95,9 @@ void render_sjis(const char* sjis, uint32_t len, uint16_t start_at_y, uint16_t c
         uint32_t first = sjis[i] & UINT8_MAX;
         uint32_t second = sjis[i + 1] & UINT8_MAX;
 
+        /* Prevent overflow */
+        if (row == NROWS_MAX)
+            break;
         /* Skip delay digit */
         if (first == 'W' && isdigit(second)) {
             delay = parse_wait_command(sjis, i);
