@@ -111,6 +111,12 @@ void render_sjis(const char* sjis, uint32_t len, uint16_t start_at_y, uint16_t c
             continue;
         }
 
+        /* Automatic line wrap */
+        if (col == NCOLS_PER_ROW) {
+            col = 0;
+            row++;
+        }
+
         /* Interpret as ascii */
         if (0x21 <= first && first <= 0x7a) {
             uint16_t fw = hw_to_fw(first);
