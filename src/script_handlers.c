@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "defs.h"
 #include "script_disass.h"
 #include "strtab.h"
 
@@ -25,7 +26,8 @@ uint32_t script_next_cmd_arg(uint16_t a1, uint16_t w, const struct script_state*
     return *(uint32_t*)(&((uint8_t*)state->args)[2 * w - 2]);
 }
 
-static uint16_t handler_stub(uint16_t arg0, uint16_t arg1, struct script_state* state) {
+static uint16_t handler_stub(UNUSED uint16_t arg0, UNUSED uint16_t arg1,
+    UNUSED struct script_state* state) {
     return 0;
 }
 
@@ -100,7 +102,8 @@ static uint16_t handler_LoadBackground(uint16_t arg0, uint16_t has_bg, struct sc
     return bg_idx;
 }
 
-static uint16_t handler_LoadEffect(uint16_t arg0, uint16_t arg1, struct script_state* state) {
+static uint16_t handler_LoadEffect(uint16_t arg0, UNUSED uint16_t arg1,
+    struct script_state* state) {
     assert(arg0 == 0);
 
     uint16_t idx0 = script_next_cmd_arg(arg0, 1, state);
@@ -176,14 +179,10 @@ static uint16_t handler_ChoiceIdx(uint16_t arg0, uint16_t nargs, struct script_s
     return 0;
 }
 
-static uint16_t handler_Stop(uint16_t arg0, uint16_t arg1, struct script_state* state) {
-    return UINT16_MAX;
-}
-
 void branch_dst(struct script_state* state, uint16_t* dst);
 uint32_t is_branch_taken(const char* info, const struct script_state* state);
 
-static uint16_t handler_Branch(uint16_t arg0, uint16_t arg1, struct script_state* state) {
+static uint16_t handler_Branch(uint16_t arg0, UNUSED uint16_t arg1, struct script_state* state) {
     assert(arg0 == 0);
 
     uint16_t idx = script_next_cmd_arg(arg0, 1, state);
@@ -219,13 +218,13 @@ static uint16_t handler_Branch(uint16_t arg0, uint16_t arg1, struct script_state
     return 0;
 }
 
-static uint16_t handler_Nop(uint16_t a1, uint16_t a2, struct script_state* state) {
+static uint16_t handler_Nop(UNUSED uint16_t a1, uint16_t a2, UNUSED struct script_state* state) {
     if (/* a1 << 16 || */ a2)
         return UINT16_MAX;
     return 0;
 }
 
-static uint16_t handler_ShowMovie(uint16_t a1, uint16_t a2, struct script_state* state) {
+static uint16_t handler_ShowMovie(uint16_t a1, UNUSED uint16_t a2, struct script_state* state) {
     assert(a2 == 1);
 
     if (state->dumping) {
@@ -236,7 +235,8 @@ static uint16_t handler_ShowMovie(uint16_t a1, uint16_t a2, struct script_state*
 }
 
 /* It's a no-op, but we prohibit disassembly of this instruction */
-static uint16_t handler_0x30(uint16_t a1, uint16_t a2, struct script_state* state) {
+static uint16_t handler_0x30(UNUSED uint16_t a1, UNUSED uint16_t a2, UNUSED struct
+    script_state* state) {
     return UINT16_MAX;
 }
 

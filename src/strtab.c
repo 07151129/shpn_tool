@@ -394,7 +394,7 @@ static bool make_dict(const uint8_t** strs, size_t nstrs, size_t* nentries) {
     return true;
 }
 
-static void dump_dict(const struct dict_node_inter* root) {
+static UNUSED void dump_dict(const struct dict_node_inter* root) {
     // if (root->has_parent)
     //     fprintf(stderr, "0x%zx -> ", root->parent_idx);
     fprintf(stderr, "0x%lx: ", root - dict);

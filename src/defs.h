@@ -25,4 +25,10 @@ typedef int iconv_t;
 #define FMT_PRINTF(fmt, va)
 #endif
 
+#if __has_attribute(unused)
+#define UNUSED __attribute__ ((unused))
+#else
+#define UNUSED
+#endif
+
 #endif

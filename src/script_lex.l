@@ -1,6 +1,7 @@
 %{
     #include <stdbool.h>
 
+    #include "defs.h"
     #include "script_gram.tab.h"
 
     void script_error();
@@ -8,7 +9,8 @@
 
     #undef YY_DECL
     #define YY_DECL \
-        int yylex(YYSTYPE* yylval_param, YYLTYPE* yylloc_param, void* ctx, yyscan_t yyscanner)
+        int yylex(YYSTYPE* yylval_param, YYLTYPE* yylloc_param, UNUSED void* ctx, \
+            UNUSED yyscan_t yyscanner)
     YY_DECL;
 %}
 
