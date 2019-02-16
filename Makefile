@@ -1,10 +1,5 @@
-ifeq ($V, 1)
-	VERBOSE =
-else
-	VERBOSE = @
-endif
-
 include config.mk
+include rules.mk
 
 # File containing main must be the first in the list
 SRC := \
