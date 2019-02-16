@@ -68,7 +68,7 @@ static uint16_t hw_to_fw(char c) {
 __attribute__ ((noinline))
 static
 void render_sjis(const char* sjis, uint32_t len, uint16_t start_at_y, uint16_t color,
-    const bool no_delay, uint16_t a6, uint16_t a7) {
+    bool no_delay, uint16_t a6, uint16_t a7) {
     (void)len;
 
     uint32_t buf[0x71 + 0x40];
@@ -98,6 +98,7 @@ void render_sjis(const char* sjis, uint32_t len, uint16_t start_at_y, uint16_t c
         /* Prevent overflow */
         if (row == NROWS_MAX)
             break;
+
         /* Skip delay digit */
         if (first == 'W' && isdigit(second)) {
             delay = parse_wait_command(sjis, i);
@@ -144,10 +145,13 @@ void render_sjis(const char* sjis, uint32_t len, uint16_t start_at_y, uint16_t c
             offs_first = 0xbc * (first - 0x88) + 0x270;
         csum = offs_first + offs_second;
 
+        /* On button press, render the rest of the text without delay */
         while (delay-- && !no_delay) {
             await_input();
-            if (*new_keys & 1 || *new_keys & 0x100)
+            if (*new_keys & 1 || *new_keys & 0x100) {
+                no_delay = true;
                 break;
+            }
         }
         delay = DELAY_DEFAULT;
 
