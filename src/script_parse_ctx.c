@@ -3,6 +3,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define _GNU_SOURCE
+#include "search.h"
+#undef _GNU_SOURCE
 #include "script_disass.h"
 #include "script_gram.tab.h"
 #include "script_lex.yy.h"
@@ -10,13 +13,44 @@
 
 /* Needed for script name lookup */
 void init_script_handlers();
+extern struct script_cmd_handler script_handlers[SCRIPT_NOPS];
 
-void script_parse_ctx_init(struct script_parse_ctx* ctx, const char* script) {
+/* Never freed */
+static struct hsearch_data handlers_htab;
+
+static bool init_handlers_htab() {
+    static bool ok;
+    if (ok)
+        return true;
+
+    if (hcreate_r(SCRIPT_NOPS, &handlers_htab) == 0) {
+        perror("hcreate");
+        return false;
+    }
+    for (size_t i = 0; i < SCRIPT_NOPS; i++) {
+        if (!script_handlers[i].name)
+            continue;
+
+        ENTRY query = {.key = (void*)script_handlers[i].name, .data = (void*)i};
+        ENTRY* entry;
+        if (hsearch_r(query, ENTER, &entry, &handlers_htab) == 0) {
+            perror("hsearch");
+            hdestroy_r(&handlers_htab);
+            return false;
+        }
+    }
+
+    ok = true;
+    return true;
+}
+
+bool script_parse_ctx_init(struct script_parse_ctx* ctx, const char* script) {
     ctx->ndiags = 0;
     ctx->nstmts = 0;
     ctx->script = script;
     ctx->filename = NULL;
     init_script_handlers();
+    return init_handlers_htab();
 }
 
 bool script_parse_ctx_parse(struct script_parse_ctx* ctx) {
@@ -54,8 +88,6 @@ bool script_ctx_add_stmt(struct script_parse_ctx* ctx, const struct script_stmt*
     return true;
 }
 
-extern struct script_cmd_handler script_handlers[SCRIPT_NOPS];
-
 bool script_op_idx(const char* name, size_t* dst) {
     assert(name);
     if (!strncmp(name, "OP_", 3) && strlen(name) > 3) {
@@ -65,13 +97,13 @@ bool script_op_idx(const char* name, size_t* dst) {
         *dst = idx;
         return true;
     }
-    /* Try to look up by name (FIXME: Slow!) */
-    for (size_t i = 0; i < SCRIPT_NOPS; i++)
-        if (script_handlers[i].name && !strcmp(script_handlers[i].name, name)) {
-            *dst = i;
-            return true;
-        }
-    return false;
+
+    ENTRY query = {.key = (char*)name, .data = NULL};
+    ENTRY* res;
+    if (hsearch_r(query, FIND, &res, &handlers_htab) == 0)
+        return false;
+    *dst = (size_t)res->data;
+    return true;
 }
 
 bool script_op_idx_chk(size_t idx) {

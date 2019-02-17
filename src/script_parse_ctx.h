@@ -64,7 +64,7 @@ struct script_parse_ctx {
     size_t nstmts;
 };
 
-void script_parse_ctx_init(struct script_parse_ctx* ctx, const char* script);
+bool script_parse_ctx_init(struct script_parse_ctx* ctx, const char* script);
 bool script_parse_ctx_parse(struct script_parse_ctx* ctx);
 bool script_parse_ctx_add_diag(struct script_parse_ctx* ctx, const struct script_diag* diag);
 bool script_arg_list_add_arg(struct script_arg_list* args, const struct script_arg* arg);

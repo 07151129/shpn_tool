@@ -256,7 +256,10 @@ bool embed_script(uint8_t* rom, size_t rom_sz, size_t script_sz_max, size_t scri
         goto done;
     }
 
-    script_parse_ctx_init(pctx, fbuf);
+    if (!script_parse_ctx_init(pctx, fbuf)) {
+        pctx = NULL;
+        goto done;
+    }
     pctx->filename = script_path;
 
     bool parsed = script_parse_ctx_parse(pctx);
