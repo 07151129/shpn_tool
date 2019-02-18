@@ -267,6 +267,7 @@ uint8_t render_sjis(const char* sjis, uint32_t len, uint16_t start_at_y, uint16_
             col = 0;
             row++;
             i++;
+            xpos_prev = TEXT_LMARGIN;
             continue;
         } else if (first == ' ') {
             i++;
@@ -277,6 +278,7 @@ uint8_t render_sjis(const char* sjis, uint32_t len, uint16_t start_at_y, uint16_
         /* Automatic line wrap */
         if (xpos_prev >= TEXT_RMARGIN) {
             col = 0;
+            xpos_prev = TEXT_LMARGIN;
             row++;
         }
 
