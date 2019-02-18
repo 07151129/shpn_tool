@@ -9,15 +9,12 @@ static uint32_t (*parse_wait_command)(const char* buf, uint32_t idx) =
 static void (*sub_8004CD4)(uint32_t idx, uint32_t* buf) = (void (*)(uint32_t, uint32_t*))0x8004CD5;
 static void (*sub_8004C34)(uint32_t*, uint32_t*, char) = (void (*)(uint32_t*, uint32_t*, char))0x8004C35;
 static void (*await_input)(void) = (void (*)(void))0x80130A1;
-static void (*upload_glyph_obj)(const uint32_t*, uint16_t x, char y, uint32_t, uint32_t, uint16_t,
-    char) = (void (*)(const uint32_t*, uint16_t, char, uint32_t, uint32_t, uint16_t, char))
-        0x8006F91;
 
 static uint16_t* new_keys = (void*)0x3002AE6;
-static uint32_t* text_col = (uint32_t*)0x300234C;
-static uint32_t* text_row = (uint32_t*)0x3002340;
+static uint32_t* cursor_col = (uint32_t*)0x300234C;
+static uint32_t* cursor_row = (uint32_t*)0x3002340;
 
-struct oam_data {
+static struct oam_data {
     uint32_t VPos:8;             // Y Coordinate
     uint32_t AffineMode:2;       // Affine Mode
     uint32_t ObjMode:2;          // OBJ Mode
@@ -35,7 +32,7 @@ struct oam_data {
     uint16_t Priority:2;         // Display priority
     uint16_t Pltt:4;             // Palette No.
     uint16_t AffineParam;        // Affine Trasnformation Parameter
-};
+} * oam_base = (void*)0x7000000;
 _Static_assert(sizeof(struct oam_data) == sizeof(uint64_t), "");
 
 struct dma_cnt {
@@ -76,20 +73,33 @@ static uint16_t hw_to_fw(char c) {
     return c;
 }
 
-#define DELAY_DEFAULT 3
-#define NCOLS_PER_ROW 16
-#define NROWS_MAX 7
+#define NCOLS_PER_ROW 30
 
 #define TILE_DIM 8
 #define NTILES_GLYPH 4
+#define GLYPH_DIM 16
 
-static void upload_glyph(const void* tiles, uint32_t x, uint32_t y, uint16_t xoffs, uint16_t yoffs) {
+#define TEXT_LMARGIN (GLYPH_DIM)
+#define TEXT_RMARGIN (240 - TEXT_LMARGIN - GLYPH_DIM)
+#define GLY_SPACE_W 2
+#define SPACE_W 6
+#define VSPACE 14
+#define TEXT_UMARGIN 15
+
+#define CURSOR_OAM_IDX 112
+
+static uint8_t upload_glyph(const void* tiles, uint32_t idx, uint32_t row, uint16_t xoffs,
+    uint16_t yoffs, uint8_t rmargin_prev, uint8_t lmargin) {
     volatile struct dma_cnt* dma3_cnt = (void*)0x40000DC;
     volatile uint32_t* dma3_src = (void*)0x40000D4;
     volatile uint32_t* dma3_dst = (void*)0x40000D8;
 
-    uint32_t idx = x + y * NCOLS_PER_ROW;
-    void* glyph_tiles_vram = (void*)(128 * idx + 0x800 + 0x600F800);
+    /* Cursor steals OAM slot 112... */
+    if (idx >= CURSOR_OAM_IDX)
+        idx++;
+
+    void* glyph_tiles_vram = (void*)(TILE_DIM * TILE_DIM * sizeof(uint16_t) * idx + 0x800 +
+        0x600F800);
 
     while (dma3_cnt->Enable)
         ;
@@ -108,13 +118,12 @@ static void upload_glyph(const void* tiles, uint32_t x, uint32_t y, uint16_t xof
     *dma3_cnt = dma_cnt.cnt;
 
     struct oam_data gly_obj = {
-        .VPos = y * 14 + 15,
+        .VPos = row * VSPACE + TEXT_UMARGIN + yoffs,
         .AffineMode = 0,
         .ObjMode = 0,
         .Mosaic = 0,
         .ColorMode = 0,
         .Shape = 0,
-        .HPos = x * 14 + xoffs,
         .AffineParamNo_L = 0,
         .HFlip = 0,
         .VFlip = 0,
@@ -125,23 +134,94 @@ static void upload_glyph(const void* tiles, uint32_t x, uint32_t y, uint16_t xof
         .AffineParam = 0
     };
 
+    gly_obj.HPos = TEXT_LMARGIN;
+    if (xoffs > TEXT_LMARGIN)
+        gly_obj.HPos = xoffs - lmargin - rmargin_prev + GLY_SPACE_W;
+
+    /* FIXME: Is it faster to have tiles uploaded asynchronously and copy gly_obj manually? */
     while (dma3_cnt->Enable)
         ;
-    struct oam_data* oam_scratch = (void*)0x30024C0;
-    oam_scratch[idx] = gly_obj;
 
-    *dma3_src = (uint32_t)&oam_scratch[idx];
-    *dma3_dst = (uint32_t)(0x7000000 + idx * sizeof(gly_obj));
+    *dma3_src = (uint32_t)&gly_obj;
+    *dma3_dst = (uint32_t)&oam_base[idx];
     dma_cnt.cnt.Enable = 1;
     dma_cnt.cnt.Count = sizeof(struct oam_data) / sizeof(uint16_t);
     *dma3_cnt = dma_cnt.cnt;
+
+    while (dma3_cnt->Enable)
+        ;
+
+    return gly_obj.HPos + GLYPH_DIM / 2;
 }
+
+#define TILE_SZ 0x20
+#define MIN(a, b) ((a) < (b) ? (a) : (b))
+
+static uint8_t tile_margin(uint8_t tiles[const 4 * TILE_SZ], unsigned tile_idx, const bool right) {
+    uint8_t ret = GLYPH_DIM / 2;
+
+    /* For each row */
+    for (unsigned i = 0; i < 8; i++) {
+        uint8_t nblank = 0;
+
+        /* For every two pixels in column (4 bpp) */
+        for (int j = right ? TILE_DIM / 4 - 1 : 0;
+            right ? j >= 0 : j < TILE_DIM / 4;
+            right ? j-- : j++) {
+            uint8_t b = tiles[tile_idx * TILE_SZ + i * TILE_DIM / 4 + j];
+
+            uint8_t lo = right ? b & 0xf0 : b & 0xf;
+            uint8_t hi = right ? b & 0xf : b & 0xf0;
+
+            if (!lo)
+                nblank++;
+            else
+                break;
+
+            if (!hi)
+                nblank++;
+            else
+                break;
+        }
+
+        ret = MIN(ret, nblank);
+    }
+
+    return ret;
+}
+
+static uint8_t glyph_margin(uint8_t tiles[const 4 * TILE_SZ], bool right) {
+    uint8_t ret = GLYPH_DIM;
+
+    uint8_t rm_upper = tile_margin(tiles, right ? 1 : 0, right);
+    uint8_t rm_lower = tile_margin(tiles, right ? 3 : 2, right);
+
+    ret = MIN(rm_upper, rm_lower);
+
+    /* If both rightmost quadrants are empty, check leftmost ones as well */
+    if (ret == GLYPH_DIM / 2) {
+        rm_upper = tile_margin(tiles, right ? 0 : 1, right);
+        rm_lower = tile_margin(tiles, right ? 2 : 3, right);
+
+        ret += MIN(rm_upper, rm_lower);
+    }
+
+    return ret;
+}
+
+#define DELAY_DEFAULT 3
+#define NCHARS_MAX (128 - 2 /* Stolen by cursor */)
 
 __attribute__ ((noinline))
 static
 void render_sjis(const char* sjis, uint32_t len, uint16_t start_at_y, uint16_t color,
-    bool no_delay, uint16_t a6, uint16_t a7) {
+    bool no_delay, uint16_t xoffs, uint16_t yoffs) {
     (void)len;
+
+    /* FIXME: Is there any good reason why the original code can draw only 112 glyphs? */
+    /* Hide glyphs past the cursor */
+    for (unsigned i = CURSOR_OAM_IDX + 1; i < NCHARS_MAX + 2; i++)
+        oam_base[i].AffineMode = 2; /* Hide */
 
     uint32_t buf[0x71 + 0x40];
     buf[0] = 0;
@@ -154,22 +234,19 @@ void render_sjis(const char* sjis, uint32_t len, uint16_t start_at_y, uint16_t c
 
     uint32_t col = 0, row = 0;
 
-    if (start_at_y << 16)
-        row = *text_row + 1;
+    if (start_at_y)
+        row = *cursor_row + 1;
 
     uint32_t delay = DELAY_DEFAULT;
-    *text_col = 0;
-    *text_row = 0;
+
+    uint8_t rmargin_prev = 0, xpos_prev = TEXT_LMARGIN;
+    unsigned nchars = 0;
 
     for (uint32_t i = 0; sjis[i];) {
         uint16_t csum = 0;
 
         uint32_t first = sjis[i] & UINT8_MAX;
         uint32_t second = sjis[i + 1] & UINT8_MAX;
-
-        /* Prevent overflow */
-        if (row == NROWS_MAX)
-            break;
 
         /* Skip delay digit */
         if (first == 'W' && isdigit(second)) {
@@ -182,16 +259,20 @@ void render_sjis(const char* sjis, uint32_t len, uint16_t start_at_y, uint16_t c
             i++;
             continue;
         } else if (first == ' ') {
-            col++;
             i++;
+            xpos_prev += SPACE_W;
             continue;
         }
 
         /* Automatic line wrap */
-        if (col == NCOLS_PER_ROW) {
+        if (xpos_prev >= TEXT_RMARGIN) {
             col = 0;
             row++;
         }
+
+        /* Prevent overflow */
+        if (nchars > NCHARS_MAX)
+            break;
 
         /* Interpret as ascii */
         if (0x21 <= first && first <= 0x7a) {
@@ -230,13 +311,27 @@ void render_sjis(const char* sjis, uint32_t len, uint16_t start_at_y, uint16_t c
         sub_8004CD4(csum, &buf[7]);
         sub_8004C34(&buf[7], &buf[0x47], color);
 
-        upload_glyph(&buf[0x47], col, row, a6, a7);
+        if (col == 0) {
+            rmargin_prev = 0;
+            xpos_prev = xoffs + TEXT_LMARGIN;
+        }
 
-        *text_col = col;
-        *text_row = row;
+        xpos_prev = upload_glyph(&buf[0x47], nchars, row, xpos_prev, yoffs, rmargin_prev,
+            glyph_margin((void*)&buf[0x47], false));
+
+        rmargin_prev = glyph_margin((void*)&buf[0x47], true);
+
+        nchars++;
 
         col++;
     }
+
+    /* Cursor is drawn at coordinates for fixed-width spacing... */
+#define CURSOR_COL 13
+#define CURSOR_ROW 8
+
+    *cursor_col = CURSOR_COL;
+    *cursor_row = CURSOR_ROW;
 }
 
 __attribute__ ((section(".entry")))
