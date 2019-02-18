@@ -30,7 +30,7 @@ LDFLAGS := \
 
 .PHONY: clean all
 
-all: render_sjis.bin render_sjis_entry.bin
+all: render_sjis.bin render_sjis_entry.bin render_sjis_entry_menu.bin
 
 render_sjis.o: render_sjis.c
 	@echo cc $<
@@ -47,6 +47,10 @@ render_sjis.bin: render_sjis
 render_sjis_entry.bin: render_sjis
 	@echo objcopy $@
 	$(VERBOSE) $(ENV) $(OBJCOPY) -O binary -j .entry $< $@
+
+render_sjis_entry_menu.bin: render_sjis
+	@echo objcopy $@
+	$(VERBOSE) $(ENV) $(OBJCOPY) -O binary -j .entry_menu $< $@
 
 clean:
 	rm -f render_sjis.bin render_sjis_entry.bin render_sjis.o render_sjis

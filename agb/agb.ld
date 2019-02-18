@@ -8,6 +8,7 @@ MEMORY {
     OAM (rw) : ORIGIN = 0x07000000, LENGTH = 1K
     ROM (rx) : ORIGIN = 0x8000000, LENGTH = 16M
     ROM_PATCH_ENTRY (rx) : ORIGIN = 0x8004DA4, LENGTH = (0x8004F70 - 0x8004DA4)
+    ROM_PATCH_MENU_ENTRY (rx) : ORIGIN = 0x8004F90, LENGTH = (0x8005134 - 0x8004F90)
     ROM_PATCH (rx) : ORIGIN = 0x87962EC, LENGTH = (0x87962EC - 0x87A0000)
 }
 
@@ -15,6 +16,10 @@ SECTIONS {
     .entry : {
         KEEP(*(.entry))
     } > ROM_PATCH_ENTRY = 0xFF
+
+    .entry_menu : {
+        KEEP(*(.entry_menu))
+    } > ROM_PATCH_MENU_ENTRY = 0xFF
 
     .text : {
         *(.init)

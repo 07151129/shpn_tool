@@ -73,6 +73,44 @@ static uint16_t hw_to_fw(char c) {
     return c;
 }
 
+struct glyph_margins {
+    uint8_t lmargin;
+    uint8_t rmargin;
+};
+
+static struct glyph_margins margins_az[] = {
+    {2, 5}, {2, 5}, {2, 5}, {2, 5}, {2, 5}, {3, 6}, {2, 5}, {2, 5}, {5, 8}, {3, 6}, {3, 5}, /* k */
+    {4, 8}, {1, 4}, {2, 5}, {2, 5}, {2, 5}, {2, 5}, {4, 6}, {2, 5}, {3, 5}, {2, 5}, {2, 5}, /* v */
+    {1, 4}, {2, 5}, {2, 5}, {2, 5} /* z */
+};
+_Static_assert(sizeof(margins_az) / sizeof(*margins_az) == 'z' - 'a' + 1, "");
+
+static struct glyph_margins margins_AZ[] = {
+    {1, 4}, {2, 5}, {2, 4}, {2, 4}, {2, 5}, {2, 5}, {2, 4}, {2, 5}, {5, 8}, {2, 5}, {2, 4}, /* K */
+    {2, 5}, {1, 4}, {2, 4}, {2, 4}, {2, 5}, {2, 4}, {2, 5}, {2, 5}, {1, 4}, {2, 4}, {1, 4}, /* V */
+    {1, 4}, {1, 4}, {1, 4}, {2, 5} /* Z */
+};
+_Static_assert(sizeof(margins_AZ) / sizeof(*margins_AZ) == 'Z' - 'A' + 1, "");
+
+static struct glyph_margins margins_cyr_lo[] = {
+    {2, 5}, {2, 5}, {2, 5}, {2, 6}, {1, 5}, {2, 5}, {2, 5}, {1, 4}, {2, 5}, {2, 5}, {2, 5}, /* й */
+    {2, 6}, {2, 5}, {1, 4}, {2, 5}, {2, 5}, {2, 5}, {2, 5}, {2, 5}, {2, 5}, {3, 5}, {0, 3}, /* ф */
+    {2, 5}, {1, 5}, {2, 5}, {1, 4}, {0, 5}, {1, 4}, {1, 5}, {2, 5}, {2, 5}, {1, 4}, {2, 5} /* я */
+};
+_Static_assert(sizeof(margins_cyr_lo) / sizeof(*margins_cyr_lo) == 33, "");
+
+static struct glyph_margins margins_cyr_cap[] = {
+    {1, 4}, {2, 5}, {2, 5}, {2, 6}, {1, 5}, {2, 5}, {2, 5}, {0, 3}, {2, 5}, {1, 5}, {1, 5}, /* Й */
+    {2, 5}, {2, 5}, {1, 4}, {2, 5}, {1, 5}, {2, 5}, {2, 5}, {1, 5}, {2, 5}, {2, 5}, {1, 4}, /* Ф */
+    {2, 5}, {1, 5}, {2, 5}, {1, 4}, {0, 4}, {1, 4}, {1, 4}, {2, 5}, {1, 5}, {0, 4}, {2, 5} /* Я */
+};
+_Static_assert(sizeof(margins_cyr_cap) / sizeof(*margins_cyr_cap) == 33, "");
+
+static struct glyph_margins margins_digit[] = {
+    {2, 5}, {5, 8}, {2, 5}, {2, 5}, {2, 4}, {2, 6}, {2, 5}, {2, 5}, {2, 5}, {2, 5}
+};
+_Static_assert(sizeof(margins_digit) / sizeof(*margins_digit) == '9' - '0' + 1, "");
+
 #define NCOLS_PER_ROW 30
 
 #define TILE_DIM 8
@@ -81,12 +119,37 @@ static uint16_t hw_to_fw(char c) {
 
 #define TEXT_LMARGIN (GLYPH_DIM)
 #define TEXT_RMARGIN (240 - TEXT_LMARGIN - GLYPH_DIM)
-#define GLY_SPACE_W 2
+
 #define SPACE_W 6
 #define VSPACE 14
 #define TEXT_UMARGIN 15
 
 #define CURSOR_OAM_IDX 112
+
+static struct glyph_margins glyph_margin(uint16_t c) {
+    if ('a' <= c && c <= 'z')
+        return margins_az[c - 'a'];
+    if ('A' <= c && c <= 'Z')
+        return margins_AZ[c - 'A'];
+    if (/* a */ 0x8470 <= c && c <= 0x8491 /* я */)
+        return margins_cyr_lo[c - 0x8470];
+    if (/* А */ 0x8440 <= c && c <= 0x8460 /* Я */)
+        return margins_cyr_cap[c - 0x8440];
+    if (isdigit(c))
+        return margins_digit[c - '0'];
+    switch (c) {
+        case '!': return (struct glyph_margins){5, 8};
+        case '?': return (struct glyph_margins){2, 6};
+        case '&': return (struct glyph_margins){2, 5};
+        case '(': return (struct glyph_margins){7, 4};
+        case ')': return (struct glyph_margins){1, 8};
+        case ',': return (struct glyph_margins){0, 12};
+        case '.': return (struct glyph_margins){1, 11};
+        case '-': return (struct glyph_margins){3, 6};
+    }
+
+    return (struct glyph_margins){0, 0};
+}
 
 static uint8_t upload_glyph(const void* tiles, uint32_t idx, uint32_t row, uint16_t xoffs,
     uint16_t yoffs, uint8_t rmargin_prev, uint8_t lmargin) {
@@ -136,7 +199,7 @@ static uint8_t upload_glyph(const void* tiles, uint32_t idx, uint32_t row, uint1
 
     gly_obj.HPos = TEXT_LMARGIN;
     if (xoffs > TEXT_LMARGIN)
-        gly_obj.HPos = xoffs - lmargin - rmargin_prev + GLY_SPACE_W;
+        gly_obj.HPos = xoffs - lmargin - rmargin_prev;
 
     /* FIXME: Is it faster to have tiles uploaded asynchronously and copy gly_obj manually? */
     while (dma3_cnt->Enable)
@@ -151,71 +214,17 @@ static uint8_t upload_glyph(const void* tiles, uint32_t idx, uint32_t row, uint1
     while (dma3_cnt->Enable)
         ;
 
-    return gly_obj.HPos + GLYPH_DIM / 2;
+    return gly_obj.HPos + GLYPH_DIM;
 }
 
 #define TILE_SZ 0x20
-#define MIN(a, b) ((a) < (b) ? (a) : (b))
-
-static uint8_t tile_margin(uint8_t tiles[const 4 * TILE_SZ], unsigned tile_idx, const bool right) {
-    uint8_t ret = GLYPH_DIM / 2;
-
-    /* For each row */
-    for (unsigned i = 0; i < 8; i++) {
-        uint8_t nblank = 0;
-
-        /* For every two pixels in column (4 bpp) */
-        for (int j = right ? TILE_DIM / 4 - 1 : 0;
-            right ? j >= 0 : j < TILE_DIM / 4;
-            right ? j-- : j++) {
-            uint8_t b = tiles[tile_idx * TILE_SZ + i * TILE_DIM / 4 + j];
-
-            uint8_t lo = right ? b & 0xf0 : b & 0xf;
-            uint8_t hi = right ? b & 0xf : b & 0xf0;
-
-            if (!lo)
-                nblank++;
-            else
-                break;
-
-            if (!hi)
-                nblank++;
-            else
-                break;
-        }
-
-        ret = MIN(ret, nblank);
-    }
-
-    return ret;
-}
-
-static uint8_t glyph_margin(uint8_t tiles[const 4 * TILE_SZ], bool right) {
-    uint8_t ret = GLYPH_DIM;
-
-    uint8_t rm_upper = tile_margin(tiles, right ? 1 : 0, right);
-    uint8_t rm_lower = tile_margin(tiles, right ? 3 : 2, right);
-
-    ret = MIN(rm_upper, rm_lower);
-
-    /* If both rightmost quadrants are empty, check leftmost ones as well */
-    if (ret == GLYPH_DIM / 2) {
-        rm_upper = tile_margin(tiles, right ? 0 : 1, right);
-        rm_lower = tile_margin(tiles, right ? 2 : 3, right);
-
-        ret += MIN(rm_upper, rm_lower);
-    }
-
-    return ret;
-}
-
 #define DELAY_DEFAULT 3
 #define NCHARS_MAX (128 - 2 /* Stolen by cursor */)
 
 __attribute__ ((noinline))
 static
-void render_sjis(const char* sjis, uint32_t len, uint16_t start_at_y, uint16_t color,
-    bool no_delay, uint16_t xoffs, uint16_t yoffs) {
+uint8_t render_sjis(const char* sjis, uint32_t len, uint16_t start_at_y, uint16_t color,
+    bool no_delay, uint16_t xoffs, uint16_t yoffs, uint8_t nchars_offs) {
     (void)len;
 
     /* FIXME: Is there any good reason why the original code can draw only 112 glyphs? */
@@ -240,13 +249,14 @@ void render_sjis(const char* sjis, uint32_t len, uint16_t start_at_y, uint16_t c
     uint32_t delay = DELAY_DEFAULT;
 
     uint8_t rmargin_prev = 0, xpos_prev = TEXT_LMARGIN;
-    unsigned nchars = 0;
+    unsigned nchars = nchars_offs;
 
     for (uint32_t i = 0; sjis[i];) {
         uint16_t csum = 0;
 
         uint32_t first = sjis[i] & UINT8_MAX;
         uint32_t second = sjis[i + 1] & UINT8_MAX;
+        struct glyph_margins margins = {0, 0};
 
         /* Skip delay digit */
         if (first == 'W' && isdigit(second)) {
@@ -276,12 +286,16 @@ void render_sjis(const char* sjis, uint32_t len, uint16_t start_at_y, uint16_t c
 
         /* Interpret as ascii */
         if (0x21 <= first && first <= 0x7a) {
+            margins = glyph_margin(first);
+
             uint16_t fw = hw_to_fw(first);
             first = fw >> 8;
             second = fw & UINT8_MAX;
             i++;
-        } else
+        } else {
+            margins = glyph_margin((first << 8) | second);
             i += 2;
+        }
 
         uint32_t offs_first = 0;
         uint32_t offs_second = second - 0x40;
@@ -317,9 +331,9 @@ void render_sjis(const char* sjis, uint32_t len, uint16_t start_at_y, uint16_t c
         }
 
         xpos_prev = upload_glyph(&buf[0x47], nchars, row, xpos_prev, yoffs, rmargin_prev,
-            glyph_margin((void*)&buf[0x47], false));
+            margins.lmargin);
 
-        rmargin_prev = glyph_margin((void*)&buf[0x47], true);
+        rmargin_prev = margins.rmargin;
 
         nchars++;
 
@@ -332,10 +346,27 @@ void render_sjis(const char* sjis, uint32_t len, uint16_t start_at_y, uint16_t c
 
     *cursor_col = CURSOR_COL;
     *cursor_row = CURSOR_ROW;
+
+    return nchars;
 }
 
 __attribute__ ((section(".entry")))
 void render_sjis_entry(const char* sjis, uint32_t len, uint16_t start_at_y, uint16_t color,
-    const bool no_delay, uint16_t a6, uint16_t a7) {
-    render_sjis(sjis, len, start_at_y, color, no_delay, a6, a7);
+    uint16_t no_delay, uint16_t a6, uint16_t a7) {
+    render_sjis(sjis, len, start_at_y, color, no_delay, a6, a7, 0);
+}
+
+__attribute__ ((section(".entry_menu")))
+void render_sjis_menu_entry(const char* sjis, uint32_t unused, uint32_t row, uint32_t chosen_row,
+    uint16_t no_delay) {
+    (void)unused;
+
+    /* FIXME */
+
+    uint32_t color = 15;
+    if (row == chosen_row)
+        color = 9;
+
+    *cursor_row = row;
+    render_sjis(sjis, 0, true, color, no_delay, 0, 0, 0);
 }
