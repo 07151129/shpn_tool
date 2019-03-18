@@ -55,26 +55,6 @@ bool isdigit(char c) {
     return '0' <= c && c <= '9';
 }
 
-static uint16_t hw_to_fw(char c) {
-    if ('a' <= c && c <= 'z')
-        return 0x8281 + c - 'a';
-    if ('A' <= c && c <= 'Z')
-        return 0x8260 + c - 'A';
-    if (isdigit(c))
-        return 0x824f + c - '0';
-    switch (c) {
-        case '!': return 0x8149;
-        case '?': return 0x8148;
-        case '&': return 0x8195;
-        case '(': return 0x8169;
-        case ')': return 0x816a;
-        case ',': return 0x8143;
-        case '.': return 0x8144;
-        case '-': return 0x815d;
-    }
-    return c;
-}
-
 #define NCOLS_PER_ROW 30
 
 #define TILE_DIM 8
@@ -229,7 +209,7 @@ uint8_t render_sjis(const char* sjis, uint32_t len, uint16_t start_at_y, uint16_
         if (0x21 <= first && first <= 0x7a) {
             margins = glyph_margin(first);
 
-            uint16_t fw = hw_to_fw(first);
+            uint16_t fw = glyph_hw_to_fw(first);
             first = fw >> 8;
             second = fw & UINT8_MAX;
             i++;

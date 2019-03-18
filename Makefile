@@ -31,6 +31,8 @@ SRC += $(OBJ_YACC)
 
 OBJ := $(SRC:src/%.c=build/%.o)
 OBJ += $(SRC_PARSER:src/%.c=build/%.o)
+OBJ += build/glyph_margins.o
+
 DEP := $(OBJ:%.o=%.d)
 
 # all but main.o
@@ -59,6 +61,7 @@ src/%.yy.c src/%.yy.h: src/%.l $(SRC_YACC)
 	$(VERBOSE) $(ENV) $(LEX) $(LEX_FLAGS) -o $(@:%.h=%.c) $<
 
 $(eval $(call COMPILE_C,build,src))
+$(eval $(call COMPILE_C,build,agb))
 $(eval $(call COMPILE_C,build/test,test))
 
 build/script_parse_ctx.o: $(SRC_PARSER)

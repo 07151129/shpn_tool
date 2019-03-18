@@ -66,3 +66,23 @@ struct glyph_margins glyph_margin(uint16_t c) {
 
     return (struct glyph_margins){0, 0};
 }
+
+uint16_t glyph_hw_to_fw(char c) {
+    if ('a' <= c && c <= 'z')
+        return 0x8281 + c - 'a';
+    if ('A' <= c && c <= 'Z')
+        return 0x8260 + c - 'A';
+    if (isdigit(c))
+        return 0x824f + c - '0';
+    switch (c) {
+        case '!': return 0x8149;
+        case '?': return 0x8148;
+        case '&': return 0x8195;
+        case '(': return 0x8169;
+        case ')': return 0x816a;
+        case ',': return 0x8143;
+        case '.': return 0x8144;
+        case '-': return 0x815d;
+    }
+    return c;
+}
