@@ -94,10 +94,11 @@ _Static_assert(sizeof(margins_AZ) / sizeof(*margins_AZ) == 'Z' - 'A' + 1, "");
 
 static struct glyph_margins margins_cyr_lo[] = {
     {2, 5}, {2, 5}, {2, 5}, {2, 6}, {1, 5}, {2, 5}, {2, 5}, {1, 4}, {2, 5}, {2, 5}, {2, 5}, /* й */
-    {2, 6}, {2, 5}, {1, 4}, {2, 5}, {2, 5}, {2, 5}, {2, 5}, {2, 5}, {2, 5}, {3, 5}, {0, 3}, /* ф */
+    {2, 6}, {2, 5}, {1, 4}, {2, 5}, {0, 0}, /* Placeholder for 847f */
+    {2, 5}, {2, 5}, {2, 5}, {2, 5}, {2, 5}, {3, 5}, {0, 3}, /* ф */
     {2, 5}, {1, 5}, {2, 5}, {1, 4}, {0, 5}, {1, 4}, {1, 5}, {2, 5}, {2, 5}, {1, 4}, {2, 5} /* я */
 };
-_Static_assert(sizeof(margins_cyr_lo) / sizeof(*margins_cyr_lo) == 33, "");
+_Static_assert(sizeof(margins_cyr_lo) / sizeof(*margins_cyr_lo) == 33 + 1, "");
 
 static struct glyph_margins margins_cyr_cap[] = {
     {1, 4}, {2, 5}, {2, 5}, {2, 6}, {1, 5}, {2, 5}, {2, 5}, {0, 3}, {2, 5}, {1, 5}, {1, 5}, /* Й */
