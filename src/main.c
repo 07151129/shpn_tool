@@ -15,7 +15,6 @@
 
 #include "defs.h"
 #include "embed.h"
-#include "glyph.h"
 #include "script_as.h"
 #include "script_disass.h"
 #include "strtab.h"
@@ -37,14 +36,11 @@ static void usage() {
                     "\tdump [out] [idx] -- Dump strtab entry at \"idx\" or all entries to file at"
                         " \"out\" or stdout\n"
                     "\tembed <in> <out> -- Embed all strtab entries from file \"in\" to file \"out\""
-                    "\n\n"
-                    "glyph <sjis>\n"
-                    "\tcidx [out] -- Compute glyph table index"
                     "\n\n");
 }
 
 static struct {
-    enum {VERB_NOP, VERB_SCRIPT, VERB_STRTAB, VERB_GLYPH} verb;
+    enum {VERB_NOP, VERB_SCRIPT, VERB_STRTAB} verb;
     union {
         enum {SCRIPT_DUMP, SCRIPT_EMBED} script_verb;
         enum {STRTAB_DUMP, STRTAB_EMBED} strtab_verb;
@@ -55,7 +51,6 @@ static struct {
     union {
         char* script_name;
         char* strtab_name;
-        uint16_t glyph_sjis;
     };
     uint32_t strtab_vma;
     uint32_t strtab_idx;
@@ -170,24 +165,6 @@ static bool parse_strtab_verb(int argc, char* const* argv, int i) {
     return true;
 }
 
-static bool parse_glyph_verb(int argc, char* const* argv, int i) {
-    int j = i + 1;
-
-    if (j < argc) {
-        char* end;
-        opts.glyph_sjis = strtoul(argv[j], &end, 0);
-        if (end <= argv[j]) {
-            fprintf(stderr, "Failed to parse SJIS code at %s\n", argv[j]);
-            return false;
-        }
-    }
-
-    if (++j < argc)
-        opts.out_path = argv[j];
-
-    return true;
-}
-
 static bool parse_argv(int argc, char* const* argv) {
     if (argc >= 2)
         opts.rom_path = argv[1];
@@ -203,9 +180,6 @@ static bool parse_argv(int argc, char* const* argv) {
         } else if (!strcmp(argv[2], "strtab")) {
             opts.verb = VERB_STRTAB;
             return parse_strtab_verb(argc, argv, 2);
-        } else if (!strcmp(argv[2], "glyph")) {
-            opts.verb = VERB_GLYPH;
-            return parse_glyph_verb(argc, argv, 2);
         } else {
             fprintf(stderr, "Unrecognized verb %s\n", argv[2]);
             return false;
@@ -421,39 +395,6 @@ done:
     return ret;
 }
 
-static bool glyph_verbs() {
-    FILE* fout = NULL;
-    bool ret = true;
-
-    if (opts.out_path) {
-        fout = fopen(opts.out_path, "wb");
-        if (!fout) {
-            perror("fopen");
-            goto done;
-        }
-    }
-
-    if (opts.glyph_sjis) {
-        uint16_t csum;
-        ret = glyph_csum(opts.glyph_sjis, &csum);
-
-        if (!ret) {
-            fprintf(stderr, "Failed to map glyph 0x%x\n", opts.glyph_sjis);
-            ret = false;
-            goto done;
-        }
-
-        fprintf(fout ? fout : stdout, "0x%x: 0x%x\n", opts.glyph_sjis, csum);
-    } else
-        dump_glyphs_csum(fout ? fout : stdout);
-
-done:
-    if (fout)
-        fclose(fout);
-
-    return ret;
-}
-
 uint32_t do_crc32(const void* buf, size_t size);
 
 static bool host_is_le() {
@@ -508,11 +449,6 @@ int main(int argc, char** argv) {
 
         case VERB_STRTAB: {
             ret = strtab_verbs(rom, rom_st.st_size) ? EXIT_SUCCESS : EXIT_FAILURE;
-            break;
-        }
-
-        case VERB_GLYPH: {
-            ret = glyph_verbs() ? EXIT_SUCCESS : EXIT_FAILURE;
             break;
         }
 
