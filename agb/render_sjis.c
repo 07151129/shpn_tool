@@ -363,12 +363,16 @@ void render_sjis_menu_entry(const char* sjis, uint32_t unused, uint32_t row, uin
     uint16_t no_delay) {
     (void)unused;
 
-    /* FIXME */
+    /**
+     * HACK: We don't draw a cursor for choice so this variable can be safely reused for storing
+     * OAM offset
+     */
+    if (row == 0)
+        *cursor_col = 0;
 
     uint32_t color = 15;
     if (row == chosen_row)
         color = 9;
 
-    *cursor_row = row;
-    render_sjis(sjis, 0, true, color, no_delay, 0, 0, 0);
+    *cursor_col = render_sjis(sjis, 0, false, color, no_delay, 0, VSPACE * row, *cursor_col);
 }
