@@ -8,6 +8,13 @@ OBJCOPY := $(ARMPREFIX)-objcopy
 
 LDSCRIPT := agb.ld
 
+SRC := \
+	render_sjis.c \
+	glyph_margins.c
+
+OBJ := $(SRC:%.c=build/%.o)
+DEP := $(OBJ:%.o=%.d)
+
 CFLAGS := \
 	-Wall \
 	-Wextra \
@@ -19,7 +26,8 @@ CFLAGS := \
 	-nostdlib \
 	-static \
 	-ffreestanding \
-	-fno-strict-aliasing
+	-fno-strict-aliasing \
+	-DFREESTANDING
 
 LDFLAGS := \
 	-static \
@@ -28,29 +36,35 @@ LDFLAGS := \
 	-T$(LDSCRIPT) \
 	-N
 
+BINS = build/render_sjis.bin build/render_sjis_entry.bin build/render_sjis_menu.bin
+
 .PHONY: clean all
+.SUFFIXES:
 
-all: render_sjis.bin render_sjis_entry.bin render_sjis_entry_menu.bin
+all: $(BINS) | build
 
-render_sjis.o: render_sjis.c
+-include $(DEP)
+
+build:
+	@mkdir -p build
+
+build/%.o: %.c build
 	@echo cc $<
-	$(VERBOSE) $(ENV) $(CC) $(CFLAGS) -o $@ -c $<
+	$(VERBOSE) $(ENV) $(CC) $(CFLAGS) -MMD -MT $@ -MF build/$*.d -o $@ -c $<
 
-render_sjis: render_sjis.o
-	@echo ld $@
-	$(VERBOSE) $(ENV) $(LD) $(LDFLAGS) -o $@ $<
+build/render_sjis: $(OBJ)
+	@echo ld $(notdir $@)
+	$(VERBOSE) $(ENV) $(LD) $(LDFLAGS) -o $@ $^
 
-render_sjis.bin: render_sjis
-	@echo objcopy $@
-	$(VERBOSE) $(ENV) $(OBJCOPY) -O binary -j .text $< $@
+define BIN_TGT
+$(1): $(2)
+	@echo objcopy $$(notdir $$@)
+	$$(VERBOSE) $$(ENV) $$(OBJCOPY) -O binary -j $(3) $$< $$@
+endef
 
-render_sjis_entry.bin: render_sjis
-	@echo objcopy $@
-	$(VERBOSE) $(ENV) $(OBJCOPY) -O binary -j .entry $< $@
-
-render_sjis_entry_menu.bin: render_sjis
-	@echo objcopy $@
-	$(VERBOSE) $(ENV) $(OBJCOPY) -O binary -j .entry_menu $< $@
+$(eval $(call BIN_TGT,build/render_sjis.bin,build/render_sjis,.text))
+$(eval $(call BIN_TGT,build/render_sjis_entry.bin,build/render_sjis,.entry))
+$(eval $(call BIN_TGT,build/render_sjis_menu.bin,build/render_sjis,.entry_menu))
 
 clean:
-	rm -f render_sjis.bin render_sjis_entry.bin render_sjis.o render_sjis
+	rm -rf build

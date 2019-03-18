@@ -4,6 +4,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "glyph_margins.h"
+
 static uint32_t (*parse_wait_command)(const char* buf, uint32_t idx) =
     (uint32_t (*)(const char*, uint32_t))0x8004D85;
 static void (*sub_8004CD4)(uint32_t idx, uint32_t* buf) = (void (*)(uint32_t, uint32_t*))0x8004CD5;
@@ -49,7 +51,7 @@ struct dma_cnt {
 };
 _Static_assert(sizeof(struct dma_cnt) == sizeof(uint32_t), "");
 
-static bool isdigit(char c) {
+bool isdigit(char c) {
     return '0' <= c && c <= '9';
 }
 
@@ -73,45 +75,6 @@ static uint16_t hw_to_fw(char c) {
     return c;
 }
 
-struct glyph_margins {
-    uint8_t lmargin;
-    uint8_t rmargin;
-};
-
-static struct glyph_margins margins_az[] = {
-    {2, 5}, {2, 5}, {2, 5}, {2, 5}, {2, 5}, {3, 6}, {2, 5}, {2, 5}, {5, 8}, {3, 6}, {3, 5}, /* k */
-    {4, 8}, {1, 4}, {2, 5}, {2, 5}, {2, 5}, {2, 5}, {4, 6}, {2, 5}, {3, 5}, {2, 5}, {2, 5}, /* v */
-    {1, 4}, {2, 5}, {2, 5}, {2, 5} /* z */
-};
-_Static_assert(sizeof(margins_az) / sizeof(*margins_az) == 'z' - 'a' + 1, "");
-
-static struct glyph_margins margins_AZ[] = {
-    {1, 4}, {2, 5}, {2, 4}, {2, 4}, {2, 5}, {2, 5}, {2, 4}, {2, 5}, {5, 8}, {2, 5}, {2, 4}, /* K */
-    {2, 5}, {1, 4}, {2, 4}, {2, 4}, {2, 5}, {2, 4}, {2, 5}, {2, 5}, {1, 4}, {2, 4}, {1, 4}, /* V */
-    {1, 4}, {1, 4}, {1, 4}, {2, 5} /* Z */
-};
-_Static_assert(sizeof(margins_AZ) / sizeof(*margins_AZ) == 'Z' - 'A' + 1, "");
-
-static struct glyph_margins margins_cyr_lo[] = {
-    {2, 5}, {2, 5}, {2, 5}, {2, 6}, {1, 5}, {2, 5}, {2, 5}, {1, 4}, {2, 5}, {2, 5}, {2, 5}, /* й */
-    {2, 6}, {2, 5}, {1, 4}, {2, 5}, {0, 0}, /* Placeholder for 847f */
-    {2, 5}, {2, 5}, {2, 5}, {2, 5}, {2, 5}, {3, 5}, {0, 3}, /* ф */
-    {2, 5}, {1, 5}, {2, 5}, {1, 4}, {0, 5}, {1, 4}, {1, 5}, {2, 5}, {2, 5}, {1, 4}, {2, 5} /* я */
-};
-_Static_assert(sizeof(margins_cyr_lo) / sizeof(*margins_cyr_lo) == 33 + 1, "");
-
-static struct glyph_margins margins_cyr_cap[] = {
-    {1, 4}, {2, 5}, {2, 5}, {2, 6}, {1, 5}, {2, 5}, {2, 5}, {0, 3}, {2, 5}, {1, 5}, {1, 5}, /* Й */
-    {2, 5}, {2, 5}, {1, 4}, {2, 5}, {1, 5}, {2, 5}, {2, 5}, {1, 5}, {2, 5}, {2, 5}, {1, 4}, /* Ф */
-    {2, 5}, {1, 5}, {2, 5}, {1, 4}, {0, 4}, {1, 4}, {1, 4}, {2, 5}, {1, 5}, {0, 4}, {2, 5} /* Я */
-};
-_Static_assert(sizeof(margins_cyr_cap) / sizeof(*margins_cyr_cap) == 33, "");
-
-static struct glyph_margins margins_digit[] = {
-    {2, 5}, {5, 8}, {2, 5}, {2, 5}, {2, 4}, {2, 6}, {2, 5}, {2, 5}, {2, 5}, {2, 5}
-};
-_Static_assert(sizeof(margins_digit) / sizeof(*margins_digit) == '9' - '0' + 1, "");
-
 #define NCOLS_PER_ROW 30
 
 #define TILE_DIM 8
@@ -126,31 +89,6 @@ _Static_assert(sizeof(margins_digit) / sizeof(*margins_digit) == '9' - '0' + 1, 
 #define TEXT_UMARGIN 15
 
 #define CURSOR_OAM_IDX 112
-
-static struct glyph_margins glyph_margin(uint16_t c) {
-    if ('a' <= c && c <= 'z')
-        return margins_az[c - 'a'];
-    if ('A' <= c && c <= 'Z')
-        return margins_AZ[c - 'A'];
-    if (/* a */ 0x8470 <= c && c <= 0x8491 /* я */)
-        return margins_cyr_lo[c - 0x8470];
-    if (/* А */ 0x8440 <= c && c <= 0x8460 /* Я */)
-        return margins_cyr_cap[c - 0x8440];
-    if (isdigit(c))
-        return margins_digit[c - '0'];
-    switch (c) {
-        case '!': return (struct glyph_margins){5, 8};
-        case '?': return (struct glyph_margins){2, 6};
-        case '&': return (struct glyph_margins){2, 5};
-        case '(': return (struct glyph_margins){7, 4};
-        case ')': return (struct glyph_margins){1, 8};
-        case ',': return (struct glyph_margins){0, 12};
-        case '.': return (struct glyph_margins){1, 11};
-        case '-': return (struct glyph_margins){3, 6};
-    }
-
-    return (struct glyph_margins){0, 0};
-}
 
 static uint8_t upload_glyph(const void* tiles, uint32_t idx, uint32_t row, uint16_t xoffs,
     uint16_t yoffs, uint8_t rmargin_prev, uint8_t lmargin) {
