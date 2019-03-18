@@ -224,7 +224,7 @@ static uint8_t upload_glyph(const void* tiles, uint32_t idx, uint32_t row, uint1
 __attribute__ ((noinline))
 static
 uint8_t render_sjis(const char* sjis, uint32_t len, uint16_t start_at_y, uint16_t color,
-    bool no_delay, uint16_t xoffs, uint16_t yoffs, uint8_t nchars_offs) {
+    bool no_delay, uint16_t xoffs, uint16_t yoffs, uint8_t nchars_offs, uint32_t* nbreaksp) {
     (void)len;
 
     /* FIXME: Is there any good reason why the original code can draw only 112 glyphs? */
@@ -250,6 +250,7 @@ uint8_t render_sjis(const char* sjis, uint32_t len, uint16_t start_at_y, uint16_
 
     uint8_t rmargin_prev = 0, xpos_prev = TEXT_LMARGIN;
     unsigned nchars = nchars_offs;
+    unsigned nbreaks = 0;
 
     for (uint32_t i = 0; sjis[i];) {
         uint16_t csum = 0;
@@ -267,6 +268,7 @@ uint8_t render_sjis(const char* sjis, uint32_t len, uint16_t start_at_y, uint16_
             col = 0;
             row++;
             i++;
+            nbreaks++;
             xpos_prev = TEXT_LMARGIN;
             continue;
         } else if (first == ' ') {
@@ -280,6 +282,7 @@ uint8_t render_sjis(const char* sjis, uint32_t len, uint16_t start_at_y, uint16_
             col = 0;
             xpos_prev = TEXT_LMARGIN;
             row++;
+            nbreaks++;
         }
 
         /* Prevent overflow */
@@ -342,12 +345,8 @@ uint8_t render_sjis(const char* sjis, uint32_t len, uint16_t start_at_y, uint16_
         col++;
     }
 
-    /* Cursor is drawn at coordinates for fixed-width spacing... */
-#define CURSOR_COL 13
-#define CURSOR_ROW 8
-
-    *cursor_col = CURSOR_COL;
-    *cursor_row = CURSOR_ROW;
+    if (nbreaksp)
+        *nbreaksp += nbreaks;
 
     return nchars;
 }
@@ -355,7 +354,14 @@ uint8_t render_sjis(const char* sjis, uint32_t len, uint16_t start_at_y, uint16_
 __attribute__ ((section(".entry")))
 void render_sjis_entry(const char* sjis, uint32_t len, uint16_t start_at_y, uint16_t color,
     uint16_t no_delay, uint16_t a6, uint16_t a7) {
-    render_sjis(sjis, len, start_at_y, color, no_delay, a6, a7, 0);
+    render_sjis(sjis, len, start_at_y, color, no_delay, a6, a7, 0, NULL);
+
+    /* Cursor is drawn at coordinates for fixed-width spacing... */
+#define CURSOR_COL 13
+#define CURSOR_ROW 8
+
+    *cursor_col = CURSOR_COL;
+    *cursor_row = CURSOR_ROW;
 }
 
 __attribute__ ((section(".entry_menu")))
@@ -363,17 +369,21 @@ void render_sjis_menu_entry(const char* sjis, uint32_t unused, uint32_t row, uin
     uint16_t no_delay) {
     (void)unused;
 
+    uint32_t* nchars_rendered = (uint32_t*)0x3002134;
+
     /**
      * HACK: We don't draw a cursor for choice so this variable can be safely reused for storing
      * OAM offset
      */
-    if (row == 0)
+    if (row == 0) {
         *cursor_col = 0;
+        *cursor_row = UINT32_MAX;
+    }
 
     uint32_t color = 15;
     if (row == chosen_row)
         color = 9;
 
-    *cursor_col = render_sjis(sjis, 0, false, color, no_delay, 0, VSPACE * row, *cursor_col);
-    *(uint32_t*)0x3002134 = *cursor_col;
+    *cursor_col = render_sjis(sjis, 0, true, color, no_delay, 0, 0, *cursor_col, cursor_row);
+    *(uint32_t*)nchars_rendered = *cursor_col;
 }
