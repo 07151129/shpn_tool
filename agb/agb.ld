@@ -22,15 +22,15 @@ SECTIONS {
     } > ROM_PATCH_MENU_ENTRY = 0xFF
 
     .text : {
-        *(.init)
+        /* *(.init) */
         *(.text)
         KEEP(*(.text))
 
-        *(.ctors)
-        *(.dtors)
+        /* *(.ctors) */
+        /* *(.dtors) */
         *(.rodata)
-        *(.fini)
-        *(.data)
+        /* *(.fini) */
+        /* *(.data) */
         *(COMMON)
         *(.bss)
     } > ROM_PATCH = 0xFF
