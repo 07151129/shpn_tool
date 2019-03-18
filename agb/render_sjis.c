@@ -375,4 +375,5 @@ void render_sjis_menu_entry(const char* sjis, uint32_t unused, uint32_t row, uin
         color = 9;
 
     *cursor_col = render_sjis(sjis, 0, false, color, no_delay, 0, VSPACE * row, *cursor_col);
+    *(uint32_t*)0x3002134 = *cursor_col;
 }
