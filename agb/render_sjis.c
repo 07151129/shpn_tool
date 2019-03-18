@@ -167,9 +167,6 @@ uint8_t render_sjis(const char* sjis, uint32_t len, uint16_t start_at_y, uint16_
     (void)len;
 
     /* FIXME: Is there any good reason why the original code can draw only 112 glyphs? */
-    /* Hide glyphs past the cursor */
-    for (unsigned i = CURSOR_OAM_IDX + 1; i < NCHARS_MAX + 2; i++)
-        oam_base[i].AffineMode = 2; /* Hide */
 
     uint32_t buf[0x71 + 0x40];
     buf[0] = 0;
@@ -325,4 +322,10 @@ void render_sjis_menu_entry(const char* sjis, uint32_t unused, uint32_t row, uin
 
     *cursor_col = render_sjis(sjis, 0, true, color, no_delay, 0, 0, *cursor_col, cursor_row);
     *(uint32_t*)nchars_rendered = *cursor_col;
+}
+
+__attribute__ ((section(".clear_oam")))
+void clear_oam() {
+    for (unsigned i = 0; i < NCHARS_MAX + 2; i++)
+        oam_base[i].AffineMode = 2; /* Hide */
 }
