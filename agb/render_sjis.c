@@ -4,6 +4,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "config.h"
 #include "glyph_margins.h"
 
 static uint32_t (*parse_wait_command)(const char* buf, uint32_t idx) =
@@ -55,18 +56,8 @@ bool isdigit(char c) {
     return '0' <= c && c <= '9';
 }
 
-#define NCOLS_PER_ROW 30
-
 #define TILE_DIM 8
 #define NTILES_GLYPH 4
-#define GLYPH_DIM 16
-
-#define TEXT_LMARGIN (GLYPH_DIM)
-#define TEXT_RMARGIN (240 - TEXT_LMARGIN - GLYPH_DIM)
-
-#define SPACE_W 6
-#define VSPACE 14
-#define TEXT_UMARGIN 15
 
 #define CURSOR_OAM_IDX 112
 
@@ -100,7 +91,7 @@ static uint8_t upload_glyph(const void* tiles, uint32_t idx, uint32_t row, uint1
     *dma3_cnt = dma_cnt.cnt;
 
     struct oam_data gly_obj = {
-        .VPos = row * VSPACE + TEXT_UMARGIN + yoffs,
+        .VPos = row * RENDER_VSPACE + RENDER_TEXT_UMARGIN + yoffs,
         .AffineMode = 0,
         .ObjMode = 0,
         .Mosaic = 0,
@@ -116,8 +107,8 @@ static uint8_t upload_glyph(const void* tiles, uint32_t idx, uint32_t row, uint1
         .AffineParam = 0
     };
 
-    gly_obj.HPos = TEXT_LMARGIN;
-    if (xoffs > TEXT_LMARGIN)
+    gly_obj.HPos = RENDER_TEXT_LMARGIN;
+    if (xoffs > RENDER_TEXT_LMARGIN)
         gly_obj.HPos = xoffs - lmargin - rmargin_prev;
 
     /* FIXME: Is it faster to have tiles uploaded asynchronously and copy gly_obj manually? */
@@ -133,12 +124,8 @@ static uint8_t upload_glyph(const void* tiles, uint32_t idx, uint32_t row, uint1
     while (dma3_cnt->Enable)
         ;
 
-    return gly_obj.HPos + GLYPH_DIM;
+    return gly_obj.HPos + RENDER_GLYPH_DIM;
 }
-
-#define TILE_SZ 0x20
-#define DELAY_DEFAULT 3
-#define NCHARS_MAX (128 - 2 /* Stolen by cursor */)
 
 __attribute__ ((noinline))
 static
@@ -162,9 +149,9 @@ uint8_t render_sjis(const char* sjis, uint32_t len, uint16_t start_at_y, uint16_
     if (start_at_y)
         row = *cursor_row + 1;
 
-    uint32_t delay = DELAY_DEFAULT;
+    uint32_t delay = RENDER_DELAY_DEFAULT;
 
-    uint8_t rmargin_prev = 0, xpos_prev = TEXT_LMARGIN;
+    uint8_t rmargin_prev = 0, xpos_prev = RENDER_TEXT_LMARGIN;
     unsigned nchars = nchars_offs;
     unsigned nbreaks = 0;
 
@@ -185,24 +172,24 @@ uint8_t render_sjis(const char* sjis, uint32_t len, uint16_t start_at_y, uint16_
             row++;
             i++;
             nbreaks++;
-            xpos_prev = TEXT_LMARGIN;
+            xpos_prev = RENDER_TEXT_LMARGIN;
             continue;
         } else if (first == ' ') {
             i++;
-            xpos_prev += SPACE_W;
+            xpos_prev += RENDER_SPACE_W;
             continue;
         }
 
         /* Automatic line wrap */
-        if (xpos_prev >= TEXT_RMARGIN) {
+        if (xpos_prev >= RENDER_TEXT_RMARGIN) {
             col = 0;
-            xpos_prev = TEXT_LMARGIN;
+            xpos_prev = RENDER_TEXT_LMARGIN;
             row++;
             nbreaks++;
         }
 
         /* Prevent overflow */
-        if (nchars > NCHARS_MAX)
+        if (nchars > RENDER_NCHARS_MAX)
             break;
 
         /* Interpret as ascii */
@@ -241,14 +228,14 @@ uint8_t render_sjis(const char* sjis, uint32_t len, uint16_t start_at_y, uint16_
                 break;
             }
         }
-        delay = DELAY_DEFAULT;
+        delay = RENDER_DELAY_DEFAULT;
 
         sub_8004CD4(csum, &buf[7]);
         sub_8004C34(&buf[7], &buf[0x47], color);
 
         if (col == 0) {
             rmargin_prev = 0;
-            xpos_prev = xoffs + TEXT_LMARGIN;
+            xpos_prev = xoffs + RENDER_TEXT_LMARGIN;
         }
 
         xpos_prev = upload_glyph(&buf[0x47], nchars, row, xpos_prev, yoffs, rmargin_prev,
@@ -306,6 +293,6 @@ void render_sjis_menu_entry(const char* sjis, uint32_t unused, uint32_t row, uin
 
 __attribute__ ((section(".clear_oam")))
 void clear_oam() {
-    for (unsigned i = 0; i < NCHARS_MAX + 2; i++)
+    for (unsigned i = 0; i < RENDER_NCHARS_MAX + 2; i++)
         oam_base[i].AffineMode = 2; /* Hide */
 }
