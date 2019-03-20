@@ -15,7 +15,8 @@ CFLAGS := \
     -Wextra \
     -pedantic \
     -Isrc \
-    -fno-strict-aliasing
+    -fno-strict-aliasing \
+    -I.
 
 LDFLAGS :=
 

@@ -12,8 +12,8 @@
 
 #include "defs.h"
 #include "embed.h"
+#include "glyph.h"
 #include "script_as.h"
-#include "script_disass.h"
 #include "script_parse_ctx.h"
 #include "strtab.h"
 
@@ -37,6 +37,15 @@ static bool ctx_conv(iconv_t conv, struct strtab_embed_ctx* ctx) {
         }
     }
     return true;
+}
+
+static void ctx_hard_wrap(struct strtab_embed_ctx* ctx) {
+    for (size_t i = 0; i < ctx->nstrs; i++) {
+        assert(ctx->strs[i]);
+
+        if (ctx->allocated[i])
+            hard_wrap_sjis(ctx->strs[i]);
+    }
 }
 
 size_t strtab_embed_min_rom_sz() {
@@ -71,6 +80,8 @@ bool embed_strtab(uint8_t* rom, size_t rom_sz, struct strtab_embed_ctx* ectx, si
 
     if (!ctx_conv(conv, ectx))
         return false;
+
+    ctx_hard_wrap(ectx);
 
     size_t nwritten;
     if (!make_strtab((void*)ectx->strs, ectx->nstrs, &rom[VMA2OFFS(ectx->rom_vma)], space_left,

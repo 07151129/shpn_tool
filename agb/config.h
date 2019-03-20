@@ -9,7 +9,7 @@
 /* Text left margin */
 #define RENDER_TEXT_LMARGIN (RENDER_GLYPH_DIM)
 /* Text right margin */
-#define RENDER_TEXT_RMARGIN (240 - RENDER_TEXT_LMARGIN - RENDER_GLYPH_DIM)
+#define RENDER_TEXT_RMARGIN (240 - RENDER_TEXT_LMARGIN)
 /* Text upper margin */
 #define RENDER_TEXT_UMARGIN 15
 
@@ -18,11 +18,17 @@
 /* Vertical space width */
 #define RENDER_VSPACE 14
 
+/* Coordinates of cursor as if glyphs were fixed-width */
+#define RENDER_CURSOR_COL 14
+#define RENDER_CURSOR_ROW 8
+
 /* Delay in vertical blanking periods before next glyph is rendered */
 #define RENDER_DELAY_DEFAULT 3
 /* Amount of OAM objects used, 1 reserved for the cursor */
 #define RENDER_NCHARS_MAX (128 - 2 /* Stolen by cursor */)
 
 _Static_assert(RENDER_NCHARS_MAX <= 126, "Too many glyphs to render");
+
+#define RENDER_AUTO_WRAP 1
 
 #endif

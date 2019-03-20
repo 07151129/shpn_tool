@@ -19,7 +19,8 @@ SRC_TEST := \
 	test/make_strtab.c \
 	test/script_as.c \
 	test/mk_strtab_str.c \
-	test/embed_strtab.c
+	test/embed_strtab.c \
+	test/hard_wrap.c
 
 SRC_LEX := src/script_lex.yy.c
 SRC_YACC := src/script_gram.tab.c

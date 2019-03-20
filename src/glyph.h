@@ -5,5 +5,6 @@
 #include <stdint.h>
 #include <stdio.h>
 
+void hard_wrap_sjis(char* sjis);
 
 #endif

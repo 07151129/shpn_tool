@@ -18,7 +18,7 @@ struct strtab_embed_ctx {
     bool allocated[EMBED_STRTAB_SZ];
 };
 
-#define STRTAB_SCRIPT_SZ 0x36b64ul
+#define STRTAB_SCRIPT_SZ (0x36b64ul)
 #define STRTAB_MENU_SZ 0x14b68ul /* FIXME: What's what actual size? */
 
 static_assert(STRTAB_MENU_SZ <= STRTAB_SCRIPT_SZ, "Unexpected strtab sizes");

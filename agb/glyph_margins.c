@@ -86,3 +86,7 @@ uint16_t glyph_hw_to_fw(char c) {
     }
     return c;
 }
+
+bool glyph_is_hw(char c) {
+    return 0x21 <= c && c <= 0x7a;
+}

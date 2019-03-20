@@ -180,20 +180,12 @@ uint8_t render_sjis(const char* sjis, uint32_t len, uint16_t start_at_y, uint16_
             continue;
         }
 
-        /* Automatic line wrap */
-        if (xpos_prev >= RENDER_TEXT_RMARGIN) {
-            col = 0;
-            xpos_prev = RENDER_TEXT_LMARGIN;
-            row++;
-            nbreaks++;
-        }
-
         /* Prevent overflow */
         if (nchars > RENDER_NCHARS_MAX)
             break;
 
         /* Interpret as ascii */
-        if (0x21 <= first && first <= 0x7a) {
+        if (glyph_is_hw(first)) {
             margins = glyph_margin(first);
 
             uint16_t fw = glyph_hw_to_fw(first);
@@ -204,6 +196,17 @@ uint8_t render_sjis(const char* sjis, uint32_t len, uint16_t start_at_y, uint16_
             margins = glyph_margin((first << 8) | second);
             i += 2;
         }
+
+#ifdef RENDER_AUTO_WRAP
+        /* Automatic line wrap */
+        if (xpos_prev - RENDER_GLYPH_DIM + margins.lmargin +
+            (RENDER_GLYPH_DIM - margins.lmargin - margins.rmargin) >= RENDER_TEXT_RMARGIN) {
+            col = 0;
+            xpos_prev = RENDER_TEXT_LMARGIN;
+            row++;
+            nbreaks++;
+        }
+#endif
 
         uint32_t offs_first = 0;
         uint32_t offs_second = second - 0x40;
@@ -260,11 +263,9 @@ void render_sjis_entry(const char* sjis, uint32_t len, uint16_t start_at_y, uint
     render_sjis(sjis, len, start_at_y, color, no_delay, a6, a7, 0, NULL);
 
     /* Cursor is drawn at coordinates for fixed-width spacing... */
-#define CURSOR_COL 13
-#define CURSOR_ROW 8
 
-    *cursor_col = CURSOR_COL;
-    *cursor_row = CURSOR_ROW;
+    *cursor_col = RENDER_CURSOR_COL;
+    *cursor_row = RENDER_CURSOR_ROW;
 }
 
 __attribute__ ((section(".entry_menu")))
