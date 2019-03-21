@@ -10,6 +10,7 @@ MEMORY {
     ROM_PATCH_ENTRY (rx) : ORIGIN = 0x8004DA4, LENGTH = (0x8004F70 - 0x8004DA4)
     ROM_PATCH_MENU_ENTRY (rx) : ORIGIN = 0x8004F90, LENGTH = (0x8005134 - 0x8004F90)
     ROM_PATCH_CLEAR_OAM (rx) : ORIGIN = 0x8007200, LENGTH = (0x80072EC - 0x8007200)
+    ROM_PATCH_RENDER_BACKLOG (rx) : ORIGIN = 0x800774C, LENGTH = (0x8007B90 - 0x800774C)
     ROM_PATCH (rx) : ORIGIN = 0x87962EC, LENGTH = (0x87962EC - 0x87A0000)
 }
 
@@ -25,6 +26,10 @@ SECTIONS {
     .clear_oam : {
         KEEP(*(.clear_oam))
     } > ROM_PATCH_CLEAR_OAM = 0xFF
+
+    .render_backlog_controls : {
+        KEEP(*(.render_backlog_controls))
+    } > ROM_PATCH_RENDER_BACKLOG = 0xFF
 
     .text : {
         /* *(.init) */

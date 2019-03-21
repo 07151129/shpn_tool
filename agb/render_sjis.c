@@ -297,3 +297,8 @@ void clear_oam() {
     for (unsigned i = 0; i < RENDER_NCHARS_MAX + 2; i++)
         oam_base[i].AffineMode = 2; /* Hide */
 }
+
+__attribute__ ((section(".render_backlog_controls")))
+void render_backlog_controls(uint32_t arg) {
+    (void)arg;
+}
