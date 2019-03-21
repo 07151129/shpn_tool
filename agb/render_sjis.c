@@ -260,7 +260,14 @@ uint8_t render_sjis(const char* sjis, uint32_t len, uint16_t start_at_y, uint16_
 __attribute__ ((section(".entry")))
 void render_sjis_entry(const char* sjis, uint32_t len, uint16_t start_at_y, uint16_t color,
     uint16_t no_delay, uint16_t a6, uint16_t a7) {
-    render_sjis(sjis, len, start_at_y, color, no_delay, a6, a7, 0, NULL);
+    /**
+     * HACK: Looks like start_at_y=1 iff. we're rendering backlog. For some reason, for choice
+     * operands render_sjis is called twice for a single line, so try to ignore the second
+     * (pointless) call, which might also corrupt the image.
+     */
+    if (start_at_y)
+        return;
+    render_sjis(sjis, len, 0, color, no_delay, a6, a7, 0, NULL);
 
     /* Cursor is drawn at coordinates for fixed-width spacing... */
 
