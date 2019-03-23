@@ -2,6 +2,8 @@ LEntry: LoadBackground(0);
 
 Choice("The quick brown fox", "Jumps over", "the lazy", "dog");
 
+ChoiceIdx(1, "Similar choice", "but with idx this time");
+
 Choice("The quick brown fox jumps over the lazy", "dog");
 
 Choice("The quick brown fox jumps over the lazy","The quick brown fox jumps over the lazy", "dog");
