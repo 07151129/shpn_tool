@@ -12,5 +12,6 @@ struct glyph_margins {
 struct glyph_margins glyph_margin(uint16_t c);
 uint16_t glyph_hw_to_fw(char c);
 bool glyph_is_hw(char c);
+bool glyph_is_wait_cmd(const char* sjis);
 
 #endif

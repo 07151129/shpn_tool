@@ -90,3 +90,7 @@ uint16_t glyph_hw_to_fw(char c) {
 bool glyph_is_hw(char c) {
     return 0x21 <= c && c <= 0x7a;
 }
+
+bool glyph_is_wait_cmd(const char* sjis) {
+    return sjis[0] == 'W' && isdigit(sjis[1]);
+}

@@ -163,7 +163,7 @@ uint8_t render_sjis(const char* sjis, uint32_t len, uint16_t start_at_y, uint16_
         struct glyph_margins margins = {0, 0};
 
         /* Skip delay digit */
-        if (first == 'W' && isdigit(second)) {
+        if (glyph_is_wait_cmd(&sjis[i])) {
             delay = parse_wait_command(sjis, i);
             i += 2;
             continue;

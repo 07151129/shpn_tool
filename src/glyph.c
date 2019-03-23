@@ -19,7 +19,7 @@ static unsigned word_end(const char* sjis, unsigned xoffs) {
         uint32_t first = sjis[i] & UINT8_MAX;
         uint32_t second = sjis[i + 1] & UINT8_MAX;
 
-        if (first == ' ' || first == '\n')
+        if (first == ' ' || first == '\n' || glyph_is_wait_cmd(&sjis[i]))
             break;
 
         if (glyph_is_hw(first)) {
@@ -50,6 +50,11 @@ void hard_wrap_sjis(char* sjis) {
         if (sjis[i] == ' ') {
             prev_space = i++;
             xoffs += RENDER_SPACE_W;
+            continue;
+        }
+
+        if (glyph_is_wait_cmd(&sjis[i])) {
+            i += 2;
             continue;
         }
 

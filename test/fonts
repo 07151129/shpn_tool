@@ -6,6 +6,9 @@ Choice("The quick brown fox jumps over the lazy", "dog");
 
 Choice("The quick brown fox jumps over the lazy","The quick brown fox jumps over the lazy", "dog");
 
+ShowText("Nine-period long delayW9 follows");
+HandleInput();
+
 /* Full width Latin */
 ShowText("ＡＢＣＤＥＦＧＨＩＪＫＬＭＮＯＰＱＲＳＴＵＶＷＸＹＺａｂｃｄｅｆｇｈｉｊｋｌｍｎｏｐｑｒｓｔｕｖｗｘｙｚ");
 HandleInput();
