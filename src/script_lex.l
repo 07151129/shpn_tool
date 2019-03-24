@@ -22,7 +22,7 @@
 
 blank [ \t]
 dquote \"
-chars (\\.|[^\\"])*|(¥.|[^¥"])*
+chars ([\\¥].|[^\\"])*
 
 uint 0[xX][[:xdigit:]]+|[[:digit:]]+
 %%
@@ -45,6 +45,7 @@ uint 0[xX][[:xdigit:]]+|[[:digit:]]+
     char* s = strdup(&yytext[1]);
 
     s[yyleng - 2] = '\0';
+
     yylval->sval = s;
     return SCRIPT_STR;
 }
