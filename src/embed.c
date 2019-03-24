@@ -284,12 +284,13 @@ bool embed_script(uint8_t* rom, size_t rom_sz, size_t script_sz_max, size_t scri
         goto done;
 
     ectx_scr = strtab_embed_ctx_with_file(strtab_scr, strtab_scr_fsz);
-    ectx_scr->rom_vma = strtab_scr_vma;
-
     ectx_menu = strtab_embed_ctx_with_file(strtab_menu, strtab_menu_fsz);
-    ectx_menu->rom_vma = strtab_menu_vma;
+
     if (!ectx_scr || !ectx_menu)
         goto done;
+
+    ectx_scr->rom_vma = strtab_scr_vma;
+    ectx_menu->rom_vma = strtab_menu_vma;
 
     ret = script_assemble(pctx, &rom[script_offs], script_sz_max, ectx_scr, ectx_menu);
     ret = ret &&
