@@ -15,14 +15,12 @@ static struct script_desc scripts[] = {
     {
         .name = "Harry",
         .vma = 0x82316DC,
-        .strtab_vma = 0x853E908,
         .cksum = 0xba64,
         .patch_info = {.size_vma = 0x80126A0}
     },
     {
         .name = "Cybil",
         .vma = 0x823EAC0,
-        .strtab_vma = 0x853E908,
         .cksum = 0xb971,
         .patch_info = {.size_vma = 0x80126AC}
     }
@@ -253,7 +251,8 @@ bool has_label(uint16_t offs, const struct script_state* state) {
  * Because there are finitely many branch/jump instructions in a script, finitely many labels will be
  * created, so the procedure will terminate.
  */
-bool script_dump(const uint8_t* rom, size_t rom_sz, const struct script_desc* desc, FILE* fout) {
+bool script_dump(const uint8_t* rom, size_t rom_sz, const struct script_desc* desc, FILE* fout,
+    uint32_t strtab_script_vma, uint32_t strtab_menu_vma) {
     const struct script_hdr* hdr = (void*)&rom[VMA2OFFS(desc->vma)];
     static_assert(sizeof(*hdr) == sizeof(uint16_t[3]), "");
 
@@ -280,7 +279,7 @@ bool script_dump(const uint8_t* rom, size_t rom_sz, const struct script_desc* de
 
     struct script_state state;
     script_state_init(&state, rom + rom_sz,
-        &rom[VMA2OFFS(desc->strtab_vma)], &rom[VMA2OFFS(STRTAB_MENU_VMA)],
+        &rom[VMA2OFFS(strtab_script_vma)], &rom[VMA2OFFS(strtab_menu_vma)],
         cmds, labels, cmd_end, &rom[VMA2OFFS(BRANCH_INFO_UMK_VMA)]);
 
     /* Phase one: read code and create labels */

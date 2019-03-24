@@ -20,23 +20,24 @@
 #include "strtab.h"
 
 static void usage() {
-    fprintf(stderr, "shpn-tool: analyze and modify Silent Hill Play Novel GBA ROM\n"
-#ifdef HAS_ICONV
-                    "Built with iconv support"
-#endif
-                    "\nusage: <ROM> <verb> [...]\n\n"
-                    "ROM is the AGB-ASHJ ROM path\n"
-                    "Supported verbs:\n"
-                    "script <name> <dump | embed>\n"
-                    "\tdump [out] -- Dump script to file at \"out\" or to stdout\n"
-                    "\tembed <in> <strtab> <menu> <out> -- Embed script at \"in\" with strtab at "
-                    "\"strtab\", menu strtab at \"menu\" into \"out\" or into \"ROM\""
-                    "\n\n"
-                    "strtab <name | addr> <dump | embed>\n"
-                    "\tdump [out] [idx] -- Dump strtab entry at \"idx\" or all entries to file at"
-                        " \"out\" or stdout\n"
-                    "\tembed <in> <out> -- Embed all strtab entries from file \"in\" to file \"out\""
-                    "\n\n");
+    fprintf(stderr,
+        "shpn-tool: analyze and modify Silent Hill Play Novel GBA ROM\n"
+    #ifdef HAS_ICONV
+        "Built with iconv support"
+    #endif
+        "\nusage: <ROM> <verb> [...]\n\n"
+        "ROM is the AGB-ASHJ ROM path\n"
+        "Supported verbs:\n"
+        "script <name> <strtab_script_vma> <strtab_menu_vma> <dump | embed>\n"
+        "\tdump [out] -- Dump script to file at \"out\" or to stdout\n"
+        "\tembed <in> <strtab> <menu> <strtab_sz> <menu_sz> <out> -- Embed script at \"in\" with "
+        "strtab at \"strtab\", menu strtab at \"menu\" into \"out\""
+        "\n\n"
+        "strtab <vma> <dump | embed>\n"
+        "\tdump [out] [idx] -- Dump strtab entry at \"idx\" or all "
+            "entries to file at \"out\" or stdout\n"
+        "\tembed <in> <size> <out> -- Embed all strtab entries from file \"in\" to file \"out\""
+        "\n\n");
 }
 
 static struct {
@@ -52,7 +53,14 @@ static struct {
         char* script_name;
         char* strtab_name;
     };
-    uint32_t strtab_vma;
+    union {
+        uint32_t strtab_vma; /* for strtab verb */
+        struct {uint32_t strtab_script_vma, strtab_menu_vma;}; /* for script verbs */
+    };
+    union {
+        uint32_t strtab_sz; /* for standalone strtab embedding */
+        uint32_t strtab_script_sz, strtab_menu_sz; /* for script embedding */
+    };
     uint32_t strtab_idx;
     bool has_strtab_idx;
 } opts;
@@ -63,7 +71,23 @@ static bool parse_script_verb(int argc, char* const* argv, int i) {
     if (j < argc)
         opts.script_name = argv[j];
     else {
-        fprintf(stderr, "Missing script address or name\n");
+        fprintf(stderr, "Missing script name\n");
+        return false;
+    }
+
+    if (++j < argc) {
+        char* end;
+        opts.strtab_script_vma = strtoul(argv[j], &end, 0);
+    } else if (!opts.strtab_vma) {
+        fprintf(stderr, "Missing non-zero address for script strtab\n");
+        return false;
+    }
+
+    if (++j < argc) {
+        char* end;
+        opts.strtab_menu_vma = strtoul(argv[j], &end, 0);
+    } else if (!opts.strtab_vma) {
+        fprintf(stderr, "Missing non-zero address for menu strtab\n");
         return false;
     }
 
@@ -106,6 +130,22 @@ static bool parse_script_verb(int argc, char* const* argv, int i) {
             return false;
         }
 
+        if (++j < argc) {
+            char* end;
+            opts.strtab_script_sz = strtoul(argv[j], &end, 0);
+        } else if (!opts.strtab_script_sz) {
+            fprintf(stderr, "Missing non-zero size for script strtab\n");
+            return false;
+        }
+
+        if (++j < argc) {
+            char* end;
+            opts.strtab_menu_sz = strtoul(argv[j], &end, 0);
+        } else if (!opts.strtab_menu_sz) {
+            fprintf(stderr, "Missing non-zero size for menu strtab\n");
+            return false;
+        }
+
         if (++j < argc)
             opts.out_path = argv[j];
         else {
@@ -123,10 +163,8 @@ static bool parse_strtab_verb(int argc, char* const* argv, int i) {
     if (j < argc) {
         char* end;
         opts.strtab_vma = strtoul(argv[j], &end, 0);
-        if (end == argv[j])
-            opts.strtab_name = argv[j];
-    } else {
-        fprintf(stderr, "Missing address or script name for strtab\n");
+    } else if (!opts.strtab_vma) {
+        fprintf(stderr, "Missing non-zero address for strtab\n");
         return false;
     }
 
@@ -150,6 +188,16 @@ static bool parse_strtab_verb(int argc, char* const* argv, int i) {
 
         if (opts.strtab_verb == STRTAB_DUMP)
             opts.out_path = argv[j];
+    }
+
+    if (opts.strtab_verb == STRTAB_EMBED) {
+        if (++j < argc) {
+            char* end;
+            opts.strtab_sz = strtoul(argv[j], &end, 0);
+        } else if (!opts.strtab_sz) {
+            fprintf(stderr, "Missing non-zero size for strtab\n");
+            return false;
+        }
     }
 
     if (++j < argc) {
@@ -191,7 +239,16 @@ static bool parse_argv(int argc, char* const* argv) {
     return true;
 }
 
+/* Amount of padding that ROM needs to accomodate sz_desired bytes at vma_desired */
+static uint32_t rom_pad_sz(size_t rom_sz, uint32_t vma_desired, size_t sz_desired) {
+    if (VMA2OFFS(vma_desired) + sz_desired < rom_sz)
+        return 0;
+    return VMA2OFFS(vma_desired) + sz_desired - rom_sz;
+}
+
 static bool script_verbs(uint8_t* rom, size_t sz) {
+    assert(opts.strtab_script_vma && opts.strtab_menu_vma);
+
     bool ret = false;
 
     const struct script_desc* desc = script_for_name(opts.script_name);
@@ -219,10 +276,19 @@ static bool script_verbs(uint8_t* rom, size_t sz) {
     init_script_handlers();
 
     if (opts.script_verb == SCRIPT_DUMP)
-        ret = script_dump(rom, sz, desc, fout ? fout : stdout);
+        ret = script_dump(rom, sz, desc, fout ? fout : stdout, opts.strtab_script_vma,
+            opts.strtab_menu_vma);
     else if (opts.script_verb == SCRIPT_EMBED) {
         assert(fin && fout);
         assert(opts.strtab_script_path && opts.strtab_menu_path);
+        assert(opts.strtab_script_sz && opts.strtab_menu_sz);
+
+        size_t pad_sz = rom_pad_sz(sz, opts.strtab_script_vma, opts.strtab_script_sz) +
+            rom_pad_sz(sz, opts.strtab_menu_vma, opts.strtab_menu_sz);
+        if (pad_sz > MAX_ROM_SZ) {
+            fprintf(stderr, "Embedding would exceed maximum allowed ROM size 0x%llx\n", MAX_ROM_SZ);
+            goto done;
+        }
 
         uint8_t * rom_cpy = NULL;
 
@@ -257,12 +323,13 @@ static bool script_verbs(uint8_t* rom, size_t sz) {
         }
         sz_strtab_menu = st.st_size;
 
-        rom_cpy = malloc(sz);
+        rom_cpy = malloc(sz + pad_sz);
         if (!rom_cpy) {
             perror("malloc");
             goto done_embed;
         }
         memcpy(rom_cpy, rom, sz);
+        memset(&rom_cpy[sz], 0xff, pad_sz);
 
         ret = embed_script(rom_cpy, sz,
                 script_sz((void*)&rom[VMA2OFFS(desc->vma)]) + sizeof(struct script_hdr),
@@ -270,10 +337,12 @@ static bool script_verbs(uint8_t* rom, size_t sz) {
                 fin, strtab_scr, strtab_menu,
                 opts.in_path,
                 sz_script, sz_strtab_scr, sz_strtab_menu,
-                desc->strtab_vma, desc->patch_info.size_vma);
+                opts.strtab_script_vma, opts.strtab_menu_vma,
+                opts.strtab_script_sz, opts.strtab_menu_sz,
+                desc->patch_info.size_vma);
 
         if (ret) {
-            ret = fwrite(rom_cpy, 1, sz, fout) == sz;
+            ret = fwrite(rom_cpy, 1, sz + pad_sz, fout) == sz + pad_sz;
             if (!ret)
                 perror("fwrite");
         }
@@ -297,26 +366,9 @@ done:
 }
 
 static bool strtab_verbs(const uint8_t* rom, size_t sz) {
-    bool ret = false;
+    assert(opts.strtab_vma);
 
-    /* FIXME: Should try to dynamically compute strtab size instead of harcoding... */
-    uint32_t strtab_vma = 0;
-    size_t strtab_sz = 0;
-    if (!opts.script_name)
-        strtab_vma = opts.strtab_vma;
-    else if (!strcmp(opts.script_name, "Menu")) {
-        strtab_sz = STRTAB_MENU_SZ;
-        strtab_vma = STRTAB_MENU_VMA;
-    }
-    else {
-        const struct script_desc* desc = script_for_name(opts.script_name);
-        if (!desc) {
-            fprintf(stderr, "Unrecognized strtab name %s\n", opts.script_name);
-            return false;
-        }
-        strtab_sz = STRTAB_SCRIPT_SZ;
-        strtab_vma = desc->strtab_vma;
-    }
+    bool ret = false;
 
     FILE* fin = NULL, * fout = NULL;
     size_t in_sz = 0;
@@ -340,7 +392,7 @@ static bool strtab_verbs(const uint8_t* rom, size_t sz) {
     }
 
     if (opts.strtab_verb == STRTAB_DUMP)
-        ret = strtab_dump(rom, sz, strtab_vma, opts.strtab_idx, opts.has_strtab_idx,
+        ret = strtab_dump(rom, sz, opts.strtab_vma, opts.strtab_idx, opts.has_strtab_idx,
             fout ? fout : stdout);
     else if (opts.strtab_verb == STRTAB_EMBED) {
 #if !HAS_ICONV
@@ -356,22 +408,31 @@ static bool strtab_verbs(const uint8_t* rom, size_t sz) {
             goto done;
         }
 
+        size_t pad_sz = rom_pad_sz(sz, opts.strtab_script_vma, opts.strtab_script_sz) +
+            rom_pad_sz(sz, opts.strtab_menu_vma, opts.strtab_menu_sz);
+        if (pad_sz > MAX_ROM_SZ) {
+            fprintf(stderr, "Embedding would exceed maximum allowed ROM size 0x%llx\n", MAX_ROM_SZ);
+            goto done;
+        }
+
         struct strtab_embed_ctx* ectx = strtab_embed_ctx_with_file(fin, in_sz);
         if (!ectx) {
             fprintf(stderr, "Failed to process %s for embedding\n", opts.in_path);
             goto done;
         }
-        ectx->rom_vma = strtab_vma;
+        ectx->rom_vma = opts.strtab_vma;
 
-        uint8_t* rom_cpy = malloc(sz);
+        uint8_t* rom_cpy = malloc(sz + pad_sz);
         if (!rom_cpy)
             perror("malloc");
         else {
             memcpy(rom_cpy, rom, sz);
+            memset(&rom_cpy[sz], 0xff, pad_sz);
+
             iconv_t conv = conv_for_embedding();
-            if (conv == (iconv_t)-1 || !embed_strtab(rom_cpy, sz, ectx, strtab_sz, conv))
+            if (conv == (iconv_t)-1 || !embed_strtab(rom_cpy, ectx, opts.strtab_sz, conv))
                 fprintf(stderr, "Failed to embed strtab from %s\n", opts.in_path);
-            else if (fwrite(rom_cpy, 1, sz, fout) < sz)
+            else if (fwrite(rom_cpy, 1, sz + pad_sz, fout) < sz + pad_sz)
                 perror("fwrite");
             else
                 ret = true;

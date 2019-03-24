@@ -229,6 +229,10 @@ bool strtab_dec_str(const uint8_t* strtab, const uint8_t* rom_end, uint32_t idx,
 
 bool strtab_dump(const uint8_t* rom, size_t rom_sz, uint32_t vma, uint32_t idx, bool has_idx,
     FILE* fout) {
+    if (VMA2OFFS(vma) >= rom_sz) {
+        fprintf(stderr, "Past EOF strtab vma 0x%x\n", vma);
+        return false;
+    }
     const void* strtab = &rom[VMA2OFFS(vma)];
 
     iconv_t conv = (iconv_t)-1;
@@ -607,11 +611,12 @@ bool make_strtab(const uint8_t** strs, size_t nstrs, uint8_t* dst, size_t dst_sz
 
                 if (nbits > 0 && nbits % 8 == 0) {
                     // fprintf(stderr, "writing val=0x%x\n", val);
-                    *msg++ = val;
                     if (dst_sz < 1) {
                         fprintf(stderr, "Out of space writing bits for string at %zu\n", i);
                         return false;
                     }
+
+                    *msg++ = val;
                     val = 0;
                     dst_sz--;
                 }
