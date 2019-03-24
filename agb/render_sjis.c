@@ -159,7 +159,7 @@ uint8_t render_sjis(const char* sjis, uint32_t len, uint16_t start_at_y, uint16_
         uint16_t csum = 0;
 
         uint32_t first = sjis[i] & UINT8_MAX;
-        uint32_t second = sjis[i + 1] & UINT8_MAX;
+        uint32_t second;
         struct glyph_margins margins = {0, 0};
 
         /* Skip delay digit */
@@ -184,23 +184,27 @@ uint8_t render_sjis(const char* sjis, uint32_t len, uint16_t start_at_y, uint16_
         if (nchars > RENDER_NCHARS_MAX)
             break;
 
-        /* Interpret as ascii */
-        if (glyph_is_hw(first)) {
+        if (glyph_is_hw(first)) { /* Known single-byte half-width */
             margins = glyph_margin(first);
 
             uint16_t fw = glyph_hw_to_fw(first);
             first = fw >> 8;
             second = fw & UINT8_MAX;
             i++;
-        } else {
+        } else if (sjis[i+1]) { /* Try to interpret as two-byte full-width */
+            second = sjis[i + 1] & UINT8_MAX;
             margins = glyph_margin((first << 8) | second);
             i += 2;
+        } else { /* Unknown char; skip */
+            i++;
+            continue;
         }
 
 #ifdef RENDER_AUTO_WRAP
         /* Automatic line wrap */
         if (xpos_prev - RENDER_GLYPH_DIM + margins.lmargin +
-            (RENDER_GLYPH_DIM - margins.lmargin - margins.rmargin) >= RENDER_TEXT_RMARGIN) {
+            (RENDER_GLYPH_DIM - margins.lmargin - margins.rmargin) - rmargin_prev
+                >= RENDER_TEXT_RMARGIN) {
             col = 0;
             xpos_prev = RENDER_TEXT_LMARGIN;
             row++;

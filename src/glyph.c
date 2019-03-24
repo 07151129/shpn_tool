@@ -17,17 +17,22 @@ static unsigned word_end(const char* sjis, unsigned xoffs) {
 
     for (size_t i = 0; sjis[i];) {
         uint32_t first = sjis[i] & UINT8_MAX;
-        uint32_t second = sjis[i + 1] & UINT8_MAX;
 
         if (first == ' ' || first == '\n' || glyph_is_wait_cmd(&sjis[i]))
             break;
 
+        /* Known single-byte half-width char */
         if (glyph_is_hw(first)) {
             margins = glyph_margin(first);
             i++;
-        } else {
+        } else if (sjis[i + 1]) { /* Possibly known two-byte full-width */
+            uint32_t second = sjis[i + 1] & UINT8_MAX;
+
             margins = glyph_margin((first << 8) | second);
             i += 2;
+        } else { /* Unknown single-byte; skip */
+            i++;
+            continue;
         }
 
         if (ret > RENDER_TEXT_LMARGIN)
@@ -46,7 +51,7 @@ void hard_wrap_sjis(char* sjis) {
     size_t prev_space = 0;
     unsigned xoffs = RENDER_TEXT_LMARGIN;
 
-    for (size_t i = 0; sjis[i];) {
+    for (size_t i = 0; sjis[i] && (i == 0 || sjis[i + 1]);) {
         if (sjis[i] == ' ') {
             prev_space = i++;
             xoffs += RENDER_SPACE_W;
@@ -79,9 +84,9 @@ void hard_wrap_sjis(char* sjis) {
 
         /* Next word */
         while (sjis[i] && sjis[i] != ' ')
-            if (glyph_is_hw(sjis[i]))
-                i++;
-            else
+            if (!glyph_is_hw(sjis[i]) && sjis[i + 1])
                 i += 2;
+            else
+                i++;
     }
 }
