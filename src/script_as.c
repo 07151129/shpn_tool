@@ -194,11 +194,10 @@ static bool emit_arg_numbered_str(const struct script_stmt* stmt, const struct s
         log(true, stmt, actx->pctx, "string index too large");
         return false;
     }
-    if (strs->allocated[arg->numbered_str.num]) {
+    if (strs->allocated[arg->numbered_str.num])
         log(false, stmt, actx->pctx, "overwriting existing string table entry at %u",
             arg->numbered_str.num);
-        return true;
-    }
+
     if (actx->dst_sz < sizeof(arg->numbered_str.num)) {
         log(true, stmt, actx->pctx, "no space to write string table index");
         return false;
