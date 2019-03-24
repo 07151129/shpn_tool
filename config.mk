@@ -50,6 +50,6 @@ ICONV ?= /usr
 
 ifneq ($(wildcard $(ICONV)/include/iconv.h),)
 	HAS_ICONV = 1
-	CFLAGS += -I$(ICONV)/include/iconv.h -DHAS_ICONV
+	CFLAGS += -I$(ICONV)/include/ -DHAS_ICONV
 	LDFLAGS += -L$(ICONV)/lib -liconv
 endif
