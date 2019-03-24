@@ -13,7 +13,7 @@ bool strtab_dump(const uint8_t* rom, size_t rom_sz, uint32_t vma, uint32_t idx, 
 bool strtab_dec_str(const uint8_t* strtab, const uint8_t* rom_end, uint32_t idx, char* out,
     size_t out_sz, size_t* nwritten, iconv_t conv, bool should_conv);
 
-#define DEC_BUF_SZ_SJIS 512
+#define DEC_BUF_SZ_SJIS 1024
 #define SJIS_TO_U8_MIN_SZ(len) (3 * (len) + 1) /* Bound for SJIS -> UTF8 */
 #define U8_TO_SJIS_MIN_SZ(len) (2 * (len) - 2 * (len) / 3 + 1) /* Bound for U8 -> SJIS */
 
