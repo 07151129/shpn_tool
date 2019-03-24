@@ -46,6 +46,19 @@ static bool is_leaf(const struct dict_node* n) {
     return n->tag != UINT32_MAX;
 }
 
+static const char* esc_for_buf(uint8_t val) {
+    switch (val) {
+        case '\n':
+            return "\\n";
+        case '\r':
+            return "\\r";
+        case '"':
+            return "\\\"";
+        default:
+            return NULL;
+    };
+}
+
 static
 bool strtab_dec_msg(const struct dict_node* dict, const uint8_t** msg, uint8_t* bits, int* nbits,
     char* dst, size_t* len, size_t maxlen, int* err, const uint8_t* rom_end) {
@@ -93,20 +106,22 @@ leaf:
         // fprintf(stderr, "decoded leaf 0x%x len %zu\n", n->val & 0xff, *len);
         assert(n->offs_l == UINT32_MAX && n->offs_r == UINT32_MAX &&
             "Leaves must have UINT32_MAX offsets");
-        /* NOTE: The original implementation replaces \n with \r for rendering, but we don't care */
-        if (n->val == '\0' || n->val == '\n') {
-            /* Replace \n with \\n in SJIS (will be half-width YEN_SIGN in UTF-8) */
-            if (n->val == '\n') {
-                if (*len + 2 >= maxlen)
-                    goto err;
-                *dst++ = '\\';
-                *dst++ = 'n';
-                *len += 2;
-            }
 
-            /* If a message was terminated by newline, we have some more to decode */
-            return n->val == '\n';
+        if (esc_for_buf(n->val)) {
+            if (*len + 2 >= maxlen)
+                goto err;
+            memcpy(dst, esc_for_buf(n->val), 2);
+            dst += 2;
+            *len += 2;
+
+            if (n->val == '\n')
+                return true;
+
+            continue;
         }
+
+        if (n->val == '\0')
+            return false;
 
         *dst++ = n->val;
         *len = *len + 1;
@@ -728,7 +743,7 @@ char* mk_strtab_str(const char* u8str, iconv_t conv) {
 
         until_newline = sjisiter - sjisiter_old;
 
-        /* We would have converted either until escape char or end of string*/
+        /* We would have converted either until escape char or end of string */
         if (*u8iter) {
             size_t cons, prod;
             const char* escb = buf_for_esc(u8iter, &cons, &prod);
