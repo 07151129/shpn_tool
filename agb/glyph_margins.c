@@ -51,10 +51,12 @@ struct glyph_margins glyph_margin(uint16_t c) {
         return margins_cyr_lo[c - 0x8470];
     if (/* А */ 0x8440 <= c && c <= 0x8460 /* Я */)
         return margins_cyr_cap[c - 0x8440];
-    if (c == 0x8167) /* opening double quote */
+
+    /* FIXME: Objects for quotes appear swapped? */
+    if (c == 0x8168) /* “ */
         return (struct glyph_margins){0, 9};
-    if (c == 0x8168) /* closing double quote */
-        return (struct glyph_margins){9, 0};
+    if (c == 0x8167) /* ” */
+        return (struct glyph_margins){6, 3};
     if (isdigit(c))
         return margins_digit[c - '0'];
     switch (c) {
