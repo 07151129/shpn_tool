@@ -58,8 +58,17 @@ iconv_t conv_for_embedding() {
     return ret;
 }
 
-bool embed_strtab(uint8_t* rom, struct strtab_embed_ctx* ectx, size_t max_sz,
-    iconv_t conv) {
+static bool patch_strtab_ptr(uint8_t* rom, size_t rom_sz, uint32_t strtab_vma, uint32_t ptr_vma) {
+    if (VMA2OFFS(ptr_vma) + sizeof(uint32_t) >= rom_sz) {
+        fprintf(stderr, "ROM too small for patching at 0x%x\n", ptr_vma);
+        return false;
+    }
+    *(uint32_t*)&rom[VMA2OFFS(ptr_vma)] = strtab_vma;
+    return true;
+}
+
+bool embed_strtab(uint8_t* rom, size_t rom_sz, struct strtab_embed_ctx* ectx, size_t max_sz,
+    uint32_t ptr_vma, iconv_t conv) {
     assert(HAS_ICONV && conv != (iconv_t)-1);
 
     /**
@@ -76,19 +85,22 @@ bool embed_strtab(uint8_t* rom, struct strtab_embed_ctx* ectx, size_t max_sz,
         &nwritten))
         return false;
 
+    if (!patch_strtab_ptr(rom, rom_sz, ectx->rom_vma, ptr_vma))
+        return false;
+
     return true;
 }
 
-bool embed_strtabs(uint8_t* rom, struct strtab_embed_ctx* ectx_script,
+bool embed_strtabs(uint8_t* rom, size_t rom_sz, struct strtab_embed_ctx* ectx_script,
     struct strtab_embed_ctx* ectx_menu, size_t strtab_script_sz, size_t strtab_menu_sz,
     iconv_t conv) {
     assert(HAS_ICONV && conv != (iconv_t)-1);
 
-    if (!embed_strtab(rom, ectx_script, strtab_script_sz, conv)) {
+    if (!embed_strtab(rom, rom_sz, ectx_script, strtab_script_sz, STRTAB_SCRIPT_PTR_VMA, conv)) {
         fprintf(stderr, "Failed to embed script strtab\n");
         return false;
     }
-    if (!embed_strtab(rom, ectx_menu, strtab_menu_sz, conv)) {
+    if (!embed_strtab(rom, rom_sz, ectx_menu, strtab_menu_sz, STRTAB_MENU_PTR_VMA, conv)) {
         fprintf(stderr, "Failed to embed menu strtab\n");
         return false;
     }
@@ -218,18 +230,6 @@ static bool patch_cksum_sz(uint8_t* rom, size_t rom_sz, size_t script_sz, uint32
     return true;
 }
 
-#define STRTAB_SCRIPT_PTR_VMA 0x8004B9C
-#define STRTAB_MENU_PTR_VMA 0x8004C24
-
-static bool patch_strtab_ptr(uint8_t* rom, size_t rom_sz, uint32_t strtab_vma, uint32_t ptr_vma) {
-    if (VMA2OFFS(ptr_vma) + sizeof(uint32_t) >= rom_sz) {
-        fprintf(stderr, "ROM too small for patching at 0x%x\n", ptr_vma);
-        return false;
-    }
-    *(uint32_t*)&rom[VMA2OFFS(ptr_vma)] = strtab_vma;
-    return true;
-}
-
 bool embed_script(uint8_t* rom, size_t rom_sz, size_t script_sz_max, size_t script_offs,
         FILE* fscript, FILE* strtab_scr, FILE* strtab_menu,
         const char* script_path,
@@ -295,9 +295,7 @@ bool embed_script(uint8_t* rom, size_t rom_sz, size_t script_sz_max, size_t scri
     ret = ret &&
         patch_cksum_sz(rom, rom_sz, script_sz((void*)&rom[script_offs]) + sizeof(struct script_hdr),
             sz_to_patch_vma) &&
-        patch_strtab_ptr(rom, rom_sz, strtab_scr_vma, STRTAB_SCRIPT_PTR_VMA) &&
-        patch_strtab_ptr(rom, rom_sz, strtab_menu_vma, STRTAB_MENU_PTR_VMA) &&
-        embed_strtabs(rom, ectx_scr, ectx_menu, strtab_scr_sz, strtab_menu_sz, conv);
+        embed_strtabs(rom, rom_sz, ectx_scr, ectx_menu, strtab_scr_sz, strtab_menu_sz, conv);
 
 done:
     if (conv != (iconv_t)-1) {

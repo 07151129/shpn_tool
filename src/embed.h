@@ -18,12 +18,13 @@ struct strtab_embed_ctx {
     bool allocated[EMBED_STRTAB_SZ];
 };
 
-#define MAX_ROM_SZ 0x1ffffffull
+#define STRTAB_SCRIPT_PTR_VMA 0x8004B9C
+#define STRTAB_MENU_PTR_VMA 0x8004C24
 
 iconv_t conv_for_embedding();
-bool embed_strtab(uint8_t* rom, struct strtab_embed_ctx* ectx, size_t max_sz,
-    iconv_t conv);
-bool embed_strtabs(uint8_t* rom, struct strtab_embed_ctx* ectx_script,
+bool embed_strtab(uint8_t* rom, size_t rom_sz, struct strtab_embed_ctx* ectx, size_t max_sz,
+    uint32_t ptr_vma, iconv_t conv);
+bool embed_strtabs(uint8_t* rom, size_t rom_sz, struct strtab_embed_ctx* ectx_script,
     struct strtab_embed_ctx* ectx_menu, size_t strtab_script_sz, size_t strtab_menu_sz,
     iconv_t conv);
 struct strtab_embed_ctx* strtab_embed_ctx_with_file(FILE* fin, size_t sz);

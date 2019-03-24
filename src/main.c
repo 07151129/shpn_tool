@@ -36,7 +36,8 @@ static void usage() {
         "strtab <vma> <dump | embed>\n"
         "\tdump [out] [idx] -- Dump strtab entry at \"idx\" or all "
             "entries to file at \"out\" or stdout\n"
-        "\tembed <in> <size> <out> -- Embed all strtab entries from file \"in\" to file \"out\""
+        "\tembed <in> <size> <Script|Menu> <out> -- Embed all strtab entries from file \"in\" to "
+        "file \"out\""
         "\n\n");
 }
 
@@ -63,6 +64,7 @@ static struct {
     };
     uint32_t strtab_idx;
     bool has_strtab_idx;
+    bool strtab_embed_script;
 } opts;
 
 static bool parse_script_verb(int argc, char* const* argv, int i) {
@@ -196,6 +198,13 @@ static bool parse_strtab_verb(int argc, char* const* argv, int i) {
             opts.strtab_sz = strtoul(argv[j], &end, 0);
         } else if (!opts.strtab_sz) {
             fprintf(stderr, "Missing non-zero size for strtab\n");
+            return false;
+        }
+
+        if (++j < argc) {
+            opts.strtab_embed_script = !strcmp(argv[j], "Script");
+        } else if (!opts.strtab_sz) {
+            fprintf(stderr, "Missing embed target for strtab\n");
             return false;
         }
     }
@@ -408,8 +417,7 @@ static bool strtab_verbs(const uint8_t* rom, size_t sz) {
             goto done;
         }
 
-        size_t pad_sz = rom_pad_sz(sz, opts.strtab_script_vma, opts.strtab_script_sz) +
-            rom_pad_sz(sz, opts.strtab_menu_vma, opts.strtab_menu_sz);
+        size_t pad_sz = rom_pad_sz(sz, opts.strtab_vma, opts.strtab_sz);
         if (pad_sz > MAX_ROM_SZ) {
             fprintf(stderr, "Embedding would exceed maximum allowed ROM size 0x%llx\n", MAX_ROM_SZ);
             goto done;
@@ -430,7 +438,8 @@ static bool strtab_verbs(const uint8_t* rom, size_t sz) {
             memset(&rom_cpy[sz], 0xff, pad_sz);
 
             iconv_t conv = conv_for_embedding();
-            if (conv == (iconv_t)-1 || !embed_strtab(rom_cpy, ectx, opts.strtab_sz, conv))
+            if (conv == (iconv_t)-1 || !embed_strtab(rom_cpy, sz + pad_sz, ectx, opts.strtab_sz,
+                opts.strtab_embed_script ? STRTAB_SCRIPT_PTR_VMA : STRTAB_MENU_PTR_VMA, conv))
                 fprintf(stderr, "Failed to embed strtab from %s\n", opts.in_path);
             else if (fwrite(rom_cpy, 1, sz + pad_sz, fout) < sz + pad_sz)
                 perror("fwrite");
