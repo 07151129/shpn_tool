@@ -58,7 +58,7 @@ iconv_t conv_for_embedding() {
     ret = iconv_open("SJIS", "UTF-8");
 #endif
     if (ret == (iconv_t)-1)
-        perror("iconv");
+        perror("iconv_open");
     return ret;
 }
 
