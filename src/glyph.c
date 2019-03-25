@@ -64,6 +64,7 @@ void hard_wrap_sjis(char* sjis) {
         }
 
         if (sjis[i] == '\n') {
+            xoffs = RENDER_TEXT_LMARGIN;
             prev_space = 0;
             i++;
             continue;
@@ -83,7 +84,7 @@ void hard_wrap_sjis(char* sjis) {
         }
 
         /* Next word */
-        while (sjis[i] && sjis[i] != ' ')
+        while (sjis[i] && sjis[i] != ' ' && sjis[i] != '\n')
             if (!glyph_is_hw(sjis[i]) && sjis[i + 1])
                 i += 2;
             else
