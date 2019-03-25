@@ -38,6 +38,7 @@ struct script_desc {
     uint16_t cksum;
     struct {
         uint32_t size_vma;
+        uint32_t ptr_vma;
     } patch_info;
 };
 
@@ -106,7 +107,8 @@ struct script_cmd_handler {
 };
 
 void init_script_handlers();
-bool script_dump(const uint8_t* rom, size_t rom_sz, const struct script_desc* desc, FILE* fout,
+bool script_dump(const uint8_t* rom, size_t rom_sz, uint32_t script_vma,
+    const struct script_desc* desc, FILE* fout,
     uint32_t strtab_script_vma, uint32_t strtab_menu_vma);
 const struct script_desc* script_for_name(const char* name);
 

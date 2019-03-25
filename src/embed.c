@@ -58,18 +58,20 @@ iconv_t conv_for_embedding() {
     return ret;
 }
 
-static bool patch_strtab_ptr(uint8_t* rom, size_t rom_sz, uint32_t strtab_vma, uint32_t ptr_vma) {
+static bool patch_ptr(uint8_t* rom, size_t rom_sz, uint32_t repl_vma, uint32_t ptr_vma) {
     if (VMA2OFFS(ptr_vma) + sizeof(uint32_t) >= rom_sz) {
         fprintf(stderr, "ROM too small for patching at 0x%x\n", ptr_vma);
         return false;
     }
-    *(uint32_t*)&rom[VMA2OFFS(ptr_vma)] = strtab_vma;
+    *(uint32_t*)&rom[VMA2OFFS(ptr_vma)] = repl_vma;
     return true;
 }
+
 
 bool embed_strtab(uint8_t* rom, size_t rom_sz, struct strtab_embed_ctx* ectx, size_t max_sz,
     uint32_t ptr_vma, iconv_t conv) {
     assert(HAS_ICONV && conv != (iconv_t)-1);
+    assert(max_sz + VMA2OFFS(ectx->rom_vma) <= rom_sz);
 
     /**
      * FIXME: Move length until newline check from ctx_conv to after ctx_hard_wrap, as the latter
@@ -85,8 +87,10 @@ bool embed_strtab(uint8_t* rom, size_t rom_sz, struct strtab_embed_ctx* ectx, si
         &nwritten))
         return false;
 
-    if (!patch_strtab_ptr(rom, rom_sz, ectx->rom_vma, ptr_vma))
+    if (!patch_ptr(rom, rom_sz, ectx->rom_vma, ptr_vma))
         return false;
+
+    fprintf(stderr, "Embedded strtab at 0x%x using %zu B\n", ectx->rom_vma, nwritten);
 
     return true;
 }
@@ -236,7 +240,7 @@ bool embed_script(uint8_t* rom, size_t rom_sz, size_t script_sz_max, size_t scri
         size_t script_fsz, size_t strtab_scr_fsz, size_t strtab_menu_fsz,
         uint32_t strtab_scr_vma, uint32_t strtab_menu_vma,
         uint32_t strtab_scr_sz, uint32_t strtab_menu_sz,
-        uint32_t sz_to_patch_vma) {
+        uint32_t sz_to_patch_vma, uint32_t script_ptr_vma) {
     bool ret = false;
     struct script_parse_ctx* pctx = NULL;
     iconv_t conv = (iconv_t)-1;
@@ -292,11 +296,18 @@ bool embed_script(uint8_t* rom, size_t rom_sz, size_t script_sz_max, size_t scri
     ectx_scr->rom_vma = strtab_scr_vma;
     ectx_menu->rom_vma = strtab_menu_vma;
 
+    size_t script_storage_used = 0;
+
     ret = script_assemble(pctx, &rom[script_offs], script_sz_max, ectx_scr, ectx_menu);
     ret = ret &&
-        patch_cksum_sz(rom, rom_sz, script_sz((void*)&rom[script_offs]) + sizeof(struct script_hdr),
+        patch_cksum_sz(rom, rom_sz,
+            (script_storage_used = script_sz((void*)&rom[script_offs]) + sizeof(struct script_hdr)),
             sz_to_patch_vma) &&
+        patch_ptr(rom, rom_sz, OFFS2VMA(script_offs), script_ptr_vma) &&
         embed_strtabs(rom, rom_sz, ectx_scr, ectx_menu, strtab_scr_sz, strtab_menu_sz, conv);
+
+    fprintf(stderr, "Embedded script at 0x%lx using %zu B\n", OFFS2VMA(script_offs),
+        script_sz((void*)&rom[script_offs]) + sizeof(struct script_hdr));
 
 done:
     if (conv != (iconv_t)-1) {

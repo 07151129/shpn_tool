@@ -37,6 +37,6 @@ bool embed_script(uint8_t* rom, size_t rom_sz, size_t script_sz_max, size_t scri
         size_t script_fsz, size_t strtab_scr_fsz, size_t strtab_menu_fsz,
         uint32_t strtab_scr_vma, uint32_t strtab_menu_vma,
         uint32_t strtab_scr_sz, uint32_t strtab_menu_sz,
-        uint32_t sz_to_patch_vma);
+        uint32_t sz_to_patch_vma, uint32_t script_ptr_vma);
 
 #endif

@@ -16,13 +16,13 @@ static struct script_desc scripts[] = {
         .name = "Harry",
         .vma = 0x82316DC,
         .cksum = 0xba64,
-        .patch_info = {.size_vma = 0x80126A0}
+        .patch_info = {.size_vma = 0x80126A0, .ptr_vma = 0x8012c28}
     },
     {
         .name = "Cybil",
         .vma = 0x823EAC0,
         .cksum = 0xb971,
-        .patch_info = {.size_vma = 0x80126AC}
+        .patch_info = {.size_vma = 0x80126AC, .ptr_vma = 0x8012c2c}
     }
 };
 
@@ -251,9 +251,10 @@ bool has_label(uint16_t offs, const struct script_state* state) {
  * Because there are finitely many branch/jump instructions in a script, finitely many labels will be
  * created, so the procedure will terminate.
  */
-bool script_dump(const uint8_t* rom, size_t rom_sz, const struct script_desc* desc, FILE* fout,
+bool script_dump(const uint8_t* rom, size_t rom_sz, uint32_t script_vma,
+    const struct script_desc* desc, FILE* fout,
     uint32_t strtab_script_vma, uint32_t strtab_menu_vma) {
-    const struct script_hdr* hdr = (void*)&rom[VMA2OFFS(desc->vma)];
+    const struct script_hdr* hdr = (void*)&rom[VMA2OFFS(script_vma)];
     static_assert(sizeof(*hdr) == sizeof(uint16_t[3]), "");
 
     uint16_t cks = script_cksum((uint8_t*)hdr, script_sz(hdr) + sizeof(struct script_hdr),
@@ -272,7 +273,7 @@ bool script_dump(const uint8_t* rom, size_t rom_sz, const struct script_desc* de
         return false;
     }
 
-    if ((uint8_t*)cmd_end + hdr->branch_info_sz+ hdr->bytes_to_end >= rom_sz + rom) {
+    if ((uint8_t*)cmd_end + hdr->branch_info_sz + hdr->bytes_to_end >= rom_sz + rom) {
         fprintf(stderr, "Script ends past EOF (incorrect script header?)\n");
         return false;
     }

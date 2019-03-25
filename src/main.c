@@ -28,10 +28,10 @@ static void usage() {
         "\nusage: <ROM> <verb> [...]\n\n"
         "ROM is the AGB-ASHJ ROM path\n"
         "Supported verbs:\n"
-        "script <name> <strtab_script_vma> <strtab_menu_vma> <dump | embed>\n"
+        "script <name> <vma> <strtab_script_vma> <strtab_menu_vma> <dump | embed>\n"
         "\tdump [out] -- Dump script to file at \"out\" or to stdout\n"
-        "\tembed <in> <strtab> <menu> <strtab_sz> <menu_sz> <out> -- Embed script at \"in\" with "
-        "strtab at \"strtab\", menu strtab at \"menu\" into \"out\""
+        "\tembed <in> <size> <strtab> <menu> <strtab_sz> <menu_sz> <out> -- Embed script at \"in\" "
+        "with strtab at \"strtab\", menu strtab at \"menu\" into \"out\""
         "\n\n"
         "strtab <vma> <dump | embed>\n"
         "\tdump [out] [idx] -- Dump strtab entry at \"idx\" or all "
@@ -51,21 +51,22 @@ static struct {
     char* in_path, * out_path;
     char* strtab_script_path, * strtab_menu_path;
     union {
-        char* script_name;
-        char* strtab_name;
-    };
-    union {
         uint32_t strtab_vma; /* for strtab verb */
-        struct {uint32_t strtab_script_vma, strtab_menu_vma;}; /* for script verbs */
+        struct {
+            char* script_name;
+            uint32_t script_vma, script_sz, strtab_script_vma, strtab_menu_vma;
+        }; /* for script verbs */
     };
     union {
         uint32_t strtab_sz; /* for standalone strtab embedding */
-        uint32_t strtab_script_sz, strtab_menu_sz; /* for script embedding */
+        struct { uint32_t strtab_script_sz, strtab_menu_sz; }; /* for script embedding */
     };
     uint32_t strtab_idx;
     bool has_strtab_idx;
     bool strtab_embed_script;
 } opts;
+
+/* FIXME: Refactor arg parsing.. */
 
 static bool parse_script_verb(int argc, char* const* argv, int i) {
     int j = i + 1;
@@ -74,6 +75,14 @@ static bool parse_script_verb(int argc, char* const* argv, int i) {
         opts.script_name = argv[j];
     else {
         fprintf(stderr, "Missing script name\n");
+        return false;
+    }
+
+    if (++j < argc) {
+        char* end;
+        opts.script_vma = strtoul(argv[j], &end, 0);
+    } else if (!opts.script_vma) {
+        fprintf(stderr, "Missing non-zero script address\n");
         return false;
     }
 
@@ -118,6 +127,14 @@ static bool parse_script_verb(int argc, char* const* argv, int i) {
     }
 
     if (opts.script_verb == SCRIPT_EMBED) {
+        if (++j < argc) {
+            char* end;
+            opts.script_sz = strtoul(argv[j], &end, 0);
+        } else if (!opts.script_sz) {
+            fprintf(stderr, "Missing non-zero script size\n");
+            return false;
+        }
+
         if (++j < argc)
             opts.strtab_script_path = argv[j];
         else {
@@ -255,6 +272,11 @@ static uint32_t rom_pad_sz(size_t rom_sz, uint32_t vma_desired, size_t sz_desire
     return VMA2OFFS(vma_desired) + sz_desired - rom_sz;
 }
 
+static bool regions_intersect(uint32_t vma_first, size_t sz_first, uint32_t vma_second,
+    size_t sz_second) {
+    return vma_first + sz_first > vma_second && vma_second + sz_second > vma_first;
+}
+
 static bool script_verbs(uint8_t* rom, size_t sz) {
     assert(opts.strtab_script_vma && opts.strtab_menu_vma);
 
@@ -285,7 +307,7 @@ static bool script_verbs(uint8_t* rom, size_t sz) {
     init_script_handlers();
 
     if (opts.script_verb == SCRIPT_DUMP)
-        ret = script_dump(rom, sz, desc, fout ? fout : stdout, opts.strtab_script_vma,
+        ret = script_dump(rom, sz, opts.script_vma, desc, fout ? fout : stdout, opts.strtab_script_vma,
             opts.strtab_menu_vma);
     else if (opts.script_verb == SCRIPT_EMBED) {
         assert(fin && fout);
@@ -293,9 +315,19 @@ static bool script_verbs(uint8_t* rom, size_t sz) {
         assert(opts.strtab_script_sz && opts.strtab_menu_sz);
 
         size_t pad_sz = rom_pad_sz(sz, opts.strtab_script_vma, opts.strtab_script_sz) +
-            rom_pad_sz(sz, opts.strtab_menu_vma, opts.strtab_menu_sz);
-        if (pad_sz > MAX_ROM_SZ) {
+            rom_pad_sz(sz, opts.strtab_menu_vma, opts.strtab_menu_sz) +
+            rom_pad_sz(sz, opts.script_vma, opts.script_sz);
+        if (sz + pad_sz > MAX_ROM_SZ) {
             fprintf(stderr, "Embedding would exceed maximum allowed ROM size 0x%llx\n", MAX_ROM_SZ);
+            goto done;
+        }
+        if (regions_intersect(opts.strtab_script_vma, opts.strtab_script_sz,
+            opts.strtab_menu_vma, opts.strtab_menu_sz) ||
+            regions_intersect(opts.strtab_script_vma, opts.strtab_script_sz,
+            opts.script_vma, opts.script_sz) ||
+            regions_intersect(opts.strtab_menu_vma, opts.strtab_menu_sz,
+                opts.script_vma, opts.script_sz)) {
+            fprintf(stderr, "Specified memory regions would intersect\n");
             goto done;
         }
 
@@ -338,17 +370,17 @@ static bool script_verbs(uint8_t* rom, size_t sz) {
             goto done_embed;
         }
         memcpy(rom_cpy, rom, sz);
-        memset(&rom_cpy[sz], 0xff, pad_sz);
+        // memset(&rom_cpy[sz], 0xff, pad_sz);
 
-        ret = embed_script(rom_cpy, sz,
-                script_sz((void*)&rom[VMA2OFFS(desc->vma)]) + sizeof(struct script_hdr),
-                VMA2OFFS(desc->vma),
+        ret = embed_script(rom_cpy, sz + pad_sz,
+                opts.script_sz,
+                VMA2OFFS(opts.script_vma),
                 fin, strtab_scr, strtab_menu,
                 opts.in_path,
                 sz_script, sz_strtab_scr, sz_strtab_menu,
                 opts.strtab_script_vma, opts.strtab_menu_vma,
                 opts.strtab_script_sz, opts.strtab_menu_sz,
-                desc->patch_info.size_vma);
+                desc->patch_info.size_vma, desc->patch_info.ptr_vma);
 
         if (ret) {
             ret = fwrite(rom_cpy, 1, sz + pad_sz, fout) == sz + pad_sz;
@@ -418,7 +450,7 @@ static bool strtab_verbs(const uint8_t* rom, size_t sz) {
         }
 
         size_t pad_sz = rom_pad_sz(sz, opts.strtab_vma, opts.strtab_sz);
-        if (pad_sz > MAX_ROM_SZ) {
+        if (sz + pad_sz > MAX_ROM_SZ) {
             fprintf(stderr, "Embedding would exceed maximum allowed ROM size 0x%llx\n", MAX_ROM_SZ);
             goto done;
         }
@@ -435,7 +467,7 @@ static bool strtab_verbs(const uint8_t* rom, size_t sz) {
             perror("malloc");
         else {
             memcpy(rom_cpy, rom, sz);
-            memset(&rom_cpy[sz], 0xff, pad_sz);
+            // memset(&rom_cpy[sz], 0xff, pad_sz);
 
             iconv_t conv = conv_for_embedding();
             if (conv == (iconv_t)-1 || !embed_strtab(rom_cpy, sz + pad_sz, ectx, opts.strtab_sz,
