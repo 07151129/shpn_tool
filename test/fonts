@@ -24,7 +24,7 @@ ShowText("АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯаб
 HandleInput();
 
 /* Digits and punctuation */
-ShowText("1234567890?!&(),.-;“”");
+ShowText("1234567890?!&(),.-;“”:'");
 HandleInput();
 
 ShowText("Text with spaces\nTextwithoutspaces");

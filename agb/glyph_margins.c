@@ -69,6 +69,8 @@ struct glyph_margins glyph_margin(uint16_t c) {
         case '.': return (struct glyph_margins){1, 11};
         case '-': return (struct glyph_margins){3, 6};
         case ';': return (struct glyph_margins){4, 8};
+        case ':': return (struct glyph_margins){4, 8};
+        case '\'': return (struct glyph_margins){0, 12};
     }
 
     return (struct glyph_margins){0, 0};
@@ -91,6 +93,8 @@ uint16_t glyph_hw_to_fw(char c) {
         case '.': return 0x8144;
         case '-': return 0x815d;
         case ';': return 0x8147;
+        case ':': return 0x8146;
+        case '\'': return 0x8166;
     }
     return c;
 }
