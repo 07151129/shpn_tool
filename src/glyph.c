@@ -1,6 +1,7 @@
 #include <assert.h>
 #include <ctype.h>
 #include <limits.h>
+#include <stdbool.h>
 #include <stddef.h>
 #include <stdio.h>
 
@@ -15,6 +16,8 @@ static unsigned word_end(const char* sjis, unsigned xoffs) {
     struct glyph_margins margins = {0, 0};
     uint8_t rmargin_prev = 0;
 
+    bool in_quotes = false;
+
     for (size_t i = 0; sjis[i];) {
         uint32_t first = sjis[i] & UINT8_MAX;
 
@@ -23,12 +26,14 @@ static unsigned word_end(const char* sjis, unsigned xoffs) {
 
         /* Known single-byte half-width char */
         if (glyph_is_hw(first)) {
-            margins = glyph_margin(first);
+            margins = glyph_margin(first, in_quotes);
+            if (sjis[i] == '"')
+                in_quotes = !in_quotes;
             i++;
         } else if (sjis[i + 1]) { /* Possibly known two-byte full-width */
             uint32_t second = sjis[i + 1] & UINT8_MAX;
 
-            margins = glyph_margin((first << 8) | second);
+            margins = glyph_margin((first << 8) | second, in_quotes);
             i += 2;
         } else { /* Unknown single-byte; skip */
             i++;

@@ -42,7 +42,7 @@ static struct glyph_margins margins_digit[] = {
 };
 _Static_assert(sizeof(margins_digit) / sizeof(*margins_digit) == '9' - '0' + 1, "");
 
-struct glyph_margins glyph_margin(uint16_t c) {
+struct glyph_margins glyph_margin(uint16_t c, bool in_quotes) {
     if ('a' <= c && c <= 'z')
         return margins_az[c - 'a'];
     if ('A' <= c && c <= 'Z')
@@ -51,6 +51,9 @@ struct glyph_margins glyph_margin(uint16_t c) {
         return margins_cyr_lo[c - 0x8470];
     if (/* А */ 0x8440 <= c && c <= 0x8460 /* Я */)
         return margins_cyr_cap[c - 0x8440];
+
+    if (c == '"')
+        c = in_quotes ? 0x8168 : 0x8167;
 
     /* FIXME: Objects for quotes appear swapped? */
     if (c == 0x8168) /* “ */
@@ -76,11 +79,13 @@ struct glyph_margins glyph_margin(uint16_t c) {
     return (struct glyph_margins){0, 0};
 }
 
-uint16_t glyph_hw_to_fw(char c) {
+uint16_t glyph_hw_to_fw(char c, bool in_quotes) {
     if ('a' <= c && c <= 'z')
         return 0x8281 + c - 'a';
     if ('A' <= c && c <= 'Z')
         return 0x8260 + c - 'A';
+    if (c == '"')
+        return in_quotes ? 0x8168 : 0x8167;
     if (isdigit(c))
         return 0x824f + c - '0';
     switch (c) {

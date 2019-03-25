@@ -155,6 +155,8 @@ uint8_t render_sjis(const char* sjis, uint32_t len, uint16_t start_at_y, uint16_
     unsigned nchars = nchars_offs;
     unsigned nbreaks = 0;
 
+    bool in_quotes = false;
+
     for (uint32_t i = 0; sjis[i];) {
         uint16_t csum = 0;
 
@@ -185,15 +187,19 @@ uint8_t render_sjis(const char* sjis, uint32_t len, uint16_t start_at_y, uint16_
             break;
 
         if (glyph_is_hw(first)) { /* Known single-byte half-width */
-            margins = glyph_margin(first);
+            margins = glyph_margin(first, in_quotes);
 
-            uint16_t fw = glyph_hw_to_fw(first);
+            uint16_t fw = glyph_hw_to_fw(first, in_quotes);
             first = fw >> 8;
             second = fw & UINT8_MAX;
+
+            if (sjis[i] == '"')
+                in_quotes = !in_quotes;
+
             i++;
         } else if (sjis[i+1]) { /* Try to interpret as two-byte full-width */
             second = sjis[i + 1] & UINT8_MAX;
-            margins = glyph_margin((first << 8) | second);
+            margins = glyph_margin((first << 8) | second, in_quotes);
             i += 2;
         } else { /* Unknown char; skip */
             i++;
