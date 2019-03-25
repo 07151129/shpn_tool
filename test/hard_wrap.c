@@ -12,7 +12,7 @@ static void test_wrap(char* str, char* wrapped) {
     char* cpy = strdup(str);
 
     hard_wrap_sjis(cpy);
-    fprintf(stderr, "%s\n", cpy);
+    // fprintf(stderr, "%s\n", cpy);
     assert(!strcmp(cpy, wrapped));
     free(cpy);
 }
