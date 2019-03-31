@@ -22,7 +22,7 @@
 
 blank [ \t]
 dquote \"
-chars ([\\¥].|[^\\"])*
+chars ([\\(¥)].|[^\\"])*
 
 uint 0[xX][[:xdigit:]]+|[[:digit:]]+
 %%
@@ -44,6 +44,7 @@ uint 0[xX][[:xdigit:]]+|[[:digit:]]+
     /* Drop the quotes */
     char* s = strdup(&yytext[1]);
 
+    assert(s[yyleng - 2] == '"');
     s[yyleng - 2] = '\0';
 
     yylval->sval = s;
