@@ -73,13 +73,6 @@ struct script_state {
 
     const uint8_t* strtab, * strtab_menu;
     const char* branch_info;
-    const uint8_t* branch_info_unk;
-
-    struct {
-    /* FIXME: Doesn't have to be that large most likely */
-#define SCRIPT_CHOICES_SZ (256 * sizeof(uint32_t))
-        uint8_t* choices;
-    } choice_ctx;
 
     struct {
         char* buf; /* any extra arguments to be logged by a handler */

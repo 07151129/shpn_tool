@@ -122,14 +122,12 @@ const struct script_desc* script_for_name(const char* name) {
 static
 void script_state_init(struct script_state* state, const uint8_t* rom_end, const uint8_t* strtab,
     const uint8_t* strtab_menu,
-    const union script_cmd* cmds, uint16_t* labels, const char* branch_info,
-    const uint8_t* branch_info_unk) {
+    const union script_cmd* cmds, uint16_t* labels, const char* branch_info) {
     assert(state);
 
     /* Those are the "default" non thread-safe buffers (OK for now) */
     // static uint8_t arg_tab_default[0x56 * sizeof(uint32_t)]; /* FIXME: Size, r/w access? */
     static char va_buf_default[VA_BUF_DEFAULT_SZ];
-    static uint8_t choices[SCRIPT_CHOICES_SZ];
 
     memset(state, 0, sizeof(*state));
     // state->arg_tab = arg_tab_default;
@@ -146,12 +144,9 @@ void script_state_init(struct script_state* state, const uint8_t* rom_end, const
     state->label_ctx.labels = labels;
 
     state->branch_info = branch_info;
-    state->branch_info_unk = branch_info_unk;
 
     assert(state->branch_info > (char*)state->cmds &&
         "branch_info is expected to terminate cmds");
-
-    state->choice_ctx.choices = choices;
 
     state->conv = (iconv_t)-1;
 
@@ -172,6 +167,8 @@ static void script_state_free(struct script_state* state) {
     if (state->conv != (iconv_t)-1) {
         iconv_close(state->conv);
     }
+#else
+    (void)state;
 #endif
 }
 
@@ -281,7 +278,7 @@ bool script_dump(const uint8_t* rom, size_t rom_sz, uint32_t script_vma,
     struct script_state state;
     script_state_init(&state, rom + rom_sz,
         &rom[VMA2OFFS(strtab_script_vma)], &rom[VMA2OFFS(strtab_menu_vma)],
-        cmds, labels, cmd_end, &rom[VMA2OFFS(BRANCH_INFO_UMK_VMA)]);
+        cmds, labels, cmd_end);
 
     /* Phase one: read code and create labels */
     make_label(0, &state); /* The initial label */
