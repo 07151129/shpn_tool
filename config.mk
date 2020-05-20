@@ -29,8 +29,8 @@ CFLAGS_DEBUG := \
     -UNDEBUG
 
 YACC_FLAGS := \
-    -y \
-    -d
+    -d \
+    -Wno-yacc
 
 LEX_FLAGS :=
 
