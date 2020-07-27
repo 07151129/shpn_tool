@@ -84,7 +84,19 @@ bool script_arg_list_add_arg(struct script_arg_list* args, const struct script_a
 bool script_ctx_add_stmt(struct script_parse_ctx* ctx, const struct script_stmt* stmt) {
     if (ctx->nstmts >= SCRIPT_PARSE_CTX_STMTS_SZ)
         return false;
-    ctx->stmts[ctx->nstmts++] = *stmt;
+
+    struct script_stmt* prev_stmt = NULL;
+    if (ctx->nstmts > 0)
+        prev_stmt = &ctx->stmts[ctx->nstmts - 1];
+
+    struct script_stmt* dst = &ctx->stmts[ctx->nstmts++];
+    *dst = *stmt;
+
+    if (prev_stmt) {
+        prev_stmt->next = dst;
+    }
+
+    dst->prev = prev_stmt;
     return true;
 }
 
@@ -117,7 +129,15 @@ void script_arg_free(const struct script_arg* arg) {
         free((void*)arg->numbered_str.str);
 }
 
-void script_stmt_free(const struct script_stmt* stmt) {
+void script_stmt_free(struct script_stmt* stmt) {
+    assert(stmt);
+
+    struct script_stmt* prev = stmt->prev, * next = stmt->next;
+    if (prev)
+        prev->next = next;
+    if (next)
+        next->prev = prev;
+
     if (stmt->label)
         free((void*)stmt->label);
     if (stmt->ty == STMT_TY_OP)

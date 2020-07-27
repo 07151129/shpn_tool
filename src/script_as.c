@@ -279,19 +279,34 @@ static bool emit_op(const struct script_stmt* stmt, struct script_as_ctx* actx) 
     return true;
 }
 
-static bool branch_src(const struct script_stmt* stmt,
-    const struct script_parse_ctx* pctx, size_t* bsrc_idx) {
-    for (size_t i = *bsrc_idx; i < pctx->nstmts; i++) {
-        *bsrc_idx = i;
+enum stmt_order {
+    STMT_ORD_LT,
+    STMT_ORD_EQ,
+    STMT_ORD_GT
+};
 
-        const struct script_stmt* src = &pctx->stmts[i];
-        if (src->ty != STMT_TY_OP)
+static enum stmt_order stmt_order(const struct script_stmt* first, const struct script_stmt* second) {
+    if (first == second)
+        return STMT_ORD_EQ;
+
+    while (first) {
+        if (first->next == second)
+            return STMT_ORD_LT;
+        first = first->next;
+    }
+    return STMT_ORD_GT;
+}
+
+static bool branch_src(const struct script_stmt* stmt, const struct script_stmt** bsrc) {
+    for (; *bsrc; *bsrc = (*bsrc)->next) {
+        if ((*bsrc)->ty != STMT_TY_OP)
             continue;
-        union script_cmd cmd = {.op = src->op.idx};
+
+        union script_cmd cmd = {.op = (*bsrc)->op.idx};
         if (cmd_is_branch(&cmd) || cmd_is_jump(&cmd)) {
-            for (int j = 0; j < src->op.args.nargs; j++)
-                if (src->op.args.args[j].type == ARG_TY_LABEL &&
-                    !strcmp(src->op.args.args[j].label, stmt->label)) {
+            for (int j = 0; j < (*bsrc)->op.args.nargs; j++)
+                if ((*bsrc)->op.args.args[j].type == ARG_TY_LABEL &&
+                    !strcmp((*bsrc)->op.args.args[j].label, stmt->label)) {
                 // fprintf(stderr, "%zu -> %zu\n", src->line, stmt->line);
                 return true;
             }
@@ -321,40 +336,49 @@ static bool section_stmt(const struct script_stmt* stmt, struct script_as_ctx* a
     return false;
 }
 
-static bool emit_stmt(const struct script_stmt* stmt, struct script_as_ctx* actx) {
-    /* There's a label at this statement and it's referenced by a Branch/Jump op */
-    if (stmt->label) {
-        /* For all jumps to stmt emitted before stmt, set their dst to stmt emitted loc */
-        for (size_t i = 0; i < actx->refs->nrefs; i++) {
-            if (actx->refs->refs[i].label == stmt) {
-                if (actx->dst - actx->dst_start > UINT16_MAX) {
-                    log(true, stmt, actx->pctx,
-                        "jump to this location from line %zu cannot be encoded",
-                        actx->refs->refs[i].jump->line);
-                }
-                *(uint16_t*)actx->refs->refs[i].emitted_jump =
-                    (uint16_t)(actx->dst - actx->dst_start);
-            }
-        }
+static bool fixup_jumps(const struct script_stmt* stmt, struct script_as_ctx* actx) {
+    assert(stmt->label);
 
-        size_t bsrc_idx = 0;
-        bool checked_refs = false;
-
-next_src:
-        if (!branch_src(stmt, actx->pctx, &bsrc_idx) && !checked_refs)
-            log(false, stmt, actx->pctx, "label %s unreferenced", stmt->label);
-        else if (cmd_is_branch(&(union script_cmd){.op = actx->pctx->stmts[bsrc_idx].op.idx})) {
-            /* Check if stmt is reachable for branching from src */
-            if (stmt <= &actx->pctx->stmts[bsrc_idx]) {
-                log(true, stmt, actx->pctx, "cannot branch from line %zu backwards to label here",
-                    actx->pctx->stmts[bsrc_idx].line);
+    /* For all jumps to stmt emitted before stmt, set their dst to stmt emitted loc */
+    for (size_t i = 0; i < actx->refs->nrefs; i++) {
+        if (actx->refs->refs[i].label == stmt) {
+            if (actx->dst - actx->dst_start > UINT16_MAX) {
+                log(true, stmt, actx->pctx,
+                    "jump to this location from line %zu cannot be encoded",
+                    actx->refs->refs[i].jump->line);
                 return false;
             }
-            for (size_t i = bsrc_idx + 1; i < (size_t)(stmt - &actx->pctx->stmts[bsrc_idx]); i++) {
-                if (cmd_can_be_branched_to(&(union script_cmd){.op = actx->pctx->stmts[i].op.idx})) {
+            *(uint16_t*)actx->refs->refs[i].emitted_jump =
+                (uint16_t)(actx->dst - actx->dst_start);
+        }
+    }
+
+    return true;
+}
+
+static bool process_label_refs(const struct script_stmt* stmt, struct script_as_ctx* actx) {
+    assert(stmt->label);
+
+    const struct script_stmt* bsrc = &actx->pctx->stmts[0];
+    bool checked_refs = false;
+
+    do {
+        if (!branch_src(stmt, &bsrc)) {
+            if (!checked_refs)
+                log(false, stmt, actx->pctx, "label %s unreferenced", stmt->label);
+        } else if (cmd_is_branch(&(union script_cmd){.op = bsrc->op.idx})) {
+            /* Check if stmt is reachable for branching from src */
+            if (stmt_order(stmt, bsrc) != STMT_ORD_GT) {
+                log(true, stmt, actx->pctx, "cannot branch from line %zu backwards to label here",
+                    bsrc->line);
+                return false;
+            }
+            for (struct script_stmt* stmt_bsrc = bsrc->next; stmt_bsrc && stmt_bsrc != stmt;
+                stmt_bsrc = stmt_bsrc->next) {
+                if (cmd_can_be_branched_to(&(union script_cmd){.op = stmt_bsrc->op.idx})) {
                     log(true, stmt, actx->pctx, "branching to label here from line %zu would branch \
                         to line %zu instead",
-                        actx->pctx->stmts[bsrc_idx].line, actx->pctx->stmts[i].line);
+                        bsrc->line, stmt_bsrc->line);
                     return false;
                 }
             }
@@ -368,27 +392,34 @@ next_src:
                     return false;
                 }
             }
-        } else if (cmd_is_jump(&(union script_cmd){.op = actx->pctx->stmts[bsrc_idx].op.idx})) {
-            const struct script_stmt* jump = &actx->pctx->stmts[bsrc_idx];
+        } else if (cmd_is_jump(&(union script_cmd){.op = bsrc->op.idx})) {
             /* Label occurs before a jump to it; create source-dst entry to be handled by jump later */
-            if (stmt < jump) {
+            if (stmt_order(stmt, bsrc) == STMT_ORD_LT) {
                 if ((actx->dst - actx->dst_start) > UINT16_MAX) {
                     log(true, stmt, actx->pctx, "jump to this location from line %zu cannot be encoded",
-                        jump->line);
+                        bsrc->line);
                     return false;
                 }
-                if (!jump_refs_add(actx->refs, jump, stmt, NULL, (uint16_t)(actx->dst - actx->dst_start))) {
+                if (!jump_refs_add(actx->refs, bsrc, stmt, NULL, (uint16_t)(actx->dst - actx->dst_start))) {
                     log(true, stmt, actx->pctx, "too many jumps in the script");
                     return false;
                 }
             }
         }
         checked_refs = true;
-
         /* Keep looking for more refs to the label */
-        if (++bsrc_idx < actx->pctx->nstmts)
-            goto next_src;
-    }
+        if (bsrc)
+            bsrc = bsrc->next;
+    } while (bsrc);
+
+    return true;
+}
+
+static bool emit_stmt(const struct script_stmt* stmt, struct script_as_ctx* actx) {
+    /* There's a label at this statement and it's referenced by a Branch/Jump op */
+    if (stmt->label)
+        if (!fixup_jumps(stmt, actx) || !process_label_refs(stmt, actx))
+            return false;
 
     switch (stmt->ty) {
         case STMT_TY_OP:
@@ -433,11 +464,18 @@ bool script_assemble(const struct script_parse_ctx* pctx, uint8_t* dst, size_t d
     };
 
     bool ret = true;
-    for (size_t i = 0; i < pctx->nstmts; i++)
-        if (!emit_stmt(&pctx->stmts[i], &actx)) {
-            ret = false;
-            break;
-        }
+    const struct script_stmt* stmt = &pctx->stmts[0];
+    size_t nstmts_left = pctx->nstmts;
+
+    while (ret && stmt) {
+        if (nstmts_left > 0)
+            nstmts_left--;
+        assert(!stmt->next || nstmts_left > 0);
+        assert(nstmts_left == 0 || stmt->next);
+
+        ret &= emit_stmt(stmt, actx);
+        stmt = stmt->next;
+    }
 
     if (ret && (!actx.branch_info_begin || !actx.branch_info_end)) {
         log(true, NULL, pctx, "missing branch_info section");

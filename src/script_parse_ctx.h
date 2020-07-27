@@ -21,6 +21,12 @@ struct script_parse_ctx {
 
 #define SCRIPT_PARSE_CTX_STMTS_SZ 20000
     struct script_stmt {
+        /**
+         * NOTE: This is the only way to get in-order iterator for stmts!
+         * The raw unordered storage can be accessed by indexing stmts[0..nstmts-1].
+         */
+        struct script_stmt* next, * prev;
+
         enum {STMT_TY_OP, STMT_TY_BYTE, STMT_TY_BEGIN_END} ty;
 
         const char* label;
@@ -69,8 +75,8 @@ bool script_parse_ctx_parse(struct script_parse_ctx* ctx);
 bool script_parse_ctx_add_diag(struct script_parse_ctx* ctx, const struct script_diag* diag);
 bool script_arg_list_add_arg(struct script_arg_list* args, const struct script_arg* arg);
 void script_arg_free(const struct script_arg* arg);
-void script_stmt_free(const struct script_stmt* stmt);
-void script_parse_ctx_free(const struct script_parse_ctx* ctx);
+void script_stmt_free(struct script_stmt* stmt);
+void script_parse_ctx_free(struct script_parse_ctx* ctx);
 bool script_op_idx(const char* name, size_t* dst);
 bool script_op_idx_chk(size_t idx);
 bool script_ctx_add_stmt(struct script_parse_ctx* ctx, const struct script_stmt* stmt);
