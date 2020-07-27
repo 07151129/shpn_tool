@@ -439,19 +439,28 @@ static bool emit_stmt(const struct script_stmt* stmt, struct script_as_ctx* actx
 
 bool script_assemble(const struct script_parse_ctx* pctx, uint8_t* dst, size_t dst_sz,
         struct strtab_embed_ctx* strs_sc, struct strtab_embed_ctx* strs_menu) {
+
+struct script_as_ctx* script_as_ctx_new(const struct script_parse_ctx* pctx, uint8_t* dst,
+    size_t dst_sz, struct strtab_embed_ctx* strs_sc, struct strtab_embed_ctx* strs_menu) {
     assert(pctx->ndiags == 0 && "Trying to assemble script with parse errors");
 
     if (dst_sz < sizeof(struct script_hdr))
-        return false;
+        return NULL;
 
     struct jump_refs_ctx* refs = malloc(sizeof(struct jump_refs_ctx));
     if (!refs) {
         perror("malloc");
-        return false;
+        return NULL;
     }
     refs->nrefs = 0;
 
-    struct script_as_ctx actx = {
+    struct script_as_ctx* actx = malloc(sizeof(struct script_as_ctx));
+    if (!actx) {
+        perror("malloc");
+        goto fail;
+    }
+
+    *actx = (struct script_as_ctx){
         .pctx = pctx,
         .dst = dst + sizeof(struct script_hdr),
         .dst_sz = dst_sz - sizeof(struct script_hdr),
@@ -462,6 +471,25 @@ bool script_assemble(const struct script_parse_ctx* pctx, uint8_t* dst, size_t d
         .branch_info_begin = NULL,
         .branch_info_end = NULL
     };
+
+    return actx;
+fail:
+    if (refs)
+        free(refs);
+    if (actx)
+        free(actx);
+    return NULL;
+}
+
+void script_as_ctx_free(struct script_as_ctx* actx) {
+    if (actx) {
+        free(actx->refs);
+        free(actx);
+    }
+}
+
+bool script_assemble(const struct script_parse_ctx* pctx, struct script_as_ctx* actx) {
+    assert(actx);
 
     bool ret = true;
     const struct script_stmt* stmt = &pctx->stmts[0];
@@ -477,18 +505,17 @@ bool script_assemble(const struct script_parse_ctx* pctx, uint8_t* dst, size_t d
         stmt = stmt->next;
     }
 
-    if (ret && (!actx.branch_info_begin || !actx.branch_info_end)) {
+    if (ret && (!actx->branch_info_begin || !actx->branch_info_end)) {
         log(true, NULL, pctx, "missing branch_info section");
         ret = false;
     }
 
     if (ret)
-        memcpy(dst, &(struct script_hdr){
-            .branch_info_offs = actx.branch_info_begin - actx.dst_start,
-            .branch_info_sz = actx.branch_info_end - actx.branch_info_begin,
-            .bytes_to_end = actx.dst - actx.branch_info_end
+        memcpy(actx->dst_start - sizeof(struct script_hdr), &(struct script_hdr){
+            .branch_info_offs = actx->branch_info_begin - actx->dst_start,
+            .branch_info_sz = actx->branch_info_end - actx->branch_info_begin,
+            .bytes_to_end = actx->dst - actx->branch_info_end
         }, sizeof(struct script_hdr));
 
-    free(refs);
     return ret;
 }

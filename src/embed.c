@@ -245,6 +245,7 @@ bool embed_script(uint8_t* rom, size_t rom_sz, size_t script_sz_max, size_t scri
     struct script_parse_ctx* pctx = NULL;
     iconv_t conv = (iconv_t)-1;
     struct strtab_embed_ctx* ectx_scr = NULL, * ectx_menu = NULL;
+    struct script_as_ctx* actx = NULL;
 
     if (!fscript)
         return false;
@@ -296,10 +297,12 @@ bool embed_script(uint8_t* rom, size_t rom_sz, size_t script_sz_max, size_t scri
     ectx_scr->rom_vma = strtab_scr_vma;
     ectx_menu->rom_vma = strtab_menu_vma;
 
+    actx = script_as_ctx_new(pctx, &rom[script_offs], script_sz_max, ectx_scr, ectx_menu);
+
     size_t script_storage_used = 0;
 
-    ret = script_assemble(pctx, &rom[script_offs], script_sz_max, ectx_scr, ectx_menu);
-    ret = ret &&
+    ret = script_assemble(pctx, actx);
+    ret &=
         patch_cksum_sz(rom, rom_sz,
             (script_storage_used = script_sz((void*)&rom[script_offs]) + sizeof(struct script_hdr)),
             sz_to_patch_vma) &&
@@ -325,5 +328,7 @@ done:
         strtab_embed_ctx_free(ectx_scr);
     if (ectx_menu)
         strtab_embed_ctx_free(ectx_menu);
+    if (actx)
+        script_as_ctx_free(actx);
     return ret;
 }

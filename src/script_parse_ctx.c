@@ -145,7 +145,7 @@ void script_stmt_free(struct script_stmt* stmt) {
             script_arg_free((void*)&stmt->op.args.args[i]);
 }
 
-void script_parse_ctx_free(const struct script_parse_ctx* ctx) {
+void script_parse_ctx_free(struct script_parse_ctx* ctx) {
     for (size_t i = 0; i < ctx->nstmts; i++)
         script_stmt_free(&ctx->stmts[i]);
 }
