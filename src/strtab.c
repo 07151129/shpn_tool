@@ -159,22 +159,28 @@ bool strtab_dec_str(const uint8_t* strtab, const uint8_t* rom_end, uint32_t idx,
 
     char buf[DEC_BUF_SZ_SJIS];
 
-    if (out_sz < SJIS_TO_U8_MIN_SZ(sizeof(buf)))
+    if (out_sz < SJIS_TO_U8_MIN_SZ(sizeof(buf))) {
+        fprintf(stderr, "Decode buffer too short\n");
         return false;
+    }
 
     size_t len = 0;
 
     const uint8_t* msg_offsp = &strtab[hdr->msgs_offs + MSG_OFFS_SZ * idx];
-    if (msg_offsp >= rom_end)
+    if (msg_offsp >= rom_end) {
+        fprintf(stderr, "Past ROM end msg_offsp\n");
         return false;
+    }
 
     uint32_t msg_offs = 0;
     memcpy(&msg_offs, msg_offsp, MSG_OFFS_SZ);
 
     const uint8_t* msg = &strtab[hdr->msgs_offs + msg_offs];
     const struct dict_node* dict = (void*)&strtab[hdr->dict_offs];
-    if (msg > rom_end || (uint8_t*)dict > rom_end)
+    if (msg > rom_end || (uint8_t*)dict > rom_end) {
+        fprintf(stderr, "msg or dict past rom end\n");
         return false;
+    }
 
     uint8_t bits = *msg;
     int nbits = 0;
