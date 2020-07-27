@@ -254,6 +254,11 @@ bool script_dump(const uint8_t* rom, size_t rom_sz, uint32_t script_vma,
     const struct script_hdr* hdr = (void*)&rom[VMA2OFFS(script_vma)];
     static_assert(sizeof(*hdr) == sizeof(uint16_t[3]), "");
 
+    if ((uint8_t*)hdr + sizeof(hdr) >= rom + rom_sz) {
+        fprintf(stderr, "Past EOF script header\n");
+        return false;
+    }
+
     uint16_t cks = script_cksum((uint8_t*)hdr, script_sz(hdr) + sizeof(struct script_hdr),
         SCRIPT_CKSUM_SEED);
     if (cks != desc->cksum)
