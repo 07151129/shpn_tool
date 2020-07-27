@@ -22,7 +22,7 @@
 
 blank [ \t]
 dquote \"
-chars ([\\(¥)].|[^\\"])*
+chars (((¥).)|\\.|[^\\"])*
 
 uint 0[xX][[:xdigit:]]+|[[:digit:]]+
 %%
