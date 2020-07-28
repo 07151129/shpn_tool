@@ -96,7 +96,7 @@ void test_as(struct script_parse_ctx* pctx) {
         ".begin branch_info .byte 0 .end branch_info");
     assert(script_parse_ctx_parse(pctx));
     struct script_as_ctx* actx = script_as_ctx_new(pctx, rom, 2048, ectx_script, ectx_menu);
-    assert(script_fill_strtabs(pctx, actx));
+    assert(script_fill_strtabs(actx));
     assert(script_assemble(actx));
 
     // fprintf(stderr, "nwritten %zu\n", nwritten);
