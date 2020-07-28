@@ -15,7 +15,7 @@
 #include "strtab.h"
 
 struct script_as_ctx {
-    const struct script_parse_ctx* pctx;
+    struct script_parse_ctx* pctx;
     uint8_t* dst;
     uint8_t* dst_start;
     size_t dst_sz;
@@ -162,8 +162,7 @@ static bool emit_arg_numbered_str(const struct script_stmt* stmt, const struct s
     assert(arg->type == ARG_TY_NUMBERED_STR);
 
     if (!strs->allocated[arg->numbered_str.num]) {
-        log(true, stmt, actx->pctx, "unprocessed string at %d strtab %p", arg->numbered_str.num,
-            strs);
+        log(true, stmt, actx->pctx, "unprocessed string at %d", arg->numbered_str.num);
         return false;
     }
 
@@ -402,6 +401,8 @@ static bool arg_numbered_str_to_strtab(struct script_stmt* stmt, struct script_a
 
     /* If we're inserting at index past nstrs-1, add placeholders in between */
     for (size_t i = strs->nstrs; i < arg->numbered_str.num; i++) {
+        assert(!strs->allocated[i]);
+
         strs->strs[i] = EMBED_STR_PLACEHOLDER;
         strs->allocated[i] = false;
     }
@@ -476,11 +477,11 @@ static bool stmt_str_to_strtab(struct script_stmt* stmt, struct script_as_ctx* a
     return ret;
 }
 
-bool script_fill_strtabs(struct script_parse_ctx* pctx, struct script_as_ctx* actx) {
+bool script_fill_strtabs(struct script_as_ctx* actx) {
     bool ret = true;
 
-    struct script_stmt* stmt = &pctx->stmts[0];
-    size_t nstmts_left = pctx->nstmts;
+    struct script_stmt* stmt = &actx->pctx->stmts[0];
+    size_t nstmts_left = actx->pctx->nstmts;
 
     while (ret && stmt) {
         if (nstmts_left > 0)
@@ -544,12 +545,12 @@ void script_as_ctx_free(struct script_as_ctx* actx) {
     }
 }
 
-bool script_assemble(const struct script_parse_ctx* pctx, struct script_as_ctx* actx) {
+bool script_assemble(struct script_as_ctx* actx) {
     assert(actx);
 
     bool ret = true;
-    const struct script_stmt* stmt = &pctx->stmts[0];
-    size_t nstmts_left = pctx->nstmts;
+    const struct script_stmt* stmt = &actx->pctx->stmts[0];
+    size_t nstmts_left = actx->pctx->nstmts;
 
     while (ret && stmt) {
         if (nstmts_left > 0)
@@ -562,7 +563,7 @@ bool script_assemble(const struct script_parse_ctx* pctx, struct script_as_ctx* 
     }
 
     if (ret && (!actx->branch_info_begin || !actx->branch_info_end)) {
-        log(true, NULL, pctx, "missing branch_info section");
+        log(true, NULL, actx->pctx, "missing branch_info section");
         ret = false;
     }
 

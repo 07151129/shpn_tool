@@ -315,11 +315,11 @@ bool embed_script(uint8_t* rom, size_t rom_sz, size_t script_sz_max, size_t scri
     // fprintf(stderr, "ectx_scr %zu menu %zu\n", ectx_scr->nstrs, ectx_menu->nstrs);
 
     actx = script_as_ctx_new(pctx, &rom[script_offs], script_sz_max, ectx_scr, ectx_menu);
-    ret = script_fill_strtabs(pctx, actx);
+    ret = script_fill_strtabs(actx);
 
     size_t script_storage_used = 0;
 
-    ret = ret && script_assemble(pctx, actx) &&
+    ret = ret && script_assemble(actx) &&
         patch_cksum_sz(rom, rom_sz,
             (script_storage_used = script_sz((void*)&rom[script_offs]) + sizeof(struct script_hdr)),
             sz_to_patch_vma) &&

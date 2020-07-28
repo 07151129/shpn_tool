@@ -18,7 +18,7 @@ void script_as_ctx_free(struct script_as_ctx* actx);
  * strings encountered in pctx. This operation will also convert every ARG_TY_STR arg to
  * ARG_TY_NUMBERED_STR. script_assemble will then simply write ARG_TY_NUMBERED_STR to dst buffer.
  */
-bool script_fill_strtabs(struct script_parse_ctx* pctx, struct script_as_ctx* actx);
-bool script_assemble(const struct script_parse_ctx* pctx, struct script_as_ctx* actx);
+bool script_fill_strtabs(struct script_as_ctx* actx);
+bool script_assemble(struct script_as_ctx* actx);
 
 #endif
