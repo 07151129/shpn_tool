@@ -30,8 +30,10 @@ static bool ctx_conv(iconv_t conv, struct strtab_embed_ctx* ctx) {
 
         if (ctx->allocated[i]) {
             char* res = mk_strtab_str(ctx->strs[i], conv);
-            if (!res)
+            if (!res) {
+                fprintf(stderr, "failed to convert string at %zu\n", i);
                 return false;
+            }
             free(ctx->strs[i]);
             ctx->strs[i] = res;
         }
@@ -66,7 +68,6 @@ static bool patch_ptr(uint8_t* rom, size_t rom_sz, uint32_t repl_vma, uint32_t p
     *(uint32_t*)&rom[VMA2OFFS(ptr_vma)] = repl_vma;
     return true;
 }
-
 
 bool embed_strtab(uint8_t* rom, size_t rom_sz, struct strtab_embed_ctx* ectx, size_t max_sz,
     uint32_t ptr_vma, iconv_t conv) {
@@ -193,6 +194,7 @@ struct strtab_embed_ctx* strtab_embed_ctx_with_file(FILE* fin, size_t sz) {
 
                 memcpy(ret->strs[sidx], &fbuf[cidx], len);
                 ret->strs[sidx][len] = '\0';
+                // fprintf(stderr, "%u: %s\n", sidx, ret->strs[sidx]);
                 ret->nstrs = sidx + 1 > ret->nstrs ? sidx + 1 : ret->nstrs;
                 ret->allocated[sidx] = true;
 
@@ -232,6 +234,19 @@ static bool patch_cksum_sz(uint8_t* rom, size_t rom_sz, size_t script_sz, uint32
     // fprintf(stderr, "patching script sz to 0x%x at vma 0x%x\n", (uint32_t)script_sz, sz_to_patch_vma);
     *(uint32_t*)&rom[VMA2OFFS(sz_to_patch_vma)] = (uint32_t)script_sz;
     return true;
+}
+
+/**
+ * For each ShowText command in the parse context, if the text used by the command argument is too
+ * long to fit on screen, split the text and insert extra ShowText commands after it.
+ *
+ * We will insert new ops into pctx linked list and pass it to script_assemble next.
+ *
+ * - strtab_ectx needs to contain already hard-wrapped SJIS. Fix by doing SJIS conversion&wrapping
+ * before embedding.
+ */
+static bool split_ShowText(struct script_parse_ctx* pctx, struct strtab_embed_ctx* strtab_ectx) {
+
 }
 
 bool embed_script(uint8_t* rom, size_t rom_sz, size_t script_sz_max, size_t script_offs,
@@ -297,20 +312,25 @@ bool embed_script(uint8_t* rom, size_t rom_sz, size_t script_sz_max, size_t scri
     ectx_scr->rom_vma = strtab_scr_vma;
     ectx_menu->rom_vma = strtab_menu_vma;
 
+    // fprintf(stderr, "ectx_scr %zu menu %zu\n", ectx_scr->nstrs, ectx_menu->nstrs);
+
     actx = script_as_ctx_new(pctx, &rom[script_offs], script_sz_max, ectx_scr, ectx_menu);
+    ret = script_fill_strtabs(pctx, actx);
 
     size_t script_storage_used = 0;
 
-    ret = script_assemble(pctx, actx);
-    ret &=
+    ret = ret && script_assemble(pctx, actx) &&
         patch_cksum_sz(rom, rom_sz,
             (script_storage_used = script_sz((void*)&rom[script_offs]) + sizeof(struct script_hdr)),
             sz_to_patch_vma) &&
         patch_ptr(rom, rom_sz, OFFS2VMA(script_offs), script_ptr_vma) &&
         embed_strtabs(rom, rom_sz, ectx_scr, ectx_menu, strtab_scr_sz, strtab_menu_sz, conv);
 
-    fprintf(stderr, "Embedded script at 0x%lx using %zu B\n", OFFS2VMA(script_offs),
-        script_sz((void*)&rom[script_offs]) + sizeof(struct script_hdr));
+    if (ret)
+        fprintf(stderr, "Embedded script at 0x%lx using %zu B\n", OFFS2VMA(script_offs),
+            script_sz((void*)&rom[script_offs]) + sizeof(struct script_hdr));
+    else
+        fprintf(stderr, "Failed to embed script\n");
 
 done:
     if (conv != (iconv_t)-1) {
