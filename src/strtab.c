@@ -68,6 +68,7 @@ bool strtab_dec_msg(const struct dict_node* dict, const uint8_t** msg, uint8_t* 
         const struct dict_node* n = dict;
 
         if (*len >= maxlen) {
+            fprintf(stderr, "Insufficient maxlen %zu\n", maxlen);
 err:
             *err = 1;
             return false;
@@ -189,8 +190,10 @@ bool strtab_dec_str(const uint8_t* strtab, const uint8_t* rom_end, uint32_t idx,
     while (strtab_dec_msg(dict, &msg, &bits, &nbits, &buf[len], &len, sizeof(buf), &err, rom_end))
         ;
     /* Do not continue if we're out of space */
-    if (err)
+    if (err) {
+        fprintf(stderr, "strtab_dec_msg failed\n");
         return false;
+    }
 
     buf[len] = 0;
 
@@ -256,6 +259,7 @@ bool strtab_dump(const uint8_t* rom, size_t rom_sz, uint32_t vma, uint32_t idx, 
     bool ret = true;
 
     char buf[SJIS_TO_U8_MIN_SZ(DEC_BUF_SZ_SJIS)];
+
     size_t nwritten = 0;
     if (!has_idx)
         for (size_t i = 0; i < ((const struct strtab_header*)strtab)->nentries; i++)
