@@ -13,6 +13,12 @@ struct script_as_ctx* script_as_ctx_new(const struct script_parse_ctx* pctx, uin
     size_t dst_sz, struct strtab_embed_ctx* strs_sc, struct strtab_embed_ctx* strs_menu);
 void script_as_ctx_free(struct script_as_ctx* actx);
 
+/**
+ * script_fill_strtabs must be called before script_assemble in order to populate strtabs with
+ * strings encountered in pctx. This operation will also convert every ARG_TY_STR arg to
+ * ARG_TY_NUMBERED_STR. script_assemble will then simply write ARG_TY_NUMBERED_STR to dst buffer.
+ */
+bool script_fill_strtabs(struct script_parse_ctx* pctx, struct script_as_ctx* actx);
 bool script_assemble(const struct script_parse_ctx* pctx, struct script_as_ctx* actx);
 
 #endif

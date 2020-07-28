@@ -17,7 +17,7 @@
 struct script_as_ctx {
     const struct script_parse_ctx* pctx;
     uint8_t* dst;
-    const uint8_t* dst_start;
+    uint8_t* dst_start;
     size_t dst_sz;
     iconv_t conv;
     struct strtab_embed_ctx* strs_sc;
@@ -150,53 +150,22 @@ static bool emit_arg_label(const struct script_stmt* stmt, const struct script_a
 }
 
 static bool emit_arg_str(const struct script_stmt* stmt, const struct script_arg* arg,
-    struct strtab_embed_ctx* strs, struct script_as_ctx* actx) {
+    UNUSED struct strtab_embed_ctx* strs, struct script_as_ctx* actx) {
     assert(arg->type == ARG_TY_STR);
 
-    if (strs->nstrs >= EMBED_STRTAB_SZ) {
-        log(true, stmt, actx->pctx, "too many strings in program");
-        return false;
-    }
-
-    uint16_t i = 0;
-    for (; i < EMBED_STRTAB_SZ; i++)
-        if (!strs->allocated[i])
-            break;
-
-    if (actx->dst_sz < sizeof(i)) {
-        log(true, stmt, actx->pctx, "no space to write string table index");
-        return false;
-    }
-
-    memcpy(actx->dst, &i, sizeof(i));
-    actx->dst += sizeof(i);
-    actx->dst_sz -= sizeof(i);
-
-    strs->strs[i] = strdup(arg->str);
-    strs->allocated[i] = strs->strs[i] != NULL;
-
-    if (!strs->strs[i]) {
-        log(true, stmt, actx->pctx, "failed to copy string");
-        perror("strdup");
-        return false;
-    }
-    if (strs->nstrs <= i)
-        strs->nstrs++;
-
-    return true;
+    log(true, stmt, actx->pctx, "unprocessed unnumbered string");
+    return false;
 }
 
 static bool emit_arg_numbered_str(const struct script_stmt* stmt, const struct script_arg* arg,
         struct strtab_embed_ctx* strs, struct script_as_ctx* actx) {
     assert(arg->type == ARG_TY_NUMBERED_STR);
 
-    if (arg->numbered_str.num >= EMBED_STRTAB_SZ) {
-        log(true, stmt, actx->pctx, "string index too large");
+    if (!strs->allocated[arg->numbered_str.num]) {
+        log(true, stmt, actx->pctx, "unprocessed string at %d strtab %p", arg->numbered_str.num,
+            strs);
         return false;
     }
-    if (strs->allocated[arg->numbered_str.num])
-        log(false, stmt, actx->pctx, "overwriting existing string table entry at %u",
-            arg->numbered_str.num);
 
     if (actx->dst_sz < sizeof(arg->numbered_str.num)) {
         log(true, stmt, actx->pctx, "no space to write string table index");
@@ -205,29 +174,6 @@ static bool emit_arg_numbered_str(const struct script_stmt* stmt, const struct s
     memcpy(actx->dst, &arg->numbered_str.num, sizeof(arg->numbered_str.num));
     actx->dst += sizeof(arg->numbered_str.num);
     actx->dst_sz -= sizeof(arg->numbered_str.num);
-
-    if (strs->allocated[arg->numbered_str.num] && strs->strs[arg->numbered_str.num])
-        free(strs->strs[arg->numbered_str.num]);
-
-    strs->strs[arg->numbered_str.num] = strdup(arg->numbered_str.str);
-
-    /* If we're inserting at index past nstrs-1, add placeholders in between */
-    for (size_t i = strs->nstrs - 1; i < arg->numbered_str.num; i++) {
-        strs->strs[i] = EMBED_STR_PLACEHOLDER;
-        strs->allocated[i] = false;
-    }
-
-    // fprintf(stderr, "Adding %s at %d\n", arg->numbered_str.str, arg->numbered_str.num);
-    if (strs->nstrs < arg->numbered_str.num + 1)
-        strs->nstrs = arg->numbered_str.num + 1;
-
-    strs->allocated[arg->numbered_str.num] = strs->strs[arg->numbered_str.num] != NULL;
-
-    if (!strs->strs[arg->numbered_str.num]) {
-        log(true, stmt, actx->pctx, "failed to copy string");
-        perror("strdup");
-        return false;
-    }
 
     return true;
 }
@@ -437,8 +383,118 @@ static bool emit_stmt(const struct script_stmt* stmt, struct script_as_ctx* actx
     return false;
 }
 
-bool script_assemble(const struct script_parse_ctx* pctx, uint8_t* dst, size_t dst_sz,
-        struct strtab_embed_ctx* strs_sc, struct strtab_embed_ctx* strs_menu) {
+static bool arg_numbered_str_to_strtab(struct script_stmt* stmt, struct script_as_ctx* actx,
+    struct strtab_embed_ctx* strs, struct script_arg* arg) {
+    assert(arg->type == ARG_TY_NUMBERED_STR);
+
+    if (arg->numbered_str.num >= EMBED_STRTAB_SZ) {
+        log(true, stmt, actx->pctx, "string index too large");
+        return false;
+    }
+    if (strs->allocated[arg->numbered_str.num])
+        log(false, stmt, actx->pctx, "overwriting existing string table entry at %u",
+            arg->numbered_str.num);
+
+    if (strs->allocated[arg->numbered_str.num])
+        free(strs->strs[arg->numbered_str.num]);
+
+    strs->strs[arg->numbered_str.num] = strdup(arg->numbered_str.str);
+
+    /* If we're inserting at index past nstrs-1, add placeholders in between */
+    for (size_t i = strs->nstrs; i < arg->numbered_str.num; i++) {
+        strs->strs[i] = EMBED_STR_PLACEHOLDER;
+        strs->allocated[i] = false;
+    }
+
+    // fprintf(stderr, "Adding %s at %d\n", arg->numbered_str.str, arg->numbered_str.num);
+
+    if (strs->nstrs < arg->numbered_str.num + 1)
+        strs->nstrs = arg->numbered_str.num + 1;
+
+    strs->allocated[arg->numbered_str.num] = strs->strs[arg->numbered_str.num] != NULL;
+
+    if (!strs->strs[arg->numbered_str.num]) {
+        log(true, stmt, actx->pctx, "failed to copy string");
+        perror("strdup");
+        return false;
+    }
+
+    return true;
+}
+
+static bool arg_str_to_strtab(struct script_stmt* stmt, struct script_as_ctx* actx,
+    struct strtab_embed_ctx* strs, struct script_arg* arg) {
+    assert(arg->type == ARG_TY_STR);
+
+    if (strs->nstrs >= EMBED_STRTAB_SZ) {
+        log(true, stmt, actx->pctx, "too many strings in program");
+        return false;
+    }
+
+    uint16_t i = 0;
+    for (; i < EMBED_STRTAB_SZ; i++)
+        if (!strs->allocated[i])
+            break;
+
+    /* Convert arg to NUMBERED_STR */
+    const char* str = arg->str;
+    arg->numbered_str.num = i;
+    arg->numbered_str.str = str;
+    arg->type = ARG_TY_NUMBERED_STR;
+
+    return arg_numbered_str_to_strtab(stmt, actx, strs, arg);
+}
+
+static bool stmt_str_to_strtab(struct script_stmt* stmt, struct script_as_ctx* actx) {
+    struct strtab_embed_ctx* strtab = NULL;
+    if (cmd_uses_menu_strtab(&(union script_cmd){.op = stmt->op.idx}))
+        strtab = actx->strs_menu;
+    else
+        strtab = actx->strs_sc;
+
+    struct script_arg_list* args = &stmt->op.args;
+    bool ret = true;
+
+    for (int i = 0; i < args->nargs; i++) {
+        switch (args->args[i].type) {
+            case ARG_TY_STR: {
+                ret &= arg_str_to_strtab(stmt, actx, strtab, &args->args[i]);
+                break;
+            }
+            case ARG_TY_NUMBERED_STR: {
+                ret &= arg_numbered_str_to_strtab(stmt, actx, strtab, &args->args[i]);
+                break;
+            }
+            default:
+                continue;
+        }
+
+        if (!ret)
+            log(true, stmt, actx->pctx, "failed to add %dth string arg to strtab", i);
+    }
+
+    return ret;
+}
+
+bool script_fill_strtabs(struct script_parse_ctx* pctx, struct script_as_ctx* actx) {
+    bool ret = true;
+
+    struct script_stmt* stmt = &pctx->stmts[0];
+    size_t nstmts_left = pctx->nstmts;
+
+    while (ret && stmt) {
+        if (nstmts_left > 0)
+            nstmts_left--;
+        assert(!stmt->next || nstmts_left > 0);
+        assert(nstmts_left == 0 || stmt->next);
+
+        if (stmt->ty == STMT_TY_OP)
+            ret &= stmt_str_to_strtab(stmt, actx);
+        stmt = stmt->next;
+    }
+
+    return ret;
+}
 
 struct script_as_ctx* script_as_ctx_new(const struct script_parse_ctx* pctx, uint8_t* dst,
     size_t dst_sz, struct strtab_embed_ctx* strs_sc, struct strtab_embed_ctx* strs_menu) {
