@@ -497,7 +497,7 @@ bool script_fill_strtabs(struct script_as_ctx* actx) {
     return ret;
 }
 
-struct script_as_ctx* script_as_ctx_new(const struct script_parse_ctx* pctx, uint8_t* dst,
+struct script_as_ctx* script_as_ctx_new(struct script_parse_ctx* pctx, uint8_t* dst,
     size_t dst_sz, struct strtab_embed_ctx* strs_sc, struct strtab_embed_ctx* strs_menu) {
     assert(pctx->ndiags == 0 && "Trying to assemble script with parse errors");
 
