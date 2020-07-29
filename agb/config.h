@@ -29,6 +29,7 @@
 
 _Static_assert(RENDER_NCHARS_MAX <= 126, "Too many glyphs to render");
 
+/* Force wrap line if it does not fit */
 #define RENDER_AUTO_WRAP 1
 
 #endif
