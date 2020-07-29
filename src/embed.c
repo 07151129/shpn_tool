@@ -322,9 +322,11 @@ bool embed_script(uint8_t* rom, size_t rom_sz, size_t script_sz_max, size_t scri
     actx = script_as_ctx_new(pctx, &rom[script_offs], script_sz_max, ectx_scr, ectx_menu);
     ret = script_fill_strtabs(actx);
 
-    ret = ret && ctx_conv(conv, ectx_scr) && !ctx_conv(conv, ectx_menu);
-    ctx_hard_wrap(ectx_scr);
-    ctx_hard_wrap(ectx_menu);
+    ret = ret && ctx_conv(conv, ectx_scr) && ctx_conv(conv, ectx_menu);
+    if (ret) {
+        ctx_hard_wrap(ectx_scr);
+        ctx_hard_wrap(ectx_menu);
+    }
 
     size_t script_storage_used = 0;
 
