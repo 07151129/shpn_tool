@@ -38,6 +38,7 @@ static bool ctx_conv(iconv_t conv, struct strtab_embed_ctx* ctx) {
             ctx->strs[i] = res;
         }
     }
+    ctx->enc = STRTAB_ENC_SJIS;
     return true;
 }
 
@@ -48,6 +49,7 @@ static void ctx_hard_wrap(struct strtab_embed_ctx* ctx) {
         if (ctx->allocated[i])
             hard_wrap_sjis(ctx->strs[i]);
     }
+    ctx->wrapped = true;
 }
 
 iconv_t conv_for_embedding() {
@@ -78,10 +80,11 @@ bool embed_strtab(uint8_t* rom, size_t rom_sz, struct strtab_embed_ctx* ectx, si
      * FIXME: Move length until newline check from ctx_conv to after ctx_hard_wrap, as the latter
      * creates more wraps.
      */
-    if (!ctx_conv(conv, ectx))
+    if (ectx->enc != STRTAB_ENC_SJIS && !ctx_conv(conv, ectx))
         return false;
 
-    ctx_hard_wrap(ectx);
+    if (!ectx->wrapped)
+        ctx_hard_wrap(ectx);
 
     size_t nwritten;
     if (!make_strtab((void*)ectx->strs, ectx->nstrs, &rom[VMA2OFFS(ectx->rom_vma)], max_sz,
@@ -118,6 +121,8 @@ struct strtab_embed_ctx* strtab_embed_ctx_new() {
         perror("malloc");
         return NULL;
     }
+    ret->nstrs = 0;
+    ret->enc = STRTAB_ENC_UTF8;
     memset(ret->allocated, '\0', sizeof(ret->allocated));
     return ret;
 }
@@ -316,6 +321,10 @@ bool embed_script(uint8_t* rom, size_t rom_sz, size_t script_sz_max, size_t scri
 
     actx = script_as_ctx_new(pctx, &rom[script_offs], script_sz_max, ectx_scr, ectx_menu);
     ret = script_fill_strtabs(actx);
+
+    ret = ret && ctx_conv(conv, ectx_scr) && !ctx_conv(conv, ectx_menu);
+    ctx_hard_wrap(ectx_scr);
+    ctx_hard_wrap(ectx_menu);
 
     size_t script_storage_used = 0;
 

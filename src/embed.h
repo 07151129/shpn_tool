@@ -12,6 +12,8 @@
 #define EMBED_STRTAB_SZ 10000
 #define EMBED_STR_PLACEHOLDER ""
 struct strtab_embed_ctx {
+    enum {STRTAB_ENC_UTF8, STRTAB_ENC_SJIS} enc;
+    bool wrapped;
     size_t nstrs; /* in total incl. placeholders */
     char* strs[EMBED_STRTAB_SZ];
     uint32_t rom_vma;
