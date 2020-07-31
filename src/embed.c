@@ -323,10 +323,8 @@ bool embed_script(uint8_t* rom, size_t rom_sz, size_t script_sz_max, size_t scri
     ret = script_fill_strtabs(actx);
 
     ret = ret && ctx_conv(conv, ectx_scr) && ctx_conv(conv, ectx_menu);
-    if (ret) {
+    if (ret)
         ctx_hard_wrap(ectx_scr);
-        ctx_hard_wrap(ectx_menu);
-    }
 
     size_t script_storage_used = 0;
 
