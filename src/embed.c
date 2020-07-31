@@ -43,6 +43,8 @@ static bool ctx_conv(iconv_t conv, struct strtab_embed_ctx* ctx) {
 }
 
 static void ctx_hard_wrap(struct strtab_embed_ctx* ctx) {
+    assert(ctx->enc == STRTAB_ENC_SJIS);
+
     for (size_t i = 0; i < ctx->nstrs; i++) {
         assert(ctx->strs[i]);
 
@@ -241,17 +243,21 @@ static bool patch_cksum_sz(uint8_t* rom, size_t rom_sz, size_t script_sz, uint32
     return true;
 }
 
+static bool split_ShowText_stmt(struct script_parse_ctx* pctx, struct strtab_embed_ctx* strtab_ectx) {
+
+}
+
 /**
  * For each ShowText command in the parse context, if the text used by the command argument is too
  * long to fit on screen, split the text and insert extra ShowText commands after it.
  *
  * We will insert new ops into pctx linked list and pass it to script_assemble next.
- *
- * - strtab_ectx needs to contain already hard-wrapped SJIS. Fix by doing SJIS conversion&wrapping
- * before embedding.
  */
-static bool split_ShowText(struct script_parse_ctx* pctx, struct strtab_embed_ctx* strtab_ectx) {
+static bool split_ShowText_stmts(struct script_parse_ctx* pctx, struct strtab_embed_ctx* strtab_ectx) {
+    assert(strtab_ectx->enc == STRTAB_ENC_SJIS);
+    assert(strtab_ectx->wrapped);
 
+    return true;
 }
 
 bool embed_script(uint8_t* rom, size_t rom_sz, size_t script_sz_max, size_t script_offs,
@@ -325,6 +331,8 @@ bool embed_script(uint8_t* rom, size_t rom_sz, size_t script_sz_max, size_t scri
     ret = ret && ctx_conv(conv, ectx_scr) && ctx_conv(conv, ectx_menu);
     if (ret)
         ctx_hard_wrap(ectx_scr);
+
+    ret = ret && split_ShowText_stmts(pctx, ectx_scr);
 
     size_t script_storage_used = 0;
 

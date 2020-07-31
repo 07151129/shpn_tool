@@ -170,6 +170,7 @@ uint8_t render_sjis(const char* sjis, uint32_t len, uint16_t start_at_y, uint16_
             i += 2;
             continue;
         } else if (first == '\r') {
+            /* The strtab decoder replaces \n with \r */
             col = 0;
             row++;
             i++;
