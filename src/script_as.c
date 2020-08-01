@@ -10,6 +10,7 @@
 
 #include "defs.h"
 #include "embed.h"
+#include "glyph.h"
 #include "script_disass.h"
 #include "script_parse_ctx.h"
 #include "strtab.h"
@@ -158,7 +159,7 @@ static bool emit_arg_str(const struct script_stmt* stmt, const struct script_arg
 }
 
 static bool emit_arg_numbered_str(const struct script_stmt* stmt, const struct script_arg* arg,
-        struct strtab_embed_ctx* strs, struct script_as_ctx* actx) {
+        UNUSED struct strtab_embed_ctx* strs, struct script_as_ctx* actx) {
     assert(arg->type == ARG_TY_NUMBERED_STR);
 
     if (!strs->allocated[arg->numbered_str.num]) {
@@ -472,6 +473,108 @@ static bool stmt_str_to_strtab(struct script_stmt* stmt, struct script_as_ctx* a
 
         if (!ret)
             log(true, stmt, actx->pctx, "failed to add %dth string arg to strtab", i);
+    }
+
+    return ret;
+}
+
+static bool insert_ShowText(struct script_as_ctx* actx, struct script_stmt* stmt,
+    const char* str) {
+    /* FIXME: script_stmt_free always calls free(), so we must copy str */
+    char* str_cpy = strdup(str);
+
+    struct script_op_stmt op = {
+        .idx = 0xc, /* ShowText */
+        .args = {
+            .nargs = 1,
+            .args[0] = {
+                .str = str_cpy
+            }
+        }
+    };
+
+    struct script_stmt stmt_new = {
+        .ty = STMT_TY_OP,
+        .label = NULL,
+        .op = op,
+        .line = stmt->line /* Not present in source, so just reuse the line */
+    };
+
+    if (!script_ctx_insert_next_stmt(actx->pctx, &stmt_new, stmt)) {
+        log(true, stmt, actx->pctx, "failed to split ShowText");
+        return false;
+    }
+
+    /* stmt_new should be at stmt->next now */
+    return stmt_str_to_strtab(stmt->next, actx);
+}
+
+// FIXME: We don't need to pass both actx and strtab.
+bool split_ShowText_stmt(struct script_as_ctx* actx, struct script_stmt* stmt,
+    struct strtab_embed_ctx* strtab, struct script_stmt** next) {
+    *next = stmt->next;
+
+    if (stmt->ty == STMT_TY_OP && cmd_uses_script_strtab(&(union script_cmd){.op = stmt->op.idx})) {
+        struct script_op_stmt* op = &stmt->op;
+
+        if (op->args.nargs != 1 || op->args.args[0].type != ARG_TY_NUMBERED_STR)
+            return false;
+
+        size_t idx = op->args.args[0].numbered_str.num;
+        if (strtab->nstrs <= idx || !strtab->allocated[idx])
+            return false;
+
+        /**
+         * FIXME: We could potentially avoid str realloc at split here, but allocated[i] does not
+         * let us tell if a string is unreferenced.
+         */
+        char* str = strtab->strs[idx];
+        size_t at = sjis_break_frame_at(str);
+        bool first = true;
+
+        while (at) {
+            assert(str[at] == '\n');
+            str[at] = '\0';
+
+            if (!first) {
+                if (!insert_ShowText(actx, stmt, str))
+                    return false;
+                stmt = stmt->next;
+            }
+
+            str = &str[at + 1];
+            first = false;
+            at = sjis_break_frame_at(str);
+        }
+
+        if (!first) {
+            if (!insert_ShowText(actx, stmt, str))
+                return false;
+            *next = stmt->next;
+
+            // fprintf(stderr, "Split ShowText at %zu\n", stmt->line);
+        }
+    }
+    return true;
+}
+
+/**
+ * For each ShowText command in the parse context, if the text used by the command argument is too
+ * long to fit on screen, split the text and insert extra ShowText commands after it.
+ *
+ * We will insert new ops into pctx linked list and pass it to script_assemble next.
+ */
+bool split_ShowText_stmts(struct script_as_ctx* actx, struct strtab_embed_ctx* strtab) {
+    assert(strtab->enc == STRTAB_ENC_SJIS);
+    assert(strtab->wrapped);
+
+    bool ret = true;
+    struct script_stmt* stmt = &actx->pctx->stmts[0];
+
+    while (ret && stmt) {
+        struct script_stmt* next = NULL;
+        ret &= split_ShowText_stmt(actx, stmt, strtab, &next);
+        stmt = next;
     }
 
     return ret;

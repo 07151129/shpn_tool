@@ -312,3 +312,7 @@ bool cmd_can_be_branched_to(const union script_cmd* cmd) {
 bool cmd_uses_menu_strtab(const union script_cmd* cmd) {
     return cmd->op == 0x11 || cmd->op == 0x35;
 }
+
+bool cmd_uses_script_strtab(const union script_cmd* cmd) {
+    return cmd->op == 0xc;
+}

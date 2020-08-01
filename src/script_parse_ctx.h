@@ -75,10 +75,12 @@ bool script_parse_ctx_parse(struct script_parse_ctx* ctx);
 bool script_parse_ctx_add_diag(struct script_parse_ctx* ctx, const struct script_diag* diag);
 bool script_arg_list_add_arg(struct script_arg_list* args, const struct script_arg* arg);
 void script_arg_free(const struct script_arg* arg);
-void script_stmt_free(struct script_stmt* stmt);
+void script_stmt_free(struct script_stmt* stmt, bool inorder);
 void script_parse_ctx_free(struct script_parse_ctx* ctx);
 bool script_op_idx(const char* name, size_t* dst);
 bool script_op_idx_chk(size_t idx);
 bool script_ctx_add_stmt(struct script_parse_ctx* ctx, const struct script_stmt* stmt);
+bool script_ctx_insert_next_stmt(struct script_parse_ctx* ctx, const struct script_stmt* stmt,
+    struct script_stmt* prev);
 
 #endif

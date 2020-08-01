@@ -82,21 +82,35 @@ bool script_arg_list_add_arg(struct script_arg_list* args, const struct script_a
 }
 
 bool script_ctx_add_stmt(struct script_parse_ctx* ctx, const struct script_stmt* stmt) {
+    return script_ctx_insert_next_stmt(ctx, stmt, NULL);
+}
+
+bool script_ctx_insert_next_stmt(struct script_parse_ctx* ctx, const struct script_stmt* stmt,
+    struct script_stmt* prev) {
     if (ctx->nstmts >= SCRIPT_PARSE_CTX_STMTS_SZ)
         return false;
 
-    struct script_stmt* prev_stmt = NULL;
-    if (ctx->nstmts > 0)
-        prev_stmt = &ctx->stmts[ctx->nstmts - 1];
+    /* If prev is not passed, we need to discover it in order */
+    if (!prev && ctx->nstmts > 0) {
+        prev = &ctx->stmts[0];
+        while (prev->next)
+            prev = prev->next;
+    }
 
     struct script_stmt* dst = &ctx->stmts[ctx->nstmts++];
     *dst = *stmt;
 
-    if (prev_stmt) {
-        prev_stmt->next = dst;
+    struct script_stmt* next = NULL;
+
+    if (prev) {
+        next = prev->next;
+        prev->next = dst;
     }
 
-    dst->prev = prev_stmt;
+    dst->prev = prev;
+    dst->next = next;
+    if (next)
+        next->prev = dst;
     return true;
 }
 
@@ -129,14 +143,16 @@ void script_arg_free(const struct script_arg* arg) {
         free((void*)arg->numbered_str.str);
 }
 
-void script_stmt_free(struct script_stmt* stmt) {
+void script_stmt_free(struct script_stmt* stmt, bool inorder) {
     assert(stmt);
 
-    struct script_stmt* prev = stmt->prev, * next = stmt->next;
-    if (prev)
-        prev->next = next;
-    if (next)
-        next->prev = prev;
+    if (inorder) {
+        struct script_stmt* prev = stmt->prev, * next = stmt->next;
+        if (prev)
+            prev->next = next;
+        if (next)
+            next->prev = prev;
+    }
 
     if (stmt->label)
         free((void*)stmt->label);
@@ -147,5 +163,5 @@ void script_stmt_free(struct script_stmt* stmt) {
 
 void script_parse_ctx_free(struct script_parse_ctx* ctx) {
     for (size_t i = 0; i < ctx->nstmts; i++)
-        script_stmt_free(&ctx->stmts[i]);
+        script_stmt_free(&ctx->stmts[i], false);
 }

@@ -114,6 +114,7 @@ bool cmd_is_branch(const union script_cmd* cmd);
 bool cmd_is_jump(const union script_cmd* cmd);
 bool cmd_can_be_branched_to(const union script_cmd* cmd);
 bool cmd_uses_menu_strtab(const union script_cmd* cmd);
+bool cmd_uses_script_strtab(const union script_cmd* cmd);
 
 bool has_label(uint16_t offs, const struct script_state* state);
 
