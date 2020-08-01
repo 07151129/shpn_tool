@@ -509,6 +509,29 @@ static bool insert_ShowText(struct script_as_ctx* actx, struct script_stmt* stmt
     return stmt_str_to_strtab(stmt->next, actx);
 }
 
+static bool insert_HandleInput(struct script_as_ctx* actx, struct script_stmt* stmt) {
+    struct script_op_stmt op = {
+        .idx = 0x10, /* HandleInput */
+        .args = {
+            .nargs = 0,
+        }
+    };
+
+    struct script_stmt stmt_new = {
+        .ty = STMT_TY_OP,
+        .label = NULL,
+        .op = op,
+        .line = stmt->line
+    };
+
+    if (!script_ctx_insert_next_stmt(actx->pctx, &stmt_new, stmt)) {
+        log(true, stmt, actx->pctx, "failed to insert HandleInput");
+        return false;
+    }
+
+    return true;
+}
+
 // FIXME: We don't need to pass both actx and strtab.
 bool split_ShowText_stmt(struct script_as_ctx* actx, struct script_stmt* stmt,
     struct strtab_embed_ctx* strtab, struct script_stmt** next) {
@@ -541,6 +564,10 @@ bool split_ShowText_stmt(struct script_as_ctx* actx, struct script_stmt* stmt,
                     return false;
                 stmt = stmt->next;
             }
+
+            if (!insert_HandleInput(actx, stmt))
+                return false;
+            stmt = stmt->next;
 
             str = &str[at + 1];
             first = false;
