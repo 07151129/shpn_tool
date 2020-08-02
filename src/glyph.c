@@ -97,8 +97,6 @@ void hard_wrap_sjis(char* sjis) {
     }
 }
 
-#define NROWS_MAX 6
-
 /* We can display max(6 rows, RENDER_NCHARS_MAX glyphs). The latter is more likely. */
 size_t sjis_break_frame_at(const char* sjis) {
     size_t i = 0;
@@ -120,7 +118,7 @@ size_t sjis_break_frame_at(const char* sjis) {
         if (sjis[i] == '\n') {
             nl_at = i;
 
-            if (++nrows == NROWS_MAX)
+            if (++nrows == RENDER_NROWS_MAX)
                 return i;
 
             i++;
