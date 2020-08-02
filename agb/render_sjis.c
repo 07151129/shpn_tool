@@ -268,6 +268,9 @@ uint8_t render_sjis(const char* sjis, uint32_t len, uint16_t start_at_y, uint16_
     return nchars;
 }
 
+/**
+ * FIXME: Investigate random glyph corruption when rendering backlog here.
+ */
 __attribute__ ((section(".entry")))
 void render_sjis_entry(const char* sjis, uint32_t len, uint16_t start_at_y, uint16_t color,
     uint16_t no_delay, uint16_t a6, uint16_t a7) {
@@ -300,6 +303,12 @@ void render_sjis_menu_entry(const char* sjis, uint32_t unused, uint32_t row, uin
     if (row == 0) {
         *cursor_col = 0;
         *cursor_row = UINT32_MAX;
+
+        /* Do not render empty pretext */
+        if (sjis[0] == ' ') {
+            *(uint32_t*)nchars_rendered = 0;
+            return;
+        }
     }
 
     uint32_t color = 15;
