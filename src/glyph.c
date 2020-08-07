@@ -136,3 +136,61 @@ size_t sjis_break_frame_at(const char* sjis) {
 
     return 0;
 }
+
+size_t sjis_nglyphs(const char* sjis) {
+    size_t nglyphs = 0, i = 0;
+
+    while (sjis[i] && (i == 0 || sjis[i + 1])) {
+        if (sjis[i] == ' ') {
+            i++;
+            continue;
+        }
+
+        if (glyph_is_wait_cmd(&sjis[i])) {
+            i += 2;
+            continue;
+        }
+
+        if (sjis[i] == '\n') {
+            i++;
+            continue;
+        }
+
+        if (!glyph_is_hw(sjis[i]) && sjis[i + 1])
+            i += 2;
+        else
+            i++;
+        nglyphs++;
+    }
+
+    return nglyphs;
+}
+
+size_t sjis_nrows(const char* sjis) {
+    size_t nrows = 1, i = 0;
+
+    while (sjis[i] && (i == 0 || sjis[i + 1])) {
+        if (sjis[i] == ' ') {
+            i++;
+            continue;
+        }
+
+        if (glyph_is_wait_cmd(&sjis[i])) {
+            i += 2;
+            continue;
+        }
+
+        if (sjis[i] == '\n') {
+            i++;
+            nrows++;
+            continue;
+        }
+
+        if (!glyph_is_hw(sjis[i]) && sjis[i + 1])
+            i += 2;
+        else
+            i++;
+    }
+
+    return nrows;
+}
