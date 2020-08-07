@@ -7,11 +7,12 @@
 #include <inttypes.h>
 #include <limits.h>
 
+#include "defs.h"
 #include "script_gram.tab.h"
 
 int yylex(YYSTYPE* yylval_param, YYLTYPE* yylloc_param, void* ctx, yyscan_t yyscanner);
 
-int yyerror(YYLTYPE* llocp, struct script_parse_ctx* ctx, yyscan_t scanner, const char* msg) {
+int yyerror(YYLTYPE* llocp, struct script_parse_ctx* ctx, UNUSED yyscan_t scanner, const char* msg) {
     script_parse_ctx_add_diag(ctx, &(struct script_diag) {.kind = DIAG_ERR,
             .line = llocp->first_line,
             .col = llocp->first_column,
