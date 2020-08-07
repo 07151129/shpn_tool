@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "agb/config.h"
 #include "defs.h"
 #include "embed.h"
 #include "glyph.h"
@@ -159,7 +160,7 @@ static bool emit_arg_str(const struct script_stmt* stmt, const struct script_arg
 }
 
 static bool emit_arg_numbered_str(const struct script_stmt* stmt, const struct script_arg* arg,
-        UNUSED struct strtab_embed_ctx* strs, struct script_as_ctx* actx) {
+        struct strtab_embed_ctx* strs, struct script_as_ctx* actx) {
     assert(arg->type == ARG_TY_NUMBERED_STR);
 
     if (!strs->allocated[arg->numbered_str.num]) {
@@ -447,6 +448,7 @@ static bool arg_str_to_strtab(struct script_stmt* stmt, struct script_as_ctx* ac
     return arg_numbered_str_to_strtab(stmt, actx, strs, arg);
 }
 
+/* FIXME: Switch to htab for strtab to avoid duplicate allocations in a loop */
 static bool stmt_str_to_strtab(struct script_stmt* stmt, struct script_as_ctx* actx) {
     struct strtab_embed_ctx* strtab = NULL;
     if (cmd_uses_menu_strtab(&(union script_cmd){.op = stmt->op.idx}))
@@ -591,6 +593,112 @@ bool split_ShowText_stmt(struct script_as_ctx* actx, struct script_stmt* stmt,
     return true;
 }
 
+static bool should_split_Choice(const struct script_stmt* stmt, struct strtab_embed_ctx* strtab,
+    size_t arg_start, size_t* first_str_arg) {
+    assert(strtab->enc == STRTAB_ENC_SJIS);
+
+    const struct script_op_stmt* op = &stmt->op;
+
+    size_t nrows = 0, nglyphs = 0;
+    bool first_str = false;
+
+    for (int i = arg_start; i < op->args.nargs; i++) {
+        if (op->args.args[i].type == ARG_TY_NUMBERED_STR) {
+            size_t num = op->args.args[i].num;
+
+            assert(strtab->allocated[num]);
+            assert(num < strtab->nstrs);
+
+            const char* sjis = strtab->strs[num];
+
+            nrows += sjis_nrows(sjis);
+            nglyphs += sjis_nglyphs(sjis);
+
+            if (first_str_arg && !first_str) {
+                first_str = true;
+                *first_str_arg = i;
+            }
+        }
+    }
+
+    return nrows > RENDER_NROWS_MAX || nglyphs > RENDER_NCHARS_MAX;
+}
+
+/**
+ * Long Choice/ChoiceIdx commands do not always fit on screen.
+ * Our workaround is to put the first argument (the choice pretext) into a preceding ShowText stmt,
+ * and leave the first argument empty.
+ * Unfortunately, it does not solve the problem entirely.
+ */
+bool split_Choice_stmt(struct script_as_ctx* actx, struct script_stmt* stmt) {
+    bool ret = true;
+
+    if (stmt->ty == STMT_TY_OP && cmd_uses_menu_strtab(&(union script_cmd){.op = stmt->op.idx})) {
+        size_t first_str_arg = 0;
+
+        if (!should_split_Choice(stmt, actx->strs_menu, 0, &first_str_arg))
+            return true;
+
+        /* Does it fit if we ignore the pretext? */
+        if (should_split_Choice(stmt, actx->strs_menu, first_str_arg + 1, NULL)) {
+            log(false, stmt, actx->pctx, "Choice does not fit after splitting");
+            // return false;
+        }
+
+        struct script_stmt* prev = stmt->prev;
+
+        if (!prev) {
+            log(true, stmt, actx->pctx, "cannot prepend to this statement");
+            return false;
+        }
+
+        /* Must be a valid idx at this point */
+        struct script_arg* pretext_arg = &stmt->op.args.args[first_str_arg];
+
+        assert(pretext_arg->type == ARG_TY_NUMBERED_STR);
+
+        size_t sidx = pretext_arg->numbered_str.num;
+        char* pretext_sjis = actx->strs_menu->strs[sidx];
+
+        /**
+         * Choice
+         * stmt
+         */
+        ret &= insert_ShowText(actx, prev, pretext_sjis);
+
+        /**
+         * ShowText,   Choice
+         * stmt->prev, stmt
+         */
+        ret &= insert_HandleInput(actx, stmt->prev);
+
+        /**
+         * ShowText,         HandleInput, Choice
+         * stmt->prev->prev, stmt->prev,  stmt
+         */
+
+        assert(stmt->prev->prev->ty == STMT_TY_OP &&
+            cmd_uses_script_strtab(&(union script_cmd){.op = stmt->prev->prev->op.idx}));
+
+        /* Now set pretext to " ". Free numbered_str.str and set str */
+        if (pretext_arg->numbered_str.str)
+            free((void*)pretext_arg->numbered_str.str);
+
+        pretext_arg->str = strdup(" ");
+        pretext_arg->type = ARG_TY_STR;
+
+        ret &= arg_str_to_strtab(stmt, actx, actx->strs_menu, pretext_arg);
+
+        log(false, stmt, actx->pctx, "splitting Choice");
+    }
+    return true;
+}
+
+/**
+ * NOTE: The two functions could be merged, but after splitting Choice we may need to split the
+ * generated ShowText again, resulting in inconvenient LL iteration.
+ */
+
 /**
  * For each ShowText command in the parse context, if the text used by the command argument is too
  * long to fit on screen, split the text and insert extra ShowText commands after it.
@@ -608,6 +716,18 @@ bool split_ShowText_stmts(struct script_as_ctx* actx) {
         struct script_stmt* next = NULL;
         ret &= split_ShowText_stmt(actx, stmt, &next);
         stmt = next;
+    }
+
+    return ret;
+}
+
+bool split_Choice_stmts(struct script_as_ctx* actx) {
+    bool ret = true;
+    struct script_stmt* stmt = &actx->pctx->stmts[0];
+
+    while (ret && stmt) {
+        ret &= split_Choice_stmt(actx, stmt);
+        stmt = stmt->next;
     }
 
     return ret;

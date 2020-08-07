@@ -317,7 +317,8 @@ bool embed_script(uint8_t* rom, size_t rom_sz, size_t script_sz_max, size_t scri
         ctx_hard_wrap(ectx_menu);
     }
 
-    ret = ret && split_ShowText_stmts(actx, ectx_scr);
+    /* NOTE: As Choice splitting may generate new ShowText, it must be done in this order */
+    ret = ret && split_Choice_stmts(actx) && split_ShowText_stmts(actx);
 
     size_t script_storage_used = 0;
 

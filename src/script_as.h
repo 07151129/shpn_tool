@@ -22,6 +22,7 @@ bool script_fill_strtabs(struct script_as_ctx* actx);
 bool script_assemble(struct script_as_ctx* actx);
 
 bool split_ShowText_stmts(struct script_as_ctx* actx);
+bool split_Choice_stmts(struct script_as_ctx* actx);
 bool split_ShowText_stmt(struct script_as_ctx* actx, struct script_stmt* stmt,
     struct strtab_embed_ctx* strtab, struct script_stmt** next);
 
