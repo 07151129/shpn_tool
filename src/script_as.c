@@ -480,14 +480,18 @@ static bool stmt_str_to_strtab(struct script_stmt* stmt, struct script_as_ctx* a
 
 static bool insert_ShowText(struct script_as_ctx* actx, struct script_stmt* stmt,
     const char* str) {
+    assert(str);
+
     /* FIXME: script_stmt_free always calls free(), so we must copy str */
-    char* str_cpy = strdup(str);
+    char* str_cpy = NULL;
+    str_cpy = strdup(str);
 
     struct script_op_stmt op = {
         .idx = 0xc, /* ShowText */
         .args = {
             .nargs = 1,
             .args[0] = {
+                .type = ARG_TY_STR,
                 .str = str_cpy
             }
         }
