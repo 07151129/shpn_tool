@@ -538,8 +538,10 @@ static bool insert_HandleInput(struct script_as_ctx* actx, struct script_stmt* s
 
 // FIXME: We don't need to pass both actx and strtab.
 bool split_ShowText_stmt(struct script_as_ctx* actx, struct script_stmt* stmt,
-    struct strtab_embed_ctx* strtab, struct script_stmt** next) {
+    struct script_stmt** next) {
     *next = stmt->next;
+
+    struct strtab_embed_ctx* strtab = actx->strs_sc;
 
     if (stmt->ty == STMT_TY_OP && cmd_uses_script_strtab(&(union script_cmd){.op = stmt->op.idx})) {
         struct script_op_stmt* op = &stmt->op;
@@ -595,16 +597,16 @@ bool split_ShowText_stmt(struct script_as_ctx* actx, struct script_stmt* stmt,
  *
  * We will insert new ops into pctx linked list and pass it to script_assemble next.
  */
-bool split_ShowText_stmts(struct script_as_ctx* actx, struct strtab_embed_ctx* strtab) {
-    assert(strtab->enc == STRTAB_ENC_SJIS);
-    assert(strtab->wrapped);
+bool split_ShowText_stmts(struct script_as_ctx* actx) {
+    assert(actx->strs_sc->enc == STRTAB_ENC_SJIS);
+    assert(actx->strs_sc->wrapped);
 
     bool ret = true;
     struct script_stmt* stmt = &actx->pctx->stmts[0];
 
     while (ret && stmt) {
         struct script_stmt* next = NULL;
-        ret &= split_ShowText_stmt(actx, stmt, strtab, &next);
+        ret &= split_ShowText_stmt(actx, stmt, &next);
         stmt = next;
     }
 
