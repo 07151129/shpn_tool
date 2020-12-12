@@ -10,7 +10,16 @@
 #include "defs.h"
 
 #define EMBED_STRTAB_SZ 10000
+
+/**
+ * Statically allocate placeholder idx such that idx % 10 == 0.
+ * This is used for Choice handler to determine whether the 0th row should be selected by default.
+ * Placeholder users must use EMBED_STR_PLACEHOLDER_IDX to get a guaranteed placeholder idx.
+ * This value is also used to fill gaps in strtab.
+ */
 #define EMBED_STR_PLACEHOLDER ""
+#define EMBED_STR_PLACEHOLDER_IDX 0
+
 struct strtab_embed_ctx {
     enum {STRTAB_ENC_UTF8, STRTAB_ENC_SJIS} enc;
     bool wrapped;

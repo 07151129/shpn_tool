@@ -1,11 +1,20 @@
 LEntry: LoadBackground(0);
-Choice((0)" ", (1)"ВариантА", (2)"ВариантБ");
+Choice((10)"Выбираем", (1)"ВариантА", (2)"ВариантБ");
 Branch4(0x569, LA);
 ShowText((0)"ВариантА");
 HandleInput();
 Jump(LEntry);
 LA: ShowText((1)"ВариантБ");
 HandleInput();
+
+Choice((0)"", (1)"ВариантА", (2)"ВариантБ");
+Branch4(0x569, LA1);
+ShowText((0)"ВариантА");
+HandleInput();
+Jump(LEntry);
+LA1: ShowText((1)"ВариантБ");
+HandleInput();
+
 Jump(LEntry);
 
 .begin branch_info

@@ -305,8 +305,8 @@ void render_sjis_menu_entry(const char* sjis, uint32_t unused, uint32_t row, uin
         *cursor_row = UINT32_MAX;
 
         /* Do not render empty pretext */
-        if (sjis[0] == ' ') {
-            *(uint32_t*)nchars_rendered = 0;
+        if (sjis[0] == '\r' && sjis[1] == '\0') {
+            *nchars_rendered = 0;
             return;
         }
     }

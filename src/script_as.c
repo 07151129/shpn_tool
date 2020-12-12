@@ -44,6 +44,8 @@ static void log(bool err, const struct script_stmt* stmt, const struct script_pa
     fputc('\n', stderr);
 }
 
+#define STMT_TO_CMD(stmt) &(union script_cmd){.op = stmt->op.idx}
+
 struct jump_refs_ctx {
 #define JUMP_REFS_SZ 10000
     size_t nrefs;
@@ -111,7 +113,7 @@ static bool emit_arg_label(const struct script_stmt* stmt, const struct script_a
         struct script_as_ctx* actx) {
     assert(arg->type == ARG_TY_LABEL && stmt->ty == STMT_TY_OP);
 
-    if (!cmd_is_jump(&(union script_cmd){.op = stmt->op.idx}))
+    if (!cmd_is_jump(STMT_TO_CMD(stmt)))
         return true;
 
     uint16_t bdst = UINT16_MAX;
@@ -151,7 +153,7 @@ static bool emit_arg_label(const struct script_stmt* stmt, const struct script_a
     return true;
 }
 
-static bool emit_arg_str(const struct script_stmt* stmt, const struct script_arg* arg,
+static bool emit_arg_str(const struct script_stmt* stmt, UNUSED const struct script_arg* arg,
     UNUSED struct strtab_embed_ctx* strs, struct script_as_ctx* actx) {
     assert(arg->type == ARG_TY_STR);
 
@@ -183,7 +185,7 @@ static bool emit_arg(const struct script_stmt* stmt, const struct script_arg* ar
         struct script_as_ctx* actx) {
     assert(stmt->ty == STMT_TY_OP);
 
-    struct strtab_embed_ctx* strs = cmd_uses_menu_strtab(&(union script_cmd){.op = stmt->op.idx}) ?
+    struct strtab_embed_ctx* strs = cmd_uses_menu_strtab(STMT_TO_CMD(stmt)) ?
         actx->strs_menu : actx->strs_sc;
 
     switch (arg->type) {
@@ -201,6 +203,33 @@ static bool emit_arg(const struct script_stmt* stmt, const struct script_arg* ar
     return false;
 }
 
+/* Choice, ChoiceIdx */
+static bool is_choice_stmt(const struct script_stmt* stmt) {
+    return stmt->ty == STMT_TY_OP && cmd_uses_menu_strtab(STMT_TO_CMD(stmt));
+}
+
+static void chk_pretext_idx(const struct script_stmt* stmt, struct script_as_ctx* actx) {
+    /* To avoid false positives just hardcode idx based on op */
+    if (is_choice_stmt(stmt) && stmt->op.args.nargs > 0) {
+        int ipretext = cmd_is_choice_idx(STMT_TO_CMD(stmt)) ? 1 : 0;
+
+        assert(ipretext < stmt->op.args.nargs);
+
+        const struct script_arg* pretext = &stmt->op.args.args[ipretext];
+
+        assert(pretext->type == ARG_TY_NUM || pretext->type == ARG_TY_NUMBERED_STR);
+
+        uint16_t sidx;
+        if (pretext->type == ARG_TY_NUM)
+            sidx = pretext->num;
+        else
+            sidx = pretext->numbered_str.num;
+
+        if (sidx % 10 && actx->strs_menu->strs[sidx][0])
+            log(false, stmt, actx->pctx, "Choice pretext will be selectable");
+    }
+}
+
 static bool emit_op(const struct script_stmt* stmt, struct script_as_ctx* actx) {
     assert(stmt->ty == STMT_TY_OP);
 
@@ -210,6 +239,8 @@ static bool emit_op(const struct script_stmt* stmt, struct script_as_ctx* actx) 
         return false;
     }
     // fprintf(stderr, "OP at line %zu at offs 0x%tx\n", stmt->line, actx->dst - actx->dst_start);
+
+    chk_pretext_idx(stmt, actx);
 
     /* For branch the second argument is not emitted */
     if (cmd_is_branch(&cmd))
@@ -329,7 +360,7 @@ static bool process_label_refs(const struct script_stmt* stmt, struct script_as_
                     return false;
                 }
             }
-            if (!cmd_can_be_branched_to(&(union script_cmd){.op = stmt->op.idx})) {
+            if (!cmd_can_be_branched_to(STMT_TO_CMD(stmt)) {
                 /* Emit nop just before stmt so we can branch here */
                 struct script_stmt nop = {.ty = STMT_TY_OP, .line = stmt->line,
                     .op = {.idx = 7, .args = {.nargs = 0}}
@@ -427,6 +458,7 @@ static bool arg_numbered_str_to_strtab(struct script_stmt* stmt, struct script_a
 
 static bool arg_str_to_strtab(struct script_stmt* stmt, struct script_as_ctx* actx,
     struct strtab_embed_ctx* strs, struct script_arg* arg) {
+    assert(arg);
     assert(arg->type == ARG_TY_STR);
 
     if (strs->nstrs >= EMBED_STRTAB_SZ) {
@@ -451,7 +483,7 @@ static bool arg_str_to_strtab(struct script_stmt* stmt, struct script_as_ctx* ac
 /* FIXME: Switch to htab for strtab to avoid duplicate allocations in a loop */
 static bool stmt_str_to_strtab(struct script_stmt* stmt, struct script_as_ctx* actx) {
     struct strtab_embed_ctx* strtab = NULL;
-    if (cmd_uses_menu_strtab(&(union script_cmd){.op = stmt->op.idx}))
+    if (cmd_uses_menu_strtab(STMT_TO_CMD(stmt))
         strtab = actx->strs_menu;
     else
         strtab = actx->strs_sc;
@@ -545,7 +577,7 @@ bool split_ShowText_stmt(struct script_as_ctx* actx, struct script_stmt* stmt,
 
     struct strtab_embed_ctx* strtab = actx->strs_sc;
 
-    if (stmt->ty == STMT_TY_OP && cmd_uses_script_strtab(&(union script_cmd){.op = stmt->op.idx})) {
+    if (stmt->ty == STMT_TY_OP && cmd_uses_script_strtab(STMT_TO_CMD(stmt))) {
         struct script_op_stmt* op = &stmt->op;
 
         if (op->args.nargs != 1 || op->args.args[0].type != ARG_TY_NUMBERED_STR)
@@ -633,7 +665,7 @@ static bool should_split_Choice(const struct script_stmt* stmt, struct strtab_em
 bool split_Choice_stmt(struct script_as_ctx* actx, struct script_stmt* stmt) {
     bool ret = true;
 
-    if (stmt->ty == STMT_TY_OP && cmd_uses_menu_strtab(&(union script_cmd){.op = stmt->op.idx})) {
+    if (is_choice_stmt(stmt)) {
         size_t first_str_arg = 0;
 
         if (!should_split_Choice(stmt, actx->strs_menu, 0, &first_str_arg))
@@ -681,13 +713,17 @@ bool split_Choice_stmt(struct script_as_ctx* actx, struct script_stmt* stmt) {
             cmd_uses_script_strtab(&(union script_cmd){.op = stmt->prev->prev->op.idx}));
 
         /* Now set pretext to " ". Free numbered_str.str and set str */
+
+        /**
+         * FIXME: This does not invalidate string reference. For example, if we have
+         * Choice((i)"long pretext"); ShowText(i) somewhere, we'll set i for Choice, but the
+         * ShowText may still expect to have "long text" at i.
+         */
         if (pretext_arg->numbered_str.str)
             free((void*)pretext_arg->numbered_str.str);
 
-        pretext_arg->str = strdup(" ");
-        pretext_arg->type = ARG_TY_STR;
-
-        ret &= arg_str_to_strtab(stmt, actx, actx->strs_menu, pretext_arg);
+        pretext_arg->num = EMBED_STR_PLACEHOLDER_IDX;
+        pretext_arg->type = ARG_TY_NUM;
 
         log(false, stmt, actx->pctx, "splitting Choice");
     }

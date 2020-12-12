@@ -123,8 +123,11 @@ struct strtab_embed_ctx* strtab_embed_ctx_new() {
         perror("malloc");
         return NULL;
     }
-    ret->nstrs = 0;
+    ret->nstrs = 1; /* reserve placeholder */
     ret->enc = STRTAB_ENC_UTF8;
+
+    ret->strs[0] = EMBED_STR_PLACEHOLDER;
+
     memset(ret->allocated, '\0', sizeof(ret->allocated));
     return ret;
 }
