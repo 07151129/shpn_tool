@@ -360,7 +360,7 @@ static bool process_label_refs(const struct script_stmt* stmt, struct script_as_
                     return false;
                 }
             }
-            if (!cmd_can_be_branched_to(STMT_TO_CMD(stmt)) {
+            if (!cmd_can_be_branched_to(STMT_TO_CMD(stmt))) {
                 /* Emit nop just before stmt so we can branch here */
                 struct script_stmt nop = {.ty = STMT_TY_OP, .line = stmt->line,
                     .op = {.idx = 7, .args = {.nargs = 0}}
@@ -370,7 +370,7 @@ static bool process_label_refs(const struct script_stmt* stmt, struct script_as_
                     return false;
                 }
             }
-        } else if (cmd_is_jump(&(union script_cmd){.op = bsrc->op.idx})) {
+        } else if (cmd_is_jump(STMT_TO_CMD(stmt))) {
             /* Label occurs before a jump to it; create source-dst entry to be handled by jump later */
             if (stmt_order(stmt, bsrc) == STMT_ORD_LT) {
                 if ((actx->dst - actx->dst_start) > UINT16_MAX) {
@@ -483,7 +483,7 @@ static bool arg_str_to_strtab(struct script_stmt* stmt, struct script_as_ctx* ac
 /* FIXME: Switch to htab for strtab to avoid duplicate allocations in a loop */
 static bool stmt_str_to_strtab(struct script_stmt* stmt, struct script_as_ctx* actx) {
     struct strtab_embed_ctx* strtab = NULL;
-    if (cmd_uses_menu_strtab(STMT_TO_CMD(stmt))
+    if (cmd_uses_menu_strtab(STMT_TO_CMD(stmt)))
         strtab = actx->strs_menu;
     else
         strtab = actx->strs_sc;
