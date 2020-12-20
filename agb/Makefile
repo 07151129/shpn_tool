@@ -37,7 +37,7 @@ LDFLAGS := \
 	-N
 
 BINS = build/render_sjis.bin build/render_sjis_entry.bin build/render_sjis_entry_menu.bin \
-	build/clear_oam.bin build/render_backlog_controls.bin
+	build/clear_oam.bin build/render_backlog_controls.bin build/render_load_menu.bin
 
 .PHONY: clean all
 .SUFFIXES:
@@ -68,6 +68,7 @@ $(eval $(call BIN_TGT,build/render_sjis_entry.bin,build/render_sjis,.entry))
 $(eval $(call BIN_TGT,build/render_sjis_entry_menu.bin,build/render_sjis,.entry_menu))
 $(eval $(call BIN_TGT,build/clear_oam.bin,build/render_sjis,.clear_oam))
 $(eval $(call BIN_TGT,build/render_backlog_controls.bin,build/render_sjis,.render_backlog_controls))
+$(eval $(call BIN_TGT,build/render_load_menu.bin,build/render_sjis,.render_load_menu))
 
 clean:
 	rm -rf build

@@ -13,9 +13,10 @@ static void (*sub_8004CD4)(uint32_t idx, uint32_t* buf) = (void (*)(uint32_t, ui
 static void (*sub_8004C34)(uint32_t*, uint32_t*, char) = (void (*)(uint32_t*, uint32_t*, char))0x8004C35;
 static void (*await_input)(void) = (void (*)(void))0x80130A1;
 
-static uint16_t* new_keys = (void*)0x3002AE6;
+static volatile uint16_t* new_keys = (void*)0x3002AE6;
 static uint32_t* cursor_col = (uint32_t*)0x300234C;
 static uint32_t* cursor_row = (uint32_t*)0x3002340;
+static uint32_t glyphTilesVRAM = 0x600F800;
 
 static struct oam_data {
     uint32_t VPos:8;             // Y Coordinate
@@ -61,18 +62,41 @@ bool isdigit(char c) {
 
 #define CURSOR_OAM_IDX 112
 
-static uint8_t upload_glyph(const void* tiles, uint32_t idx, uint32_t row, uint16_t xoffs,
-    uint16_t yoffs, uint8_t rmargin_prev, uint8_t lmargin) {
+struct glyph_blit_cfg {
+    void* tiles; /* glyph tile data */
+    uint16_t oam_idx; /* OAM glyph object index */
+    bool rendering_menu; /* are we rendering a load menu */
+    uint16_t row; /* character row the glyph is at */
+    uint16_t xoffs; /* horizontal offset in pixels */
+    uint16_t yoffs; /* vertical offset in pixels */
+    uint8_t rmargin_prev; /* previous character's right margin */
+    uint8_t lmargin; /* left margin */
+};
+
+static void* glyph_vram_addr_normal(uint16_t idx) {
+    return (void*)(TILE_DIM * TILE_DIM * sizeof(uint16_t) * idx + 0x800 +
+        glyphTilesVRAM);
+}
+
+static void* glyph_vram_addr_menu(uint16_t idx) {
+    return (void*)(0x06010f00 + (idx - 15) * TILE_DIM * TILE_DIM * sizeof(uint16_t));
+}
+
+static uint8_t upload_glyph(const struct glyph_blit_cfg* cfg) {
     volatile struct dma_cnt* dma3_cnt = (void*)0x40000DC;
     volatile uint32_t* dma3_src = (void*)0x40000D4;
     volatile uint32_t* dma3_dst = (void*)0x40000D8;
+    uint16_t idx = cfg->oam_idx;
+    volatile void* glyph_tiles_vram;
 
     /* Cursor steals OAM slot 112... */
-    if (idx >= CURSOR_OAM_IDX)
+    if (!cfg->rendering_menu && idx >= CURSOR_OAM_IDX)
         idx++;
 
-    void* glyph_tiles_vram = (void*)(TILE_DIM * TILE_DIM * sizeof(uint16_t) * idx + 0x800 +
-        0x600F800);
+    if (cfg->rendering_menu)
+        glyph_tiles_vram = glyph_vram_addr_menu(idx);
+    else
+        glyph_tiles_vram = glyph_vram_addr_normal(idx);
 
     while (dma3_cnt->Enable)
         ;
@@ -86,12 +110,12 @@ static uint8_t upload_glyph(const void* tiles, uint32_t idx, uint32_t row, uint1
     dma_cnt.cnt.Enable = 1;
     dma_cnt.cnt.Count = TILE_DIM * TILE_DIM * NTILES_GLYPH / sizeof(uint16_t);
 
-    *dma3_src = (uint32_t)tiles;
+    *dma3_src = (uint32_t)cfg->tiles;
     *dma3_dst = (uint32_t)glyph_tiles_vram;
     *dma3_cnt = dma_cnt.cnt;
 
     struct oam_data gly_obj = {
-        .VPos = row * RENDER_VSPACE + RENDER_TEXT_UMARGIN + yoffs,
+        .VPos = cfg->row * RENDER_VSPACE + RENDER_TEXT_UMARGIN + cfg->yoffs,
         .AffineMode = 0,
         .ObjMode = 0,
         .Mosaic = 0,
@@ -107,9 +131,12 @@ static uint8_t upload_glyph(const void* tiles, uint32_t idx, uint32_t row, uint1
         .AffineParam = 0
     };
 
+    if (cfg->rendering_menu)
+        gly_obj.CharNo += 60;
+
     gly_obj.HPos = RENDER_TEXT_LMARGIN;
-    if (xoffs > RENDER_TEXT_LMARGIN)
-        gly_obj.HPos = xoffs - lmargin - rmargin_prev;
+    if (cfg->xoffs > RENDER_TEXT_LMARGIN)
+        gly_obj.HPos = cfg->xoffs - cfg->lmargin - cfg->rmargin_prev;
 
     /* FIXME: Is it faster to have tiles uploaded asynchronously and copy gly_obj manually? */
     while (dma3_cnt->Enable)
@@ -129,8 +156,9 @@ static uint8_t upload_glyph(const void* tiles, uint32_t idx, uint32_t row, uint1
 
 __attribute__ ((noinline))
 static
-uint8_t render_sjis(const char* sjis, uint32_t len, uint16_t start_at_y, uint16_t color,
-    bool no_delay, uint16_t xoffs, uint16_t yoffs, uint8_t nchars_offs, uint32_t* nbreaksp) {
+uint8_t render_sjis(const char* sjis, uint32_t len, struct glyph_blit_cfg* cfg, uint16_t start_at_y,
+    uint16_t color, bool no_delay, uint16_t xoffs, uint16_t yoffs, uint8_t nchars_offs,
+    uint32_t* nbreaksp) {
     (void)len;
 
     /* FIXME: Is there any good reason why the original code can draw only 112 glyphs? */
@@ -252,8 +280,15 @@ uint8_t render_sjis(const char* sjis, uint32_t len, uint16_t start_at_y, uint16_
             xpos_prev = xoffs + RENDER_TEXT_LMARGIN;
         }
 
-        xpos_prev = upload_glyph(&buf[0x47], nchars, row, xpos_prev, yoffs, rmargin_prev,
-            margins.lmargin);
+        cfg->tiles = &buf[0x47];
+        cfg->oam_idx = nchars;
+        cfg->row = row;
+        cfg->xoffs = xpos_prev;
+        cfg->yoffs = yoffs;
+        cfg->rmargin_prev = rmargin_prev;
+        cfg->lmargin = margins.lmargin;
+
+        xpos_prev = upload_glyph(cfg);
 
         rmargin_prev = margins.rmargin;
 
@@ -281,7 +316,12 @@ void render_sjis_entry(const char* sjis, uint32_t len, uint16_t start_at_y, uint
      */
     if (start_at_y)
         return;
-    render_sjis(sjis, len, 0, color, no_delay, a6, a7, 0, NULL);
+
+    struct glyph_blit_cfg cfg = {
+        .rendering_menu = false,
+    };
+
+    render_sjis(sjis, len, &cfg, 0, color, no_delay, a6, a7, 0, NULL);
 
     /* Cursor is drawn at coordinates for fixed-width spacing... */
 
@@ -315,8 +355,12 @@ void render_sjis_menu_entry(const char* sjis, uint32_t unused, uint32_t row, uin
     if (row == chosen_row)
         color = 9;
 
-    *cursor_col = render_sjis(sjis, 0, true, color, no_delay, 0, 0, *cursor_col, cursor_row);
-    *(uint32_t*)nchars_rendered = *cursor_col;
+    struct glyph_blit_cfg cfg = {
+        .rendering_menu = false,
+    };
+
+    *cursor_col = render_sjis(sjis, 0, &cfg, true, color, no_delay, 0, 0, *cursor_col, cursor_row);
+    *nchars_rendered = *cursor_col;
 }
 
 __attribute__ ((section(".clear_oam")))
@@ -328,4 +372,84 @@ void clear_oam() {
 __attribute__ ((section(".render_backlog_controls")))
 void render_backlog_controls(uint32_t arg) {
     (void)arg;
+}
+
+/**
+ * NOTE: Do not rely on any of those names.
+ * The layout is accurate but the purpose is largely unknown.
+ */
+
+struct __attribute__((packed)) RenderContext
+{
+  uint32_t oam_offset;
+  uint32_t sym_count;
+  uint32_t glyph_space_x;
+  uint32_t glyph_space_y;
+  uint32_t space;
+  uint32_t delay_timer;
+};
+
+struct __attribute__((packed)) RendererContent
+{
+  uint32_t a1;
+  uint32_t *a2;
+  uint32_t a3;
+  uint32_t a4;
+  uint32_t width;
+  uint32_t height;
+  uint32_t a7;
+};
+
+struct __attribute__((packed)) RenderRequest
+{
+  struct RendererContent *a1;
+  uint32_t a2;
+  uint32_t a3;
+  uint32_t oam_offset_curr;
+  uint32_t sym_count_curr;
+  uint32_t x_curr;
+  uint32_t y_curr;
+  uint32_t glyph_space_x;
+  uint32_t glyph_space_y;
+  uint32_t has_prev_offsets;
+  uint32_t oam_offset_prev;
+  uint32_t space_count_prev;
+  uint32_t oam_offset_last;
+  uint32_t sym_count_last;
+};
+
+_Static_assert(offsetof(struct RenderRequest, has_prev_offsets) == 0x24, "");
+
+// FIXME: Where's the color?
+
+__attribute__ ((section(".render_load_menu")))
+void render_load_menu(const char* sjis, uint32_t len, uint32_t x, uint32_t y,
+    struct RenderRequest* req, uint8_t flags) {
+    (void)len;
+
+    if (!req->has_prev_offsets) {
+        req->has_prev_offsets = 1;
+        req->oam_offset_prev = req->oam_offset_curr;
+        req->space_count_prev = 0;
+    }
+
+    /**
+     * The game reserves first 14 objects for 32x16 graphics. Since our render_sjis assumes 16x16
+     * tiles, we need to start at an extra offset to avoid overwriting the 32x16 objs VRAM data.
+     * Additionally, negatively shift the passed x/y coordinates to negate our renderer's shift.
+     */
+    uint32_t oam_offs = req->oam_offset_curr;
+
+    struct glyph_blit_cfg cfg = {
+        .rendering_menu = true,
+    };
+
+    oam_offs = render_sjis(sjis, 0, &cfg, 0, 15, flags & 0x80,
+        x - RENDER_TEXT_LMARGIN, y - RENDER_TEXT_UMARGIN, oam_offs, 0);
+
+    req->oam_offset_last = oam_offs;
+
+    req->sym_count_last = oam_offs - req->oam_offset_curr;
+    if (flags & 2)
+        req->oam_offset_curr = oam_offs;
 }
