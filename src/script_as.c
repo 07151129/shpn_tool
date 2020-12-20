@@ -423,9 +423,9 @@ static bool arg_numbered_str_to_strtab(struct script_stmt* stmt, struct script_a
         log(true, stmt, actx->pctx, "string index too large");
         return false;
     }
-    if (strs->allocated[arg->numbered_str.num])
-        log(false, stmt, actx->pctx, "overwriting existing string table entry at %u",
-            arg->numbered_str.num);
+    // if (strs->allocated[arg->numbered_str.num])
+    //     log(false, stmt, actx->pctx, "overwriting existing string table entry at %u",
+    //         arg->numbered_str.num);
 
     if (strs->allocated[arg->numbered_str.num])
         free(strs->strs[arg->numbered_str.num]);
@@ -461,12 +461,18 @@ static bool arg_str_to_strtab(struct script_stmt* stmt, struct script_as_ctx* ac
     assert(arg);
     assert(arg->type == ARG_TY_STR);
 
+    /**
+     * FIXME: This is really creating a problem: strtab_script specifies a string at 9999 so with
+     * the placeholers we run out of space. Should look into a fallback from here to find
+     * unreferenced strings, or extending strtab_embed_ctx.allocated to specify if a string is
+     * used.
+     */
     if (strs->nstrs >= EMBED_STRTAB_SZ) {
-        log(true, stmt, actx->pctx, "too many strings in program");
+        log(true, stmt, actx->pctx, "too many strings in program %zu", strs->nstrs);
         return false;
     }
 
-    uint16_t i = 0;
+    uint16_t i = 1;
     for (; i < EMBED_STRTAB_SZ; i++)
         if (!strs->allocated[i])
             break;
