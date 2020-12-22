@@ -24,6 +24,7 @@
 
 /* Delay in vertical blanking periods before next glyph is rendered */
 #define RENDER_DELAY_DEFAULT 3
+#define RENDER_DELAY_MENU 10
 /* Amount of OAM objects used, 1 reserved for the cursor */
 #define RENDER_NCHARS_MAX (128 - 2 /* Stolen by cursor */)
 

@@ -127,7 +127,7 @@ static uint8_t upload_glyph(const struct glyph_blit_cfg* cfg) {
         .Size = 1,
         .CharNo = 4 * idx,
         .Priority = 0,
-        .Pltt = 14,
+        .Pltt = !cfg->rendering_menu ? 14 : 15,
         .AffineParam = 0
     };
 
@@ -178,6 +178,8 @@ uint8_t render_sjis(const char* sjis, uint32_t len, struct glyph_blit_cfg* cfg, 
         row = *cursor_row + 1;
 
     uint32_t delay = RENDER_DELAY_DEFAULT;
+    if (cfg->rendering_menu)
+        delay = RENDER_DELAY_MENU;
 
     uint8_t rmargin_prev = 0, xpos_prev = RENDER_TEXT_LMARGIN;
     unsigned nchars = nchars_offs;
@@ -420,8 +422,7 @@ struct __attribute__((packed)) RenderRequest
 
 _Static_assert(offsetof(struct RenderRequest, has_prev_offsets) == 0x24, "");
 
-// FIXME: Where's the color?
-
+// FIXME: Corruption when drawing last choice item on 2nd screen
 __attribute__ ((section(".render_load_menu")))
 void render_load_menu(const char* sjis, uint32_t len, uint32_t x, uint32_t y,
     struct RenderRequest* req, uint8_t flags) {
@@ -439,17 +440,21 @@ void render_load_menu(const char* sjis, uint32_t len, uint32_t x, uint32_t y,
      * Additionally, negatively shift the passed x/y coordinates to negate our renderer's shift.
      */
     uint32_t oam_offs = req->oam_offset_curr;
+    uint32_t color = req->a1->a2[2] & 0xf;
 
     struct glyph_blit_cfg cfg = {
         .rendering_menu = true,
     };
 
-    oam_offs = render_sjis(sjis, 0, &cfg, 0, 15, flags & 0x80,
+    oam_offs = render_sjis(sjis, 0, &cfg, 0, color, !(flags & 0x80),
         x - RENDER_TEXT_LMARGIN, y - RENDER_TEXT_UMARGIN, oam_offs, 0);
 
     req->oam_offset_last = oam_offs;
 
     req->sym_count_last = oam_offs - req->oam_offset_curr;
+
+    if (flags & 1)
+        req->sym_count_curr = req->sym_count_last;
     if (flags & 2)
         req->oam_offset_curr = oam_offs;
 }
