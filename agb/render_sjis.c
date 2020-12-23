@@ -6,12 +6,14 @@
 
 #include "config.h"
 #include "glyph_margins.h"
+#include "static_strings.h"
 
 static uint32_t (*parse_wait_command)(const char* buf, uint32_t idx) =
     (uint32_t (*)(const char*, uint32_t))0x8004D85;
 static void (*sub_8004CD4)(uint32_t idx, uint32_t* buf) = (void (*)(uint32_t, uint32_t*))0x8004CD5;
 static void (*sub_8004C34)(uint32_t*, uint32_t*, char) = (void (*)(uint32_t*, uint32_t*, char))0x8004C35;
 static void (*await_input)(void) = (void (*)(void))0x80130A1;
+static void* (*lineToSJIS_Menu)(uint32_t) = (void* (*)(uint32_t))0x8004BAD;
 
 static volatile uint16_t* new_keys = (void*)0x3002AE6;
 static uint32_t* cursor_col = (uint32_t*)0x300234C;
@@ -427,6 +429,13 @@ __attribute__ ((section(".render_load_menu")))
 void render_load_menu(const char* sjis, uint32_t len, uint32_t x, uint32_t y,
     struct RenderRequest* req, uint8_t flags) {
     (void)len;
+
+    uint16_t menu_idx = static_str_map(sjis);
+    if (menu_idx) {
+        const char* sjis_translated = lineToSJIS_Menu(menu_idx);
+        if (sjis_translated)
+            sjis = sjis_translated;
+    }
 
     if (!req->has_prev_offsets) {
         req->has_prev_offsets = 1;

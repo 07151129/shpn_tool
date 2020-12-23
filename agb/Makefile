@@ -10,7 +10,8 @@ LDSCRIPT := agb.ld
 
 SRC := \
 	render_sjis.c \
-	glyph_margins.c
+	glyph_margins.c \
+	static_strings.c
 
 OBJ := $(SRC:%.c=build/%.o)
 DEP := $(OBJ:%.o=%.d)
