@@ -165,7 +165,7 @@ static bool emit_arg_numbered_str(const struct script_stmt* stmt, const struct s
         struct strtab_embed_ctx* strs, struct script_as_ctx* actx) {
     assert(arg->type == ARG_TY_NUMBERED_STR);
 
-    if (!strs->allocated[arg->numbered_str.num]) {
+    if (!strs->allocated[arg->numbered_str.num].allocated) {
         log(true, stmt, actx->pctx, "unprocessed string at %d", arg->numbered_str.num);
         return false;
     }
@@ -427,17 +427,19 @@ static bool arg_numbered_str_to_strtab(struct script_stmt* stmt, struct script_a
     //     log(false, stmt, actx->pctx, "overwriting existing string table entry at %u",
     //         arg->numbered_str.num);
 
-    if (strs->allocated[arg->numbered_str.num])
+    if (strs->allocated[arg->numbered_str.num].allocated)
         free(strs->strs[arg->numbered_str.num]);
 
-    strs->strs[arg->numbered_str.num] = strdup(arg->numbered_str.str);
+    char** str_dst = &strs->strs[arg->numbered_str.num];
+    *str_dst = strdup(arg->numbered_str.str);
 
     /* If we're inserting at index past nstrs-1, add placeholders in between */
     for (size_t i = strs->nstrs; i < arg->numbered_str.num; i++) {
-        assert(!strs->allocated[i]);
+        assert(!strs->allocated[i].allocated);
 
         strs->strs[i] = EMBED_STR_PLACEHOLDER;
-        strs->allocated[i] = false;
+        strs->allocated[i].allocated = false;
+        strs->allocated[i].used = false;
     }
 
     // fprintf(stderr, "Adding %s at %d\n", arg->numbered_str.str, arg->numbered_str.num);
@@ -445,7 +447,8 @@ static bool arg_numbered_str_to_strtab(struct script_stmt* stmt, struct script_a
     if (strs->nstrs < arg->numbered_str.num + 1)
         strs->nstrs = arg->numbered_str.num + 1;
 
-    strs->allocated[arg->numbered_str.num] = strs->strs[arg->numbered_str.num] != NULL;
+    strs->allocated[arg->numbered_str.num].allocated = *str_dst;
+    strs->allocated[arg->numbered_str.num].used = *str_dst;
 
     if (!strs->strs[arg->numbered_str.num]) {
         log(true, stmt, actx->pctx, "failed to copy string");
@@ -461,21 +464,15 @@ static bool arg_str_to_strtab(struct script_stmt* stmt, struct script_as_ctx* ac
     assert(arg);
     assert(arg->type == ARG_TY_STR);
 
-    /**
-     * FIXME: This is really creating a problem: strtab_script specifies a string at 9999 so with
-     * the placeholers we run out of space. Should look into a fallback from here to find
-     * unreferenced strings, or extending strtab_embed_ctx.allocated to specify if a string is
-     * used.
-     */
-    if (strs->nstrs >= EMBED_STRTAB_SZ) {
-        log(true, stmt, actx->pctx, "too many strings in program %zu", strs->nstrs);
-        return false;
-    }
-
     uint16_t i = 1;
     for (; i < EMBED_STRTAB_SZ; i++)
-        if (!strs->allocated[i])
+        if (!strs->allocated[i].used)
             break;
+
+    if (i == EMBED_STRTAB_SZ) {
+        log(true, stmt, actx->pctx, "too many strings in program");
+        return false;
+    }
 
     /* Convert arg to NUMBERED_STR */
     const char* str = arg->str;
@@ -590,7 +587,7 @@ bool split_ShowText_stmt(struct script_as_ctx* actx, struct script_stmt* stmt,
             return false;
 
         size_t idx = op->args.args[0].numbered_str.num;
-        if (strtab->nstrs <= idx || !strtab->allocated[idx])
+        if (strtab->nstrs <= idx || !strtab->allocated[idx].allocated)
             return false;
 
         /**
@@ -644,7 +641,7 @@ static bool should_split_Choice(const struct script_stmt* stmt, struct strtab_em
         if (op->args.args[i].type == ARG_TY_NUMBERED_STR) {
             size_t num = op->args.args[i].num;
 
-            assert(strtab->allocated[num]);
+            assert(strtab->allocated[num].allocated);
             assert(num < strtab->nstrs);
 
             const char* sjis = strtab->strs[num];

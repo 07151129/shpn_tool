@@ -26,8 +26,10 @@ struct strtab_embed_ctx {
     size_t nstrs; /* in total incl. placeholders */
     char* strs[EMBED_STRTAB_SZ];
     uint32_t rom_vma;
-    /* FIXME: This does not let us distinguish between unreferenced and referenced strs */
-    bool allocated[EMBED_STRTAB_SZ];
+    struct {
+        bool allocated; /* must be freed */
+        bool used; /* is referenced */
+    } allocated[EMBED_STRTAB_SZ];
 };
 
 #define STRTAB_SCRIPT_PTR_VMA 0x8004B9C

@@ -19,7 +19,7 @@
 
 void strtab_embed_ctx_free(struct strtab_embed_ctx* ctx) {
     for (size_t i = 0; i < ctx->nstrs; i++)
-        if (ctx->strs[i] && ctx->allocated[i])
+        if (ctx->strs[i] && ctx->allocated[i].allocated)
             free(ctx->strs[i]);
     free(ctx);
 }
@@ -28,7 +28,7 @@ static bool ctx_conv(iconv_t conv, struct strtab_embed_ctx* ctx) {
     for (size_t i = 0; i < ctx->nstrs; i++) {
         assert(ctx->strs[i]);
 
-        if (ctx->allocated[i]) {
+        if (ctx->allocated[i].allocated) {
             char* res = mk_strtab_str(ctx->strs[i], conv);
             if (!res) {
                 fprintf(stderr, "failed to convert string at %zu\n", i);
@@ -48,7 +48,7 @@ static void ctx_hard_wrap(struct strtab_embed_ctx* ctx) {
     for (size_t i = 0; i < ctx->nstrs; i++) {
         assert(ctx->strs[i]);
 
-        if (ctx->allocated[i])
+        if (ctx->allocated[i].allocated)
             hard_wrap_sjis(ctx->strs[i]);
     }
     ctx->wrapped = true;
@@ -206,7 +206,8 @@ struct strtab_embed_ctx* strtab_embed_ctx_with_file(FILE* fin, size_t sz) {
                 ret->strs[sidx][len] = '\0';
                 // fprintf(stderr, "%u: %s\n", sidx, ret->strs[sidx]);
                 ret->nstrs = sidx + 1 > ret->nstrs ? sidx + 1 : ret->nstrs;
-                ret->allocated[sidx] = true;
+                ret->allocated[sidx].allocated = true;
+                ret->allocated[sidx].used = true;
 
                 i++;
                 at_nl = true;
@@ -224,7 +225,7 @@ struct strtab_embed_ctx* strtab_embed_ctx_with_file(FILE* fin, size_t sz) {
      * Alternatively, we could pass struct strtab_embed_ctx to make_strtab
      */
     for (size_t i = 0; i < ret->nstrs; i++)
-        if (!ret->allocated[i])
+        if (!ret->allocated[i].allocated)
             ret->strs[i] = EMBED_STR_PLACEHOLDER;
 
 done:
