@@ -20,6 +20,18 @@ static uint32_t* cursor_col = (uint32_t*)0x300234C;
 static uint32_t* cursor_row = (uint32_t*)0x3002340;
 static uint32_t glyphTilesVRAM = 0x600F800;
 
+struct oam_affine {
+    uint16_t fill0[3];
+    int16_t pa;
+    uint16_t fill1[3];
+    int16_t pb;
+    uint16_t fill2[3];
+    int16_t pc;
+    uint16_t fill3[3];
+    int16_t pd;
+};
+_Static_assert(sizeof(struct oam_affine) == sizeof(uint64_t[4]), "");
+
 static struct oam_data {
     uint32_t VPos:8;             // Y Coordinate
     uint32_t AffineMode:2;       // Affine Mode
@@ -41,19 +53,26 @@ static struct oam_data {
 } * oam_base = (void*)0x7000000;
 _Static_assert(sizeof(struct oam_data) == sizeof(uint64_t), "");
 
-struct dma_cnt {
-    uint16_t Count;              // Transfer Count
-    uint16_t Dummy_21_16:5;
-    uint16_t DestpCnt:2;         // Destination Address Control
-    uint16_t SrcpCnt:2;          // Source Address Control
-    uint16_t ContinuousON:1;     // Continuous Mode
-    uint16_t BusSize:1;          // Bus Size 16/32Bit Select
-    uint16_t DataRequest:1;      // Data Request Synchronize Mode
-    uint16_t Timming:2;          // Timing Select
-    uint16_t IF_Enable:1;        // Interrupt Request Enable
-    uint16_t Enable:1;           // DMA Enable
+union dma_cnt {
+    struct {
+        uint16_t Count;              // Transfer Count
+        uint16_t Dummy_21_16:5;
+        uint16_t DestpCnt:2;         // Destination Address Control
+        uint16_t SrcpCnt:2;          // Source Address Control
+        uint16_t ContinuousON:1;     // Continuous Mode
+        uint16_t BusSize:1;          // Bus Size 16/32Bit Select
+        uint16_t DataRequest:1;      // Data Request Synchronize Mode
+        uint16_t Timming:2;          // Timing Select
+        uint16_t IF_Enable:1;        // Interrupt Request Enable
+        uint16_t Enable:1;           // DMA Enable
+    };
+    uint32_t val;
 };
-_Static_assert(sizeof(struct dma_cnt) == sizeof(uint32_t), "");
+_Static_assert(sizeof(union dma_cnt) == sizeof(uint32_t), "");
+
+static volatile union dma_cnt* dma3_cnt = (void*)0x40000DC;
+static volatile uint32_t* dma3_src = (void*)0x40000D4;
+static volatile uint32_t* dma3_dst = (void*)0x40000D8;
 
 bool isdigit(char c) {
     return '0' <= c && c <= '9';
@@ -63,6 +82,9 @@ bool isdigit(char c) {
 #define NTILES_GLYPH 4
 
 #define CURSOR_OAM_IDX 112
+
+#define PALETTE_SCRIPT 14 /* render_sjis */
+#define PALETTE_MENU 15 /* render_load_menu */
 
 struct glyph_blit_cfg {
     void* tiles; /* glyph tile data */
@@ -85,9 +107,6 @@ static void* glyph_vram_addr_menu(uint16_t idx) {
 }
 
 static uint8_t upload_glyph(const struct glyph_blit_cfg* cfg) {
-    volatile struct dma_cnt* dma3_cnt = (void*)0x40000DC;
-    volatile uint32_t* dma3_src = (void*)0x40000D4;
-    volatile uint32_t* dma3_dst = (void*)0x40000D8;
     uint16_t idx = cfg->oam_idx;
     volatile void* glyph_tiles_vram;
 
@@ -103,22 +122,19 @@ static uint8_t upload_glyph(const struct glyph_blit_cfg* cfg) {
     while (dma3_cnt->Enable)
         ;
 
-    union {
-        struct dma_cnt cnt;
-        uint32_t val;
-    } dma_cnt;
+    union dma_cnt dma_cnt;
     dma_cnt.val = 0;
 
-    dma_cnt.cnt.Enable = 1;
-    dma_cnt.cnt.Count = TILE_DIM * TILE_DIM * NTILES_GLYPH / sizeof(uint16_t);
+    dma_cnt.Enable = 1;
+    dma_cnt.Count = TILE_DIM * TILE_DIM * NTILES_GLYPH / sizeof(uint16_t);
 
     *dma3_src = (uint32_t)cfg->tiles;
     *dma3_dst = (uint32_t)glyph_tiles_vram;
-    *dma3_cnt = dma_cnt.cnt;
+    *dma3_cnt = dma_cnt;
 
     struct oam_data gly_obj = {
         .VPos = cfg->row * RENDER_VSPACE + RENDER_TEXT_UMARGIN + cfg->yoffs,
-        .AffineMode = 0,
+        .AffineMode = /* cfg->rendering_menu ? 1 : 0 */ 0,
         .ObjMode = 0,
         .Mosaic = 0,
         .ColorMode = 0,
@@ -129,7 +145,7 @@ static uint8_t upload_glyph(const struct glyph_blit_cfg* cfg) {
         .Size = 1,
         .CharNo = 4 * idx,
         .Priority = 0,
-        .Pltt = !cfg->rendering_menu ? 14 : 15,
+        .Pltt = !cfg->rendering_menu ? PALETTE_SCRIPT : PALETTE_MENU,
         .AffineParam = 0
     };
 
@@ -146,15 +162,27 @@ static uint8_t upload_glyph(const struct glyph_blit_cfg* cfg) {
 
     *dma3_src = (uint32_t)&gly_obj;
     *dma3_dst = (uint32_t)&oam_base[idx];
-    dma_cnt.cnt.Enable = 1;
-    dma_cnt.cnt.Count = sizeof(struct oam_data) / sizeof(uint16_t);
-    *dma3_cnt = dma_cnt.cnt;
-
-    while (dma3_cnt->Enable)
-        ;
+    dma_cnt.Enable = 1;
+    dma_cnt.Count = sizeof(struct oam_data) / sizeof(uint16_t);
+    *dma3_cnt = dma_cnt;
 
     return gly_obj.HPos + RENDER_GLYPH_DIM;
 }
+
+/* FIXME: This results in unreadable text. The hope was to scale it down so that it fits in menus,
+ * but the screen/font resolution is too small, so we'd have to redraw the font by hand.
+ */
+#if 0
+static void set_transform(struct glyph_blit_cfg* cfg) {
+    if (cfg->rendering_menu) {
+        volatile struct oam_affine* oam_affine = (void*)oam_base;
+        oam_affine[0].pa = 1 << 8;
+        oam_affine[0].pb = 0;
+        oam_affine[0].pc = 0;
+        oam_affine[0].pd = (1 << 8) | (1 << 4);
+    }
+}
+#endif
 
 __attribute__ ((noinline))
 static
@@ -187,6 +215,8 @@ uint8_t render_sjis(const char* sjis, uint32_t len, struct glyph_blit_cfg* cfg, 
     unsigned nchars = nchars_offs;
     unsigned nbreaks = 0;
 
+    // set_transform(cfg);
+
     bool in_quotes = false;
 
     for (uint32_t i = 0; sjis[i];) {
@@ -216,7 +246,8 @@ uint8_t render_sjis(const char* sjis, uint32_t len, struct glyph_blit_cfg* cfg, 
         }
 
         /* Prevent overflow */
-        if (nchars > RENDER_NCHARS_MAX)
+        if ((!cfg->rendering_menu && nchars > RENDER_NCHARS_MAX) ||
+            (cfg->rendering_menu && nchars > RENDER_NCHARS_MAX + 1))
             break;
 
         if (glyph_is_hw(first)) { /* Known single-byte half-width */
@@ -431,6 +462,11 @@ void render_load_menu(const char* sjis, uint32_t len, uint32_t x, uint32_t y,
     (void)len;
 
     uint16_t menu_idx = static_str_map(sjis);
+
+    /* This just looks akward in most languages (FIXME) */
+    if (menu_idx == 2136)
+        return;
+
     if (menu_idx) {
         const char* sjis_translated = lineToSJIS_Menu(menu_idx);
         if (sjis_translated)

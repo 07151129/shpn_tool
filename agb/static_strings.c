@@ -3,6 +3,7 @@
 #include "static_strings.h"
 
 static struct static_str strs[] = {
+    /* Puzzle/cards */
     {0x80C581C, 0}, /* カードフォルダを空にします。\nカードをすべて失いますが\nよろしいですか？\n */
     {0x80C5864, 2130}, /* はい */
     {0x80C586C, 2131}, /* いいえ */
@@ -18,6 +19,7 @@ static struct static_str strs[] = {
     {0x807AAAC, 0}, /* その行為には意味がない */
     {0x807AAC4, 0}, /* それ以上入らない */
     {0x807AA8C, 0}, /* よし…！*/
+    /* Savefile load menu */
     {0x80D9B38, 2136}, /* このシナリオが選択されました */
     {0x80D9B58, 2133}, /* 続きから */
     {0x80D9B64, 2134}, /* 初めから */
