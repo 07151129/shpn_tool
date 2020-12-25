@@ -90,6 +90,7 @@ struct glyph_blit_cfg {
     void* tiles; /* glyph tile data */
     uint16_t oam_idx; /* OAM glyph object index */
     bool rendering_menu; /* are we rendering a load menu */
+    bool rendering_choice;
     uint16_t row; /* character row the glyph is at */
     uint16_t xoffs; /* horizontal offset in pixels */
     uint16_t yoffs; /* vertical offset in pixels */
@@ -111,7 +112,7 @@ static uint8_t upload_glyph(const struct glyph_blit_cfg* cfg) {
     volatile void* glyph_tiles_vram;
 
     /* Cursor steals OAM slot 112... */
-    if (!cfg->rendering_menu && idx >= CURSOR_OAM_IDX)
+    if (!cfg->rendering_menu && !cfg->rendering_choice && idx >= CURSOR_OAM_IDX)
         idx++;
 
     if (cfg->rendering_menu)
@@ -354,6 +355,7 @@ void render_sjis_entry(const char* sjis, uint32_t len, uint16_t start_at_y, uint
 
     struct glyph_blit_cfg cfg = {
         .rendering_menu = false,
+        .rendering_choice = false
     };
 
     render_sjis(sjis, len, &cfg, 0, color, no_delay, a6, a7, 0, NULL);
@@ -392,6 +394,7 @@ void render_sjis_menu_entry(const char* sjis, uint32_t unused, uint32_t row, uin
 
     struct glyph_blit_cfg cfg = {
         .rendering_menu = false,
+        .rendering_choice = true
     };
 
     *cursor_col = render_sjis(sjis, 0, &cfg, true, color, no_delay, 0, 0, *cursor_col, cursor_row);
@@ -489,6 +492,7 @@ void render_load_menu(const char* sjis, uint32_t len, uint32_t x, uint32_t y,
 
     struct glyph_blit_cfg cfg = {
         .rendering_menu = true,
+        .rendering_choice = false
     };
 
     oam_offs = render_sjis(sjis, 0, &cfg, 0, color, !(flags & 0x80),
