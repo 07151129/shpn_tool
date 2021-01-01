@@ -1474,7 +1474,7 @@ OP_0x64(); // 0x1834: 00000064
 LoadBackground(0xd); // 0x1838: 00001069
 OP_0x65(); // 0x183e: 00000065
 OP_0x6c(0x66, 0x1); // 0x1842: 0000206c
-Choice((10)"From the darkness I can hear multiple footsteps coming this way...", (11)"A ) I don't know who it is. I will take a look.", (12)"B ) I am going to get out of here... I don't have anything with me that can be used as a weapon."); // 0x184a: 00003011
+Choice((10)"From the darkness I can hear multiple footsteps coming this way...", (11)"I don't know who it is. I will take a look.", (12)"I am going to get out of here... I don't have anything with me that can be used as a weapon."); // 0x184a: 00003011
 Branch4(0x573, L_0x1860); // 0x1854: 00001004
 Jump(L_0x1874); // 0x185a: 00001001
 L_0x1860:
@@ -1561,7 +1561,7 @@ OP_0x64(); // 0x1a0a: 00000064
 LoadBackground(0x0); // 0x1a0e: 00001069
 OP_0x65(); // 0x1a14: 00000065
 OP_0x6c(0x67); // 0x1a18: 0000106c
-ShowText((1043)"Cybil Bennet. She is a full time police officer working in the neighboring town of Brahms. There was no one else in the cafe other than her and Harry. She took a seat at the counter and waited for Harry to awaken. Movie: Harry wakes up in Cafe 5 to 2"); // 0x1a1e: 0000100c
+ShowText((1043)"Cybil Bennet. She is a full time police officer working in the neighboring town of Brahms. There was no one else in the cafe other than her and Harry. She took a seat at the counter and waited for Harry to awaken."); // 0x1a1e: 0000100c
 HandleInput(); // 0x1a24: 00000010
 ShowMovie(0x1); // 0x1a28: 0000100d
 OP_0x34(); // 0x1a2e: 00000034
@@ -2468,7 +2468,7 @@ OP_0x26(0x34); // 0x2db8: 00001026
 OP_0x64(); // 0x2dbe: 00000064
 LoadBackground(0x3f); // 0x2dc2: 00001069
 OP_0x65(); // 0x2dc8: 00000065
-Choice((80)"It was...", (81)"A ) a children's book. (This choice will result in automatic branching if you reach 5-16. From 5-16 you will then automatically go to 5-18; however, this choice does not affect anything else.)", (82)"B ) a pharmaceutical book. (This choice will result in automatic branching if you reach 5-16. From 5-16 you will then automatically go to 5-19; however, this choice does not affect anything else.)", (83)"C ) a dictionary of religious science. (This choice will result in automatic branching if you reach 5-16. From 5-16 you will then automatically go to 5-20; however, this choice"); // 0x2dcc: 00004011
+Choice((80)"It was...", (81)"A ) a children's book.", (82)"B ) a pharmaceutical book.", (83)"C ) a dictionary of religious science."); // 0x2dcc: 00004011
 Branch4(0x5cd, L_0x2de4); // 0x2dd8: 00001004
 Jump(L_0x2e08); // 0x2dde: 00001001
 L_0x2de4:
@@ -2931,7 +2931,7 @@ OP_0x72(0x1b, 0x1); // 0x37e4: 00002072
 OP_0x6c(0x68); // 0x37ec: 0000106c
 ShowText((1230)"I begin to run toward the church on a road half covered in mud. Snow falls above my head, some of which freezes my hair as chilly air flows by."); // 0x37f2: 0000100c
 HandleInput(); // 0x37f8: 00000010
-ShowText((1231)"When I reach the church I push open the heavy door without hesitation. The sly looking woman Movie: Dahlia turns in the church"); // 0x37fc: 0000100c
+ShowText((1231)"When I reach the church I push open the heavy door without hesitation. The sly looking woman"); // 0x37fc: 0000100c
 HandleInput(); // 0x3802: 00000010
 OP_0x64(); // 0x3806: 00000064
 LoadBackground(0x0); // 0x380a: 00001069
@@ -3287,7 +3287,7 @@ OP_0x26(0x5a); // 0x3f7e: 00001026
 OP_0x64(); // 0x3f84: 00000064
 LoadBackground(0x53); // 0x3f88: 00001069
 OP_0x65(); // 0x3f8e: 00000065
-Choice((150)"I reach out my hand towards the thing in front of me.", (151)"A ) Pick up the pet bottle. (This choice is related to the automatic branching that occurs in 15-1. If you wish to reach ending A then you must make this choice.)", (152)"B ) Pick up the kitchen knife. (This choice is related to the automatic branching that occurs in 15-1."); // 0x3f92: 00003011
+Choice((150)"I reach out my hand towards the thing in front of me.", (151)"A ) Pick up the pet bottle.", (152)"B ) Pick up the kitchen knife."); // 0x3f92: 00003011
 Branch4(0x640, L_0x3fa8); // 0x3f9c: 00001004
 Jump(L_0x3fbc); // 0x3fa2: 00001001
 L_0x3fa8:
@@ -3335,7 +3335,7 @@ OP_0x64(); // 0x4072: 00000064
 LoadBackground(0x54); // 0x4076: 00001069
 OP_0x65(); // 0x407c: 00000065
 OP_0x6c(0x6e); // 0x4080: 0000106c
-ChoiceIdx(0x5, (160)"If I use the pet bottle...", (161)"A ) Scoop up the red liquid. (This choice is related to the automatic branching that occurs in 15-1. If you wish to reach ending A then you must make this choice.)", (162)"B ) Scoop up the blue liquid. (This choice is related to the automatic branching that occurs in 15-1. If you wish to reach ending B then you must choose this or C.)", (163)"C ) Scoop up the mixture of purple liquid. (This choice is related to the automatic branching that occurs in 15-1."); // 0x4086: 00005035
+ChoiceIdx(0x5, (160)"If I use the pet bottle...", (161)"A ) Scoop up the red liquid.", (162)"B ) Scoop up the blue liquid.", (163)"C ) Scoop up the mixture of purple liquid."); // 0x4086: 00005035
 Branch4(0x64e, L_0x40a0); // 0x4094: 00001004
 Jump(L_0x40c4); // 0x409a: 00001001
 L_0x40a0:
@@ -3931,7 +3931,7 @@ OP_0x26(0x78); // 0x4cca: 00001026
 OP_0x64(); // 0x4cd0: 00000064
 LoadBackground(0x0); // 0x4cd4: 00001069
 OP_0x65(); // 0x4cda: 00000065
-ChoiceIdx(0x4, (210)"Who is it...?", (211)"A ) Slowly approach. (This choice will result in automatic branching once you reach 8-22. From 8-22 you will then automatically go to 9-1. You must make this choice if you wish to have a chance to reach endings A, B, C-1, C-2, D-1, or D-2.)", (212)"B ) Fire the gun. (This choice will result in automatic branching once you reach 8-22. From 8-22 you will then automatically go to 9-6. You must make this"); // 0x4cde: 00004035
+ChoiceIdx(0x4, (210)"Who is it...?", (211)"A ) Slowly approach.", (212)"B ) Fire the gun."); // 0x4cde: 00004035
 Branch4(0x6a2, L_0x4cf6); // 0x4cea: 00001004
 Jump(L_0x4d0a); // 0x4cf0: 00001001
 L_0x4cf6:
@@ -5410,7 +5410,7 @@ LoadEffect(0x27, 0x2, 0x1, 0x2); // 0x6d06: 0000406d
 OP_0x65(); // 0x6d12: 00000065
 OP_0x6c(0x67, 0x1); // 0x6d16: 0000206c
 OP_0x6e(0x27, 0x2, 0x1, 0x1); // 0x6d1e: 0000406e
-ChoiceIdx(0x7, (320)"¥"Cybil...¥"", (321)"A ) I will go to the lighthouse. (This choice will result in automatic branching if you reach 15-5. From 15-5 you will then automatically go to 16-1. You must make this choice if you wish to have a chance to reach endings A, B, D-1 or D-2.) D-1, or D-2.)", (322)"B ) I will go to the amusement park. (This choice will result in automatic branching once you reach 15-5. From 15-5 you will then automatically go to 16-6. You must make this"); // 0x6d2a: 00004035
+ChoiceIdx(0x7, (320)"¥"Cybil...¥"", (321)"A ) I will go to the lighthouse.", (322)"B ) I will go to the amusement park."); // 0x6d2a: 00004035
 Branch4(0x74a, L_0x6d42); // 0x6d36: 00001004
 Jump(L_0x6d56); // 0x6d3c: 00001001
 L_0x6d42:
@@ -5506,7 +5506,7 @@ OP_0x64(); // 0x6f26: 00000064
 LoadBackground(0xa0); // 0x6f2a: 00001069
 OP_0x65(); // 0x6f30: 00000065
 OP_0x6c(0x6f, 0x1); // 0x6f34: 0000206c
-Choice((330)"¥"Alessa...! Wait!¥"", (331)"A ) I've got a bad feeling. I'll head back to the boat. (This choice is related to the automatic branching that occurs in 15-1. If you are hoping to reach endings A or B then you can make this choice.)", (332)"B ) Rush to the vicinity where Alessa disappeared from. (This choice is related to the automatic branching that occurs in 15-1. (You must make this choice if you wish to have a chance to reach endings D-1 or D-2. You will still be able to reach endings A or B if you make"); // 0x6f3c: 00003011
+Choice((330)"¥"Alessa...! Wait!¥"", (331)"A ) I've got a bad feeling. I'll head back to the boat.", (332)"B ) Rush to the vicinity where Alessa disappeared from."); // 0x6f3c: 00003011
 Branch4(0x758, L_0x6f52); // 0x6f46: 00001004
 Jump(L_0x6f66); // 0x6f4c: 00001001
 L_0x6f52:
@@ -5559,7 +5559,7 @@ OP_0x64(); // 0x7030: 00000064
 LoadBackground(0xa0); // 0x7034: 00001069
 OP_0x65(); // 0x703a: 00000065
 OP_0x6c(0x6f, 0x1); // 0x703e: 0000206c
-ChoiceIdx(0x6, (340)"¥"Alessa...¥"", (341)"A ) Bravely jump in. (This choice will result in automatic branching once you reach 15-1. From 15-1 you will then automatically go to either 15-2 or 15-3. You must make this choice if you wish to reach endings A or B.)", (342)"B ) On second thought I'd better turn back. (This choice will result in automatic branching once you reach 15-1. From 15-1 you will then automatically go to 15-6. You must make this"); // 0x7046: 00004035
+ChoiceIdx(0x6, (340)"¥"Alessa...¥"", (341)"A ) Bravely jump in.", (342)"B ) On second thought I'd better turn back."); // 0x7046: 00004035
 Branch4(0x766, L_0x705e); // 0x7052: 00001004
 Jump(L_0x7072); // 0x7058: 00001001
 L_0x705e:
@@ -5651,7 +5651,7 @@ OP_0x65(); // 0x7202: 00000065
 OP_0x6c(0x68, 0x1); // 0x7206: 0000206c
 ShowText((1587)"And then...in the darkness I see Cybil from behind."); // 0x720e: 0000100c
 HandleInput(); // 0x7214: 00000010
-ShowText((1588)"¥"Cybil...¥" I try calling out to her. Only the low sound of the motor of the Ferris wheel echoes from afar. She should be able to hear me. I take another look at her. Movie: Monster Cybil stands up from the wheelchair"); // 0x7218: 0000100c
+ShowText((1588)"¥"Cybil...¥" I try calling out to her. Only the low sound of the motor of the Ferris wheel echoes from afar. She should be able to hear me. I take another look at her."); // 0x7218: 0000100c
 HandleInput(); // 0x721e: 00000010
 OP_0x2c(0x3, 0x1); // 0x7222: 0000202c
 OP_0x64(); // 0x722a: 00000064
@@ -6425,7 +6425,7 @@ OP_0x65(); // 0x820c: 00000065
 OP_0x6c(0x68, 0x1); // 0x8210: 0000206c
 ShowText((2007)"And then...in the darkness I see Cybil from behind."); // 0x8218: 0000100c
 HandleInput(); // 0x821e: 00000010
-ShowText((2008)"¥"Cybil...¥" I try calling out to her. Only the low sound of the motor of the Ferris wheel echoes from afar. She should be able to hear me. I take another look at her. Movie: Monster Cybil stands up from the wheelchair"); // 0x8222: 0000100c
+ShowText((2008)"¥"Cybil...¥" I try calling out to her. Only the low sound of the motor of the Ferris wheel echoes from afar. She should be able to hear me. I take another look at her."); // 0x8222: 0000100c
 HandleInput(); // 0x8228: 00000010
 OP_0x2c(0x3, 0x1); // 0x822c: 0000202c
 OP_0x64(); // 0x8234: 00000064
