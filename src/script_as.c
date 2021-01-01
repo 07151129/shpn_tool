@@ -423,8 +423,10 @@ static bool arg_numbered_str_to_strtab(struct script_stmt* stmt, struct script_a
         log(true, stmt, actx->pctx, "string index too large");
         return false;
     }
-    // if (strs->allocated[arg->numbered_str.num])
-    //     log(false, stmt, actx->pctx, "overwriting existing string table entry at %u",
+    // FIXME: This warning seems to be produced incorrectly...
+    // if (strs->allocated[arg->numbered_str.num].used)
+    //     log(false, stmt, actx->pctx, "overwriting existing %s string table entry at %u",
+    //         cmd_uses_menu_strtab(STMT_TO_CMD(stmt)) ? "menu" : "script",
     //         arg->numbered_str.num);
 
     if (strs->allocated[arg->numbered_str.num].allocated)
@@ -468,6 +470,8 @@ static bool arg_str_to_strtab(struct script_stmt* stmt, struct script_as_ctx* ac
     for (; i < EMBED_STRTAB_SZ; i++)
         if (!strs->allocated[i].used)
             break;
+
+    assert(!strs->allocated[i].allocated);
 
     if (i == EMBED_STRTAB_SZ) {
         log(true, stmt, actx->pctx, "too many strings in program");
