@@ -368,7 +368,7 @@ OP_0x64(); // 0x620: 00000064
 LoadBackground(0xe0); // 0x624: 00001069
 LoadEffect(0x41, 0x1, 0x0); // 0x62a: 0000306d
 OP_0x65(); // 0x634: 00000065
-ShowText((5022)"But it was already too late. In the middle of the road a girl stood, with her arms raised to shield her from the light. (View moves side to side)"); // 0x638: 0000100c
+ShowText((5022)"But it was already too late. In the middle of the road a girl stood, with her arms raised to shield her from the light."); // 0x638: 0000100c
 HandleInput(); // 0x63e: 00000010
 ShowText((9998)""); // 0x642: 0000100c
 OP_0x73(0x7); // 0x648: 00001073
@@ -384,7 +384,7 @@ OP_0x64(); // 0x67a: 00000064
 LoadBackground(0x0); // 0x67e: 00001069
 OP_0x65(); // 0x684: 00000065
 OP_0x1f(0x78); // 0x688: 0000101f
-ShowText((5024)"Hita... Hita... (Onomatopoeia for the feeling of cold)"); // 0x68e: 0000100c
+ShowText((5024)"Hita... Hita..."); // 0x68e: 0000100c
 HandleInput(); // 0x694: 00000010
 ShowText((5025)"Something cold is touching Cybil's cheek. Cybil slowly opened her eyes."); // 0x698: 0000100c
 HandleInput(); // 0x69e: 00000010
@@ -786,7 +786,7 @@ ShowText((5084)"¥"I wonder if this the phone that I was connected to?¥" Cybil 
 HandleInput(); // 0xf7a: 00000010
 ShowText((5085)"The problem is that the police station is completely empty. Even Cybil, who had been skeptical about the condition of the town up to this point, now had to accept things as they were. She thought, ¥"Something terrible has happened here.¥""); // 0xf7e: 0000100c
 HandleInput(); // 0xf84: 00000010
-ShowText((9905)"There is a phone. A scribbled memo has been placed next to it. (Telephone mini-game) (38*2647*)"); // 0xf88: 0000100c
+ShowText((9905)"There is a phone. A scribbled memo has been placed next to it.(38*2647*)"); // 0xf88: 0000100c
 HandleInput(); // 0xf8e: 00000010
 Puzzle(0x4); // 0xf92: 00001061
 OP_0x64(); // 0xf98: 00000064
@@ -1616,7 +1616,7 @@ HandleInput(); // 0x204a: 00000010
 ShowText((5213)"I have thought about it for so long. I have been confused by it for so long. However, maybe I can tell you about it Miss. The reason why there is no one in town. The reason why I don't want to see my Daddy. And also, my true...)"); // 0x204e: 0000100c
 HandleInput(); // 0x2054: 00000010
 OP_0x29(); // 0x2058: 00000029
-ShowText((5214)"Once again, there is silence. (Your true? Your true what?) (Do you know something?) (Cybil) However, that question is not answered. Elevator"); // 0x205c: 0000100c
+ShowText((5214)"Once again, there is silence. (Your true? Your true what?) (Do you know something?) (Cybil) However, that question is not answered."); // 0x205c: 0000100c
 HandleInput(); // 0x2062: 00000010
 Jump(L_0x206c); // 0x2066: 00001001
 L_0x206c:
@@ -2211,17 +2211,17 @@ LoadEffect(0x0, 0x0, 0x1); // 0x2d1e: 0000306d
 LoadBackground(0x0); // 0x2d28: 00001069
 OP_0x65(); // 0x2d2e: 00000065
 OP_0x72(0x39); // 0x2d32: 00001072
-ShowText((6032)"In order to resurrect myself I will need your body. Please understand this... (Alessa)"); // 0x2d38: 0000100c
+ShowText((6032)"In order to resurrect myself I will need your body. Please understand this...)"); // 0x2d38: 0000100c
 HandleInput(); // 0x2d3e: 00000010
-ShowText((6033)"I understand. That is why I came here, and came to see you. (Cheryl)"); // 0x2d42: 0000100c
+ShowText((6033)"I understand. That is why I came here, and came to see you."); // 0x2d42: 0000100c
 HandleInput(); // 0x2d48: 00000010
-ShowText((6034)"To think of these seven years... I never once was able to get out of bed and couldn't even move... (Alessa)"); // 0x2d4c: 0000100c
+ShowText((6034)"To think of these seven years... I never once was able to get out of bed and couldn't even move..."); // 0x2d4c: 0000100c
 HandleInput(); // 0x2d52: 00000010
-ShowText((6035)"However, everything is going according to plan and I was able to be reunited with you. (Alessa)"); // 0x2d56: 0000100c
+ShowText((6035)"However, everything is going according to plan and I was able to be reunited with you."); // 0x2d56: 0000100c
 HandleInput(); // 0x2d5c: 00000010
-ShowText((6036)"But they will come after us. What should we do... (Cheryl)"); // 0x2d60: 0000100c
+ShowText((6036)"But they will come after us. What should we do..."); // 0x2d60: 0000100c
 HandleInput(); // 0x2d66: 00000010
-ShowText((6037)"Let me... Let me take care of everything... (Alessa)"); // 0x2d6a: 0000100c
+ShowText((6037)"Let me... Let me take care of everything..."); // 0x2d6a: 0000100c
 HandleInput(); // 0x2d70: 00000010
 OP_0x2c(0x2, 0x2); // 0x2d74: 0000202c
 ShowText((6038)"..........................."); // 0x2d7c: 0000100c
@@ -2300,7 +2300,7 @@ ShowText((9913)"Cybil just happens to notice an object that looks like a pedesta
 HandleInput(); // 0x2f0a: 00000010
 ShowText((9914)"¥"The chosen one. must be moved t. the chosen place. Once the task is complete. the guidepost leading to chao. shall appear¥""); // 0x2f0e: 0000100c
 HandleInput(); // 0x2f14: 00000010
-ShowText((9915)"Use the L and R buttons to select a plate. Use the d-pad to move the selected plate. (Plate game)"); // 0x2f18: 0000100c
+ShowText((9915)"Use the L and R buttons to select a plate. Use the d-pad to move the selected plate."); // 0x2f18: 0000100c
 HandleInput(); // 0x2f1e: 00000010
 Puzzle(0x5); // 0x2f22: 00001061
 OP_0x64(); // 0x2f28: 00000064

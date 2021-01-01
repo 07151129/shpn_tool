@@ -1689,11 +1689,11 @@ HandleInput(); // 0x1ccc: 00000010
 ShowText((1068)"All I can do is look for her. I may not have any knowledge of the surroundings or any clues, but I won't find Cheryl if I stay here. I stood up energetically and placed my hand on the cafe door."); // 0x1cd0: 0000100c
 HandleInput(); // 0x1cd6: 00000010
 OP_0x72(0xd); // 0x1cda: 00001072
-ShowText((1069)"(JiJiJi...JiJi...JiJiJi.........) (Onomatopoeia for radio static)"); // 0x1ce0: 0000100c
+ShowText((1069)"(JiJiJi...JiJi...JiJiJi.........)"); // 0x1ce0: 0000100c
 HandleInput(); // 0x1ce6: 00000010
 ShowText((1070)"Something is making noise."); // 0x1cea: 0000100c
 HandleInput(); // 0x1cf0: 00000010
-ShowText((1071)"(JiJiJiJi...JiJiJiJi...JiJi...) (Onomatopoeia for radio static)"); // 0x1cf4: 0000100c
+ShowText((1071)"(JiJiJiJi...JiJiJiJi...JiJi...)"); // 0x1cf4: 0000100c
 HandleInput(); // 0x1cfa: 00000010
 ShowText((1072)"?"); // 0x1cfe: 0000100c
 HandleInput(); // 0x1d04: 00000010
@@ -1803,7 +1803,7 @@ ShowText((1078)"It swings its large arm-like wing down at me and using that ¥"w
 HandleInput(); // 0x1f58: 00000010
 ShowText((1079)"This is my chance. The target is its body... Mumbling, I tell myself that."); // 0x1f5c: 0000100c
 HandleInput(); // 0x1f62: 00000010
-ShowText((4503)"However...I can't fix my aim very well. My hands are shaking. (Gun shot sound, then Air Screamer falls)"); // 0x1f66: 0000100c
+ShowText((4503)"However...I can't fix my aim very well. My hands are shaking."); // 0x1f66: 0000100c
 HandleInput(); // 0x1f6c: 00000010
 OP_0x29(); // 0x1f70: 00000029
 OP_0x73(0xf); // 0x1f74: 00001073
@@ -1904,7 +1904,7 @@ OP_0x6e(0x1a, 0x1, 0x0, 0x1); // 0x219a: 0000406e
 OP_0x6c(0x66, 0x1); // 0x21a6: 0000206c
 ShowText((1090)"Those large wings. It uses them nimbly to maintain its balance in the air."); // 0x21ae: 0000100c
 HandleInput(); // 0x21b4: 00000010
-ShowText((1091)"If I destroy its wing it won't be able to move. Then I can finish it at my leisure. (Gun shot sound, then Air Screamer falls)"); // 0x21b8: 0000100c
+ShowText((1091)"If I destroy its wing it won't be able to move. Then I can finish it at my leisure."); // 0x21b8: 0000100c
 HandleInput(); // 0x21be: 00000010
 OP_0x29(); // 0x21c2: 00000029
 OP_0x73(0xf); // 0x21c6: 00001073
@@ -1940,7 +1940,7 @@ ShowText((1096)"That's it. I must set my aim. Its body. When it spreads its wing
 HandleInput(); // 0x2284: 00000010
 ShowText((1097)"It swings its large arm-like wing down at me and using that ¥"weapon¥" it just misses my neck."); // 0x2288: 0000100c
 HandleInput(); // 0x228e: 00000010
-ShowText((1098)"This is my chance. The target is its body... Mumbling, I tell myself that. However...I can't fix my aim very well. My hands are shaking. (Gun shot sound, then Air Screamer falls)"); // 0x2292: 0000100c
+ShowText((1098)"This is my chance. The target is its body... Mumbling, I tell myself that. However...I can't fix my aim very well. My hands are shaking."); // 0x2292: 0000100c
 HandleInput(); // 0x2298: 00000010
 OP_0x29(); // 0x229c: 00000029
 OP_0x73(0xf); // 0x22a0: 00001073
@@ -1976,7 +1976,7 @@ ShowText((1104)"However, I didn't let go of the gun."); // 0x2358: 0000100c
 HandleInput(); // 0x235e: 00000010
 ShowText((1105)"The target is the wing..."); // 0x2362: 0000100c
 HandleInput(); // 0x2368: 00000010
-ShowText((1106)"If I can destroy its wing it won't be able to move. Then I can finish it at my leisure. (Gun shot sound, then Air Screamer falls)"); // 0x236c: 0000100c
+ShowText((1106)"If I can destroy its wing it won't be able to move. Then I can finish it at my leisure."); // 0x236c: 0000100c
 HandleInput(); // 0x2372: 00000010
 OP_0x29(); // 0x2376: 00000029
 OP_0x73(0xf); // 0x237a: 00001073
@@ -2054,7 +2054,7 @@ LoadBackground(0x2f); // 0x2508: 00001069
 OP_0x65(); // 0x250e: 00000065
 ShowText((1118)"At the end of the alley I see a familiar sketchbook that appears to have been thrown away. The likeness of me that Cheryl drew is on the cover of the sketchbook."); // 0x2512: 0000100c
 HandleInput(); // 0x2518: 00000010
-ShowText((1119)"¥"This is definitely Cheryl's...¥" (Sketchbook opens)"); // 0x251c: 0000100c
+ShowText((1119)"¥"This is definitely Cheryl's...¥""); // 0x251c: 0000100c
 HandleInput(); // 0x2522: 00000010
 OP_0x73(0x19); // 0x2526: 00001073
 OP_0x6e(0x1c, 0x1, 0x1); // 0x252c: 0000306e
@@ -2159,7 +2159,7 @@ OP_0x29(); // 0x2734: 00000029
 ShowText((1137)"Wait. Something appears to be wriggling about in the darkness. An animal? No, it's dark and I can't see so well, but it is slowly moving on two legs. It appears to be searching for prey."); // 0x2738: 0000100c
 HandleInput(); // 0x273e: 00000010
 OP_0x72(0xd); // 0x2742: 00001072
-ShowText((1138)"(JiJiJiJi...JiJiJi.........) (Onomatopoeia for radio static) At that moment the radio I had clipped to my chest suddenly began making noise. As I return my sight to the hallway a sharp pain runs through my thigh."); // 0x2748: 0000100c
+ShowText((1138)"(JiJiJiJi...JiJiJi.........) At that moment the radio I had clipped to my chest suddenly began making noise. As I return my sight to the hallway a sharp pain runs through my thigh."); // 0x2748: 0000100c
 HandleInput(); // 0x274e: 00000010
 OP_0x6c(0x66); // 0x2752: 0000106c
 OP_0x6e(0x54, 0x1, 0x1); // 0x2758: 0000306e
@@ -2189,10 +2189,10 @@ OP_0x6c(0x66, 0x1); // 0x27dc: 0000206c
 OP_0x6e(0x54, 0x1, 0x1, 0x1); // 0x27e4: 0000406e
 ShowText((1140)"With my right hand I push on its head part with force and knock it away. It then totters and falls down on its face. That was when I noticed that I had been completely surrounded by those monsters."); // 0x27f0: 0000100c
 HandleInput(); // 0x27f6: 00000010
-ShowText((1141)"I ready the gun. I fix my aim on their heads and pull the trigger with my trembling index finger. (Gun shot sound)"); // 0x27fa: 0000100c
+ShowText((1141)"I ready the gun. I fix my aim on their heads and pull the trigger with my trembling index finger."); // 0x27fa: 0000100c
 HandleInput(); // 0x2800: 00000010
 OP_0x73(0xf); // 0x2804: 00001073
-ShowText((1142)"I continue to shoot as each one of them appears. The smoke from the gun powder began to fill the air around me so I placed one hand over my mouth. (Fade to red and radio stops)"); // 0x280a: 0000100c
+ShowText((1142)"I continue to shoot as each one of them appears. The smoke from the gun powder began to fill the air around me so I placed one hand over my mouth."); // 0x280a: 0000100c
 HandleInput(); // 0x2810: 00000010
 OP_0x6e(0x11, 0x1, 0x2); // 0x2814: 0000306e
 OP_0x1f(0x78); // 0x281e: 0000101f
@@ -2260,7 +2260,7 @@ ShowText((1150)"I try pushing the switch but the boiler doesn't do anything at a
 HandleInput(); // 0x2976: 00000010
 ShowText((1151)"It appears that I must somehow supply power from the main power supply to the boiler."); // 0x297a: 0000100c
 HandleInput(); // 0x2980: 00000010
-ShowText((9917)"The power supply is on the right. From the left of the switchboard a thick pipe extends out and is connected to the boiler... (Boiler Switchboard Game)"); // 0x2984: 0000100c
+ShowText((9917)"The power supply is on the right. From the left of the switchboard a thick pipe extends out and is connected to the boiler..."); // 0x2984: 0000100c
 HandleInput(); // 0x298a: 00000010
 Puzzle(0x1); // 0x298e: 00001061
 OP_0x64(); // 0x2994: 00000064
@@ -2313,7 +2313,7 @@ OP_0x26(0x2c); // 0x2a78: 00001026
 OP_0x72(0xd, 0x1); // 0x2a7e: 00002072
 OP_0x6c(0x66, 0x1); // 0x2a86: 0000206c
 OP_0x6e(0x54, 0x1, 0x1, 0x1); // 0x2a8e: 0000406e
-ShowText((1163)"I instantaneously readied the hand gun I was carrying and fired at the monster. (Gun shot sound)"); // 0x2a9a: 0000100c
+ShowText((1163)"I instantaneously readied the hand gun I was carrying and fired at the monster."); // 0x2a9a: 0000100c
 HandleInput(); // 0x2aa0: 00000010
 OP_0x73(0xf); // 0x2aa4: 00001073
 OP_0x6e(0xf, 0x1, 0x2); // 0x2aaa: 0000306e
@@ -2322,13 +2322,13 @@ ShowText((1164)"¥"Ow!¥" I hit it, but its long claws dug deeper into my thigh,
 HandleInput(); // 0x2ac4: 00000010
 ShowText((1140)"With my right hand I push on its head part with force and knock it away. It then totters and falls down on its face. That was when I noticed that I had been completely surrounded by those monsters."); // 0x2ac8: 0000100c
 HandleInput(); // 0x2ace: 00000010
-ShowText((1141)"I ready the gun. I fix my aim on their heads and pull the trigger with my trembling index finger. (Gun shot sound)"); // 0x2ad2: 0000100c
+ShowText((1141)"I ready the gun. I fix my aim on their heads and pull the trigger with my trembling index finger."); // 0x2ad2: 0000100c
 HandleInput(); // 0x2ad8: 00000010
 OP_0x29(); // 0x2adc: 00000029
 OP_0x73(0xf); // 0x2ae0: 00001073
 OP_0x6e(0xf, 0x1, 0x2); // 0x2ae6: 0000306e
 OP_0x6e(0x0, 0x0, 0x2); // 0x2af0: 0000306e
-ShowText((1142)"I continue to shoot as each one of them appears. The smoke from the gun powder began to fill the air around me so I placed one hand over my mouth. (Fade to red and radio stops)"); // 0x2afa: 0000100c
+ShowText((1142)"I continue to shoot as each one of them appears. The smoke from the gun powder began to fill the air around me so I placed one hand over my mouth."); // 0x2afa: 0000100c
 HandleInput(); // 0x2b00: 00000010
 OP_0x6e(0x11, 0x1, 0x2); // 0x2b04: 0000306e
 OP_0x1f(0x78); // 0x2b0e: 0000101f
@@ -2424,7 +2424,7 @@ OP_0x65(); // 0x2cde: 00000065
 ShowText((1181)"I begin to leave the room."); // 0x2ce2: 0000100c
 HandleInput(); // 0x2ce8: 00000010
 OP_0x72(0x17); // 0x2cec: 00001072
-ShowText((1182)"Jiriririri...Jiriririri... (Onomatopoeia for ringing telephone)"); // 0x2cf2: 0000100c
+ShowText((1182)"Jiriririri...Jiriririri..."); // 0x2cf2: 0000100c
 HandleInput(); // 0x2cf8: 00000010
 ShowText((1183)"My heart rapidly contracts. The mechanical bell sound echoes throughout the room. I nervously approach the telephone, and once again pick up the receiver."); // 0x2cfc: 0000100c
 HandleInput(); // 0x2d02: 00000010
@@ -2741,7 +2741,7 @@ OP_0x28(0x0, 0x1d); // 0x339e: 00002028
 OP_0x73(0x18); // 0x33a6: 00001073
 ShowText((4003)"(......Hello) The voice of a man I do not know escapes from the receiver. ¥"Hello...who is this...¥""); // 0x33ac: 0000100c
 HandleInput(); // 0x33b2: 00000010
-ShowText((4004)"From the receiver I hear a gasp. (Ah...) Click... (Onomatopoeia for hanging up of a phone)"); // 0x33b6: 0000100c
+ShowText((4004)"From the receiver I hear a gasp. (Ah...) Click..."); // 0x33b6: 0000100c
 HandleInput(); // 0x33bc: 00000010
 OP_0x73(0x18); // 0x33c0: 00001073
 OP_0x72(0x16); // 0x33c6: 00001072
@@ -3191,7 +3191,7 @@ LoadBackground(0x6b); // 0x3d90: 00001069
 LoadEffect(0x0, 0x0, 0x0); // 0x3d96: 0000306d
 OP_0x65(); // 0x3da0: 00000065
 OP_0x73(0xc); // 0x3da4: 00001073
-ShowText((1271)"Bang. (Onomatopoeia for door closing) The examination room door shuts powerlessly. Doctor Michael Kaufmann... Oddly enough I have completely memorized that name."); // 0x3daa: 0000100c
+ShowText((1271)"Bang. The examination room door shuts powerlessly. Doctor Michael Kaufmann... Oddly enough I have completely memorized that name."); // 0x3daa: 0000100c
 HandleInput(); // 0x3db0: 00000010
 ShowText((1272)"¥"Huh?¥" I suddenly notice that there is something on the floor that looks like a white scrap of paper."); // 0x3db4: 0000100c
 HandleInput(); // 0x3dba: 00000010
@@ -4158,7 +4158,7 @@ HandleInput(); // 0x51a2: 00000010
 ShowText((4067)"Other than a layer of dust so thick that it almost appeared as if a cloth had been laid on the cabinet there is nothing of interest."); // 0x51a6: 0000100c
 HandleInput(); // 0x51ac: 00000010
 OP_0x73(0x25); // 0x51b0: 00001073
-ShowText((4068)"¥"Ah!¥" My field of vision shakes violently. I lost my balance and fell to the floor. I landed on my butt hard enough for it to be unpleasant. (Ahh-ta,ta,ta,ta,ta...) (Onomatopoeia for Harry's pain noise)"); // 0x51b6: 0000100c
+ShowText((4068)"¥"Ah!¥" My field of vision shakes violently. I lost my balance and fell to the floor. I landed on my butt hard enough for it to be unpleasant. (Ahh-ta,ta,ta,ta,ta...)"); // 0x51b6: 0000100c
 HandleInput(); // 0x51bc: 00000010
 ShowText((4069)"There I discover something odd. Countless lines have been bored into the old flooring, and fiber-shaped wooden chips are exposed."); // 0x51c0: 0000100c
 HandleInput(); // 0x51c6: 00000010
@@ -5635,7 +5635,7 @@ ShowText((1582)"I pass by the Ferris wheel, and arrive at the merry-go-round. Ho
 HandleInput(); // 0x71b8: 00000010
 ShowText((1583)"While it is only natural for a ride to not be in operation, it seems unnatural for this merry-go-round to not be running... I walk around it."); // 0x71bc: 0000100c
 HandleInput(); // 0x71c2: 00000010
-ShowText((1584)"Clink...Clink... (Onomatopoeia for walking sounds) While slipping between the horses I look for Cybil. Quite a bit of time has passed since she came here."); // 0x71c6: 0000100c
+ShowText((1584)"Clink...Clink... While slipping between the horses I look for Cybil. Quite a bit of time has passed since she came here."); // 0x71c6: 0000100c
 HandleInput(); // 0x71cc: 00000010
 ShowText((1585)"I suppose maybe she didn't find Cheryl and headed back to that ship. But the only way to get here is through those sewers. If she had gone back then we should have ran across each other at some point."); // 0x71d0: 0000100c
 HandleInput(); // 0x71d6: 00000010
@@ -5934,7 +5934,7 @@ OP_0x65(); // 0x77e2: 00000065
 OP_0x6c(0x67, 0x1); // 0x77e6: 0000206c
 ShowText((4154)"¥"Don't worry. I will do what I can.¥" A quiet smile appeared on Lisa's face. I softly hold her delicate body."); // 0x77ee: 0000100c
 HandleInput(); // 0x77f4: 00000010
-ShowText((4155)"I'm happy... (Lisa)"); // 0x77f8: 0000100c
+ShowText((4155)"I'm happy..."); // 0x77f8: 0000100c
 HandleInput(); // 0x77fe: 00000010
 ShowText((4156)"Lisa's body quivered. However, maybe that is just because she is relieved. She...looks at me with empty eyes, eyes that have lost their life. Then her lips began to tremble and a look of astonishment appears on her face."); // 0x7802: 0000100c
 HandleInput(); // 0x7808: 00000010
@@ -5997,7 +5997,7 @@ ShowText((1683)"(Oh, but mommy. I just want to be with you. Just two of us. Plea
 HandleInput(); // 0x792a: 00000010
 ShowText((1684)"(Oh, yes, I see... Maybe mommy has been wrong.) (Mommy...) (Why didn't I see this before?) (There's no reason to wait...)"); // 0x792e: 0000100c
 HandleInput(); // 0x7934: 00000010
-ShowText((1685)"(Herein lies the mother's womb, containing the power to create life. (I could have done it all myself.) (Mommy?) Classroom"); // 0x7938: 0000100c
+ShowText((1685)"(Herein lies the mother's womb, containing the power to create life.) (I could have done it all myself.) (Mommy?)"); // 0x7938: 0000100c
 HandleInput(); // 0x793e: 00000010
 Jump(L_0x7948); // 0x7942: 00001001
 L_0x7948:
@@ -6117,7 +6117,7 @@ ShowText((1710)"This is a child's room. Stuffed animals and art supplies are sca
 HandleInput(); // 0x7b96: 00000010
 ShowText((9903)"Alessa probably collected these. Butterfly specimens of many different colors are on display."); // 0x7b9a: 0000100c
 HandleInput(); // 0x7ba0: 00000010
-ShowText((9904)"¥"...Huh...?¥" I think I just saw something flash. (Butterfly game)"); // 0x7ba4: 0000100c
+ShowText((9904)"¥"...Huh...?¥" I think I just saw something flash."); // 0x7ba4: 0000100c
 HandleInput(); // 0x7baa: 00000010
 Puzzle(0x3); // 0x7bae: 00001061
 OP_0x64(); // 0x7bb4: 00000064
@@ -6224,7 +6224,7 @@ OP_0x2c(0x3, 0x3); // 0x7dac: 0000202c
 OP_0x64(); // 0x7db4: 00000064
 LoadBackground(0xc9); // 0x7db8: 00001069
 OP_0x65(); // 0x7dbe: 00000065
-ShowText((1740)"Dahlia looks completely emaciated as she watches the whole thing. However, not me, nor anyone could have predicted the situation that came out of that event. (Incubus is born)"); // 0x7dc2: 0000100c
+ShowText((1740)"Dahlia looks completely emaciated as she watches the whole thing. However, not me, nor anyone could have predicted the situation that came out of that event."); // 0x7dc2: 0000100c
 HandleInput(); // 0x7dc8: 00000010
 OP_0x64(); // 0x7dcc: 00000064
 LoadBackground(0xce); // 0x7dd0: 00001069
@@ -6409,7 +6409,7 @@ ShowText((2002)"I pass by the Ferris wheel, and arrive at the merry-go-round. Bu
 HandleInput(); // 0x81c2: 00000010
 ShowText((2003)"While it is only natural for a ride to not be in operation, it seems unnatural for this merry-go-round to not be running... I walk around it."); // 0x81c6: 0000100c
 HandleInput(); // 0x81cc: 00000010
-ShowText((2004)"Clink...Clink... (Onomatopoeia for walking sounds) While slipping between the horses I look for Cybil. Quite a bit of time has passed since she came here."); // 0x81d0: 0000100c
+ShowText((2004)"Clink...Clink... While slipping between the horses I look for Cybil. Quite a bit of time has passed since she came here."); // 0x81d0: 0000100c
 HandleInput(); // 0x81d6: 00000010
 ShowText((2005)"I suppose maybe she didn't find Cheryl and headed back to that ship. But the only way to get here is through those sewers. If she had gone back then we should have ran across each other at some point."); // 0x81da: 0000100c
 HandleInput(); // 0x81e0: 00000010
@@ -6632,7 +6632,7 @@ OP_0x29(); // 0x865e: 00000029
 OP_0x64(); // 0x8662: 00000064
 LoadBackground(0xc9); // 0x8666: 00001069
 OP_0x65(); // 0x866c: 00000065
-ShowText((2140)"Dahlia looks completely emaciated as she watches the whole thing. However, not me, nor anyone could have predicted the situation that came out of that event. (Incubus is born)"); // 0x8670: 0000100c
+ShowText((2140)"Dahlia looks completely emaciated as she watches the whole thing. However, not me, nor anyone could have predicted the situation that came out of that event."); // 0x8670: 0000100c
 HandleInput(); // 0x8676: 00000010
 OP_0x2c(0x3, 0x3); // 0x867a: 0000202c
 OP_0x64(); // 0x8682: 00000064
@@ -7146,7 +7146,7 @@ OP_0x64(); // 0x90f6: 00000064
 LoadBackground(0x0); // 0x90fa: 00001069
 OP_0x65(); // 0x9100: 00000065
 OP_0x73(0x1f); // 0x9104: 00001073
-ShowText((2570)"I place my hand on the door. It opens much easier that I thought it would. An entrance to the deepest area. Dazzling light escapes from the inside, and I place my hands over my face and squint. (Headlights move toward screen)"); // 0x910a: 0000100c
+ShowText((2570)"I place my hand on the door. It opens much easier that I thought it would. An entrance to the deepest area. Dazzling light escapes from the inside, and I place my hands over my face and squint."); // 0x910a: 0000100c
 HandleInput(); // 0x9110: 00000010
 OP_0x6e(0x30, 0x1, 0x1); // 0x9114: 0000306e
 OP_0x73(0x7); // 0x911e: 00001073
@@ -7348,7 +7348,7 @@ OP_0x64(); // 0x9512: 00000064
 LoadBackground(0xad); // 0x9516: 00001069
 OP_0x65(); // 0x951c: 00000065
 OP_0x72(0x17); // 0x9520: 00001072
-ShowText((3011)"Ziriririri... (Onomatopoeia for ringing phone) The phone rings. Who is it?"); // 0x9526: 0000100c
+ShowText((3011)"Ziriririri... The phone rings. Who is it?"); // 0x9526: 0000100c
 HandleInput(); // 0x952c: 00000010
 Jump(L_0x9536); // 0x9530: 00001001
 L_0x9536:
@@ -9054,11 +9054,11 @@ ShowText((1139)"When I look down I see that the tips of those long claws are pie
 HandleInput(); // 0xb8ba: 00000010
 ShowText((1140)"With my right hand I push on its head part with force and knock it away. It then totters and falls down on its face. That was when I noticed that I had been completely surrounded by those monsters."); // 0xb8be: 0000100c
 HandleInput(); // 0xb8c4: 00000010
-ShowText((1141)"I ready the gun. I fix my aim on their heads and pull the trigger with my trembling index finger. (Gun shot sound)"); // 0xb8c8: 0000100c
+ShowText((1141)"I ready the gun. I fix my aim on their heads and pull the trigger with my trembling index finger. "); // 0xb8c8: 0000100c
 HandleInput(); // 0xb8ce: 00000010
 OP_0x6e(0x36, 0x1); // 0xb8d2: 0000206e
 OP_0x6e(0x11, 0x3c); // 0xb8da: 0000206e
-ShowText((1142)"I continue to shoot as each one of them appears. The smoke from the gun powder began to fill the air around me so I placed one hand over my mouth. (Fade to red and radio stops)"); // 0xb8e2: 0000100c
+ShowText((1142)"I continue to shoot as each one of them appears. The smoke from the gun powder began to fill the air around me so I placed one hand over my mouth."); // 0xb8e2: 0000100c
 HandleInput(); // 0xb8e8: 00000010
 Jump(L_0xc0f4); // 0xb8ec: 00001001
 L_0xb8f2:
