@@ -3683,7 +3683,7 @@ ShowText((9901)"¥"To create it you must come up with one deciliter of liquid an
 HandleInput(); // 0x47e2: 00000010
 ShowText((9902)"¥"Explanation of Controls¥" Use the d-pad to select a beaker that contains liquid and then confirm with the A button. Then choose the beaker that you wish to move the liquid to and press the A button to move the liquid."); // 0x47e6: 0000100c
 HandleInput(); // 0x47ec: 00000010
-ShowText((9918)"Using the 10 deciliter, 7 deciliter, and 5 deciliter beakers you must create an amount of exactly one deciliter. The door won't budge an inch."); // 0x47f0: 0000100c
+ShowText((9918)"Using the 10 deciliter, 7 deciliter, and 5 deciliter beakers you must create an amount of exactly one deciliter."); // 0x47f0: 0000100c
 HandleInput(); // 0x47f6: 00000010
 OP_0x64(); // 0x47fa: 00000064
 LoadBackground(0x0); // 0x47fe: 00001069
@@ -3694,7 +3694,7 @@ OP_0x64(); // 0x4818: 00000064
 LoadBackground(0x0); // 0x481c: 00001069
 OP_0x65(); // 0x4822: 00000065
 OP_0x73(0x1f); // 0x4826: 00001073
-ShowText((1332)"Harry melted the chain on the door with the completed liquid. The door slowly opens with a 'click'. The unnatural scratches"); // 0x482c: 0000100c
+ShowText((1332)"Harry melted the chain on the door with the completed liquid. The door slowly opens with a 'click'."); // 0x482c: 0000100c
 HandleInput(); // 0x4832: 00000010
 Jump(L_0x483c); // 0x4836: 00001001
 L_0x483c:
