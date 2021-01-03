@@ -38,7 +38,7 @@ static uint16_t handler_Jump(uint16_t arg0, uint16_t arg1, struct script_state* 
     assert(arg0 == 0);
 
     uint16_t dst = script_next_cmd_arg(arg0, 1, state);
-    // assert(dst % 2 == 0 && "Misaligned jump destination");
+    assert(dst % 2 == 0 && "Misaligned jump destination");
 
     if (!state->dumping)
         make_label(dst, state);
