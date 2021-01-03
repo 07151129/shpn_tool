@@ -1,4 +1,7 @@
+default: all
+
 include ../rules.mk
+include patch.mk
 
 ARMPREFIX := arm-none-eabi
 
@@ -37,13 +40,10 @@ LDFLAGS := \
 	-T$(LDSCRIPT) \
 	-N
 
-BINS = build/render_sjis.bin build/render_sjis_entry.bin build/render_sjis_entry_menu.bin \
-	build/clear_oam.bin build/render_backlog_controls.bin build/render_load_menu.bin
-
 .PHONY: clean all
 .SUFFIXES:
 
-all: $(BINS) | build
+all: $(AGB_BINS) | build
 
 -include $(DEP)
 
@@ -57,19 +57,6 @@ build/%.o: %.c build
 build/render_sjis: $(OBJ)
 	@echo ld $(notdir $@)
 	$(VERBOSE) $(ENV) $(LD) $(LDFLAGS) -o $@ $^
-
-define BIN_TGT
-$(1): $(2)
-	@echo objcopy $$(notdir $$@)
-	$$(VERBOSE) $$(ENV) $$(OBJCOPY) -O binary -j $(3) $$< $$@
-endef
-
-$(eval $(call BIN_TGT,build/render_sjis.bin,build/render_sjis,.text))
-$(eval $(call BIN_TGT,build/render_sjis_entry.bin,build/render_sjis,.entry))
-$(eval $(call BIN_TGT,build/render_sjis_entry_menu.bin,build/render_sjis,.entry_menu))
-$(eval $(call BIN_TGT,build/clear_oam.bin,build/render_sjis,.clear_oam))
-$(eval $(call BIN_TGT,build/render_backlog_controls.bin,build/render_sjis,.render_backlog_controls))
-$(eval $(call BIN_TGT,build/render_load_menu.bin,build/render_sjis,.render_load_menu))
 
 clean:
 	rm -rf build

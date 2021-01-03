@@ -1,9 +1,12 @@
 CC ?= cc
 LD := $(CC)
 STRIP ?= strip
+FLIPS ?= flips
 
 YACC ?= bison
 LEX ?= flex
+
+SHPN_ROM ?= ../0019\ -\ Play\ Novel\ -\ Silent\ Hill\ \(J\).gba
 
 CFLAGS_OPT := \
     -Os \
