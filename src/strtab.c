@@ -12,6 +12,7 @@
 #endif
 
 #include "defs.h"
+#include "embed.h"
 #define _GNU_SOURCE
 #include "search.h"
 #undef _GNU_SOURCE
@@ -236,8 +237,7 @@ bool strtab_dec_str(const uint8_t* strtab, const uint8_t* rom_end, uint32_t idx,
     return cstatus != (size_t)-1;
 }
 
-bool strtab_dump(const uint8_t* rom, size_t rom_sz, uint32_t vma, uint32_t idx, bool has_idx,
-    FILE* fout) {
+bool strtab_from_rom(const uint8_t* rom, size_t rom_sz, uint32_t vma, struct strtab_embed_ctx* ectx) {
     if (VMA2OFFS(vma) >= rom_sz) {
         fprintf(stderr, "Past EOF strtab vma 0x%x\n", vma);
         return false;
@@ -261,34 +261,59 @@ bool strtab_dump(const uint8_t* rom, size_t rom_sz, uint32_t vma, uint32_t idx, 
     char buf[SJIS_TO_U8_MIN_SZ(DEC_BUF_SZ_SJIS)];
 
     size_t nwritten = 0;
-    if (!has_idx)
-        for (size_t i = 0; i < ((const struct strtab_header*)strtab)->nentries; i++)
-            if (!strtab_dec_str(strtab, rom + rom_sz, i, buf, sizeof(buf), &nwritten, conv, true)) {
-                fprintf(stderr, "Failed to decode string at %zu\n", i);
-                ret = false;
-                goto done;
-            } else
-                fprintf(fout, "%zu: %s\n", i, buf);
-    else {
-        if (!strtab_dec_str(strtab, rom + rom_sz, idx, buf, sizeof(buf), &nwritten, conv, true)) {
-            fprintf(stderr, "Failed to decode string at %u\n", idx);
+
+    /* HACK */
+    for (size_t i = 1; i < ((const struct strtab_header*)strtab)->nentries; i++) {
+        if (i >= EMBED_STRTAB_SZ) {
+            fprintf(stderr, "index %zu too large\n", i);
             ret = false;
             goto done;
-        } else
-            fprintf(fout, "%u: %s\n", idx, buf);
+        }
+
+        if (!strtab_dec_str(strtab, rom + rom_sz, i, buf, sizeof(buf), &nwritten, conv, true)) {
+            fprintf(stderr, "Failed to decode string at %zu\n", i);
+            ret = false;
+            goto done;
+        } else {
+            ectx->strs[i] = strdup(buf);
+            ectx->allocated[i].allocated = ectx->strs[i] != NULL;
+            ectx->allocated[i].used = strlen(buf) != 0;
+            ectx->nstrs++;
+        }
     }
 
 done:
     if (conv != (iconv_t)-1) {
-        if (!ret) {
-            if (idx >= ((const struct strtab_header*)strtab)->nentries)
-                fprintf(stderr, "Index %u is too large (table has %u entries)\n", idx,
-                    ((const struct strtab_header*)strtab)->nentries);
-            else
-                perror("iconv");
-        }
+        if (!ret)
+            perror("iconv");
         iconv_close(conv);
     }
+    return ret;
+}
+
+bool strtab_dump(const uint8_t* rom, size_t rom_sz, uint32_t vma, uint32_t idx, bool has_idx,
+    FILE* fout) {
+    /* FIXME: Slow for individual queries (disassembler is not affected as it uses decode directly) */
+    struct strtab_embed_ctx* ectx = strtab_embed_ctx_new();
+    bool ret = true;
+
+    if (ectx && strtab_from_rom(rom, rom_sz, vma, ectx)) {
+        if (has_idx) {
+            ret = idx < ectx->nstrs;
+            assert(ectx->allocated[idx].allocated);
+            if (ret)
+                fprintf(fout, "%u: %s\n", idx, ectx->strs[idx]);
+        } else {
+            for (size_t i = 0; i < ectx->nstrs; i++) {
+                assert(ectx->allocated[i].allocated);
+                fprintf(fout, "%u: %s\n", idx, ectx->strs[i]);
+            }
+        }
+    }
+
+    if (ectx)
+        strtab_embed_ctx_free(ectx);
+
     return ret;
 }
 

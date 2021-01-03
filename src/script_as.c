@@ -466,12 +466,22 @@ static bool arg_str_to_strtab(struct script_stmt* stmt, struct script_as_ctx* ac
     assert(arg);
     assert(arg->type == ARG_TY_STR);
 
+    /* FIXME: Things broke here again.
+     * We embed the two scenarios separately, so the strtabs resulting from the first embedding
+     * must be preserved.
+     * However, when we obtain a strtab from the ROM, we do not know anymore if the entries are
+     * truly used (wthout a complete script analysis).
+     * As a hack, we assume that empty strings are never used.
+     */
     uint16_t i = 1;
     for (; i < EMBED_STRTAB_SZ; i++)
         if (!strs->allocated[i].used)
             break;
 
-    assert(!strs->allocated[i].allocated);
+    if (strs->allocated[i].allocated) {
+        free(strs->strs[i]);
+        strs->allocated[i].allocated = false;
+    }
 
     if (i == EMBED_STRTAB_SZ) {
         log(true, stmt, actx->pctx, "too many strings in program");

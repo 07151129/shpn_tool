@@ -30,7 +30,7 @@ static void usage() {
         "Supported verbs:\n"
         "script <name> <vma> <strtab_script_vma> <strtab_menu_vma> <dump | embed>\n"
         "\tdump [out] -- Dump script to file at \"out\" or to stdout\n"
-        "\tembed <in> <size> <strtab> <menu> <strtab_sz> <menu_sz> <out> -- Embed script at \"in\" "
+        "\tembed <in> <use_rom_strtab> <size> <strtab> <menu> <strtab_sz> <menu_sz> <out> -- Embed script at \"in\" "
         "with strtab at \"strtab\", menu strtab at \"menu\" into \"out\""
         "\n\n"
         "strtab <vma> <dump | embed>\n"
@@ -64,6 +64,7 @@ static struct {
     uint32_t strtab_idx;
     bool has_strtab_idx;
     bool strtab_embed_script;
+    bool use_rom_strtabs;
 } opts;
 
 /* FIXME: Refactor arg parsing.. */
@@ -123,6 +124,13 @@ static bool parse_script_verb(int argc, char* const* argv, int i) {
             opts.in_path = argv[j];
     } else if (opts.script_verb == SCRIPT_EMBED) {
         fprintf(stderr, "Missing in path for embed verb\n");
+        return false;
+    }
+
+    if (opts.script_verb == SCRIPT_EMBED && ++j < argc) {
+        opts.use_rom_strtabs = atoi(argv[j]) > 0;
+    } else if (opts.script_verb == SCRIPT_EMBED) {
+        fprintf(stderr, "Missing use_rom_strtabs for embed verb\n");
         return false;
     }
 
@@ -375,6 +383,7 @@ static bool script_verbs(uint8_t* rom, size_t sz) {
         ret = embed_script(rom_cpy, sz + pad_sz,
                 opts.script_sz,
                 VMA2OFFS(opts.script_vma),
+                opts.use_rom_strtabs,
                 fin, strtab_scr, strtab_menu,
                 opts.in_path,
                 sz_script, sz_strtab_scr, sz_strtab_menu,
@@ -455,8 +464,8 @@ static bool strtab_verbs(const uint8_t* rom, size_t sz) {
             goto done;
         }
 
-        struct strtab_embed_ctx* ectx = strtab_embed_ctx_with_file(fin, in_sz);
-        if (!ectx) {
+        struct strtab_embed_ctx* ectx = strtab_embed_ctx_new();
+        if (!ectx || !strtab_embed_ctx_with_file(fin, in_sz, ectx)) {
             fprintf(stderr, "Failed to process %s for embedding\n", opts.in_path);
             goto done;
         }

@@ -8,6 +8,9 @@
 #include <stdint.h>
 #include <stdio.h>
 
+struct strtab_embed_ctx;
+
+bool strtab_from_rom(const uint8_t* rom, size_t rom_sz, uint32_t vma, struct strtab_embed_ctx* ectx);
 bool strtab_dump(const uint8_t* rom, size_t rom_sz, uint32_t vma, uint32_t idx, bool has_idx,
     FILE* fout);
 bool strtab_dec_str(const uint8_t* strtab, const uint8_t* rom_end, uint32_t idx, char* out,

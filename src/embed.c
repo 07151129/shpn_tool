@@ -132,35 +132,30 @@ struct strtab_embed_ctx* strtab_embed_ctx_new() {
     return ret;
 }
 
-struct strtab_embed_ctx* strtab_embed_ctx_with_file(FILE* fin, size_t sz) {
+bool strtab_embed_ctx_with_file(FILE* fin, size_t sz, struct strtab_embed_ctx* ectx) {
     if (!fin)
-        return NULL;
+        return false;
 
     rewind(fin);
 
     char* fbuf = malloc(sz);
     if (!fbuf) {
         perror("malloc");
-        return NULL;
+        return false;
     }
 
     if (fread(fbuf, 1, sz, fin) < (size_t)sz) {
         fprintf(stderr, "Failed to fread (error %d)\n", ferror(fin));
         free(fbuf);
-        return NULL;
+        return false;
     }
 
-    struct strtab_embed_ctx* ret = strtab_embed_ctx_new();
-    if (!ret) {
-        free(fbuf);
-        return NULL;
-    }
-
+    bool ret = true;
     bool at_nl = true;
     size_t line = 0;
     uint32_t sidx = 0;
     size_t cidx = 0;
-    ret->nstrs = 0;
+    // ret->nstrs = 0;
 
     for (size_t i = 0; i < sz;) {
         if (at_nl) {
@@ -168,15 +163,13 @@ struct strtab_embed_ctx* strtab_embed_ctx_with_file(FILE* fin, size_t sz) {
             sidx = strtoul(&fbuf[i], &end, 0);
             if (sidx >= EMBED_STRTAB_SZ) {
                 fprintf(stderr, "Index %u exceeds strtab limit %d\n", sidx, EMBED_STRTAB_SZ);
-                ret = NULL;
-                free(ret);
+                ret = false;
                 goto done;
             }
 
             if (*end != ':') {
                 fprintf(stderr, "Failed to parse input at line %zu\n", line);
-                free(ret);
-                ret = NULL;
+                ret = false;
                 goto done;
             }
             i += (size_t)(end - &fbuf[i] + 1);
@@ -194,20 +187,26 @@ struct strtab_embed_ctx* strtab_embed_ctx_with_file(FILE* fin, size_t sz) {
                     i = sz;
                 assert((size_t)i >= cidx);
                 size_t len = i - cidx;
-                ret->strs[sidx] = malloc(len + 1);
-                if (!ret->strs[sidx]) {
+
+                if (ectx->allocated[sidx].used) {
+                    // fprintf(stderr, "overriding used ROM strtab entry %u\n", sidx);
+                    if (ectx->allocated[sidx].allocated)
+                        free(ectx->strs[sidx]);
+                }
+
+                ectx->strs[sidx] = malloc(len + 1);
+                if (!ectx->strs[sidx]) {
                     perror("malloc");
-                    free(ret);
-                    ret = NULL;
+                    ret = false;
                     goto done;
                 }
 
-                memcpy(ret->strs[sidx], &fbuf[cidx], len);
-                ret->strs[sidx][len] = '\0';
+                memcpy(ectx->strs[sidx], &fbuf[cidx], len);
+                ectx->strs[sidx][len] = '\0';
                 // fprintf(stderr, "%u: %s\n", sidx, ret->strs[sidx]);
-                ret->nstrs = sidx + 1 > ret->nstrs ? sidx + 1 : ret->nstrs;
-                ret->allocated[sidx].allocated = true;
-                ret->allocated[sidx].used = true;
+                ectx->nstrs = sidx + 1 > ectx->nstrs ? sidx + 1 : ectx->nstrs;
+                ectx->allocated[sidx].allocated = true;
+                ectx->allocated[sidx].used = true;
 
                 i++;
                 at_nl = true;
@@ -224,9 +223,9 @@ struct strtab_embed_ctx* strtab_embed_ctx_with_file(FILE* fin, size_t sz) {
      *
      * Alternatively, we could pass struct strtab_embed_ctx to make_strtab
      */
-    for (size_t i = 0; i < ret->nstrs; i++)
-        if (!ret->allocated[i].allocated)
-            ret->strs[i] = EMBED_STR_PLACEHOLDER;
+    for (size_t i = 0; i < ectx->nstrs; i++)
+        if (!ectx->allocated[i].allocated)
+            ectx->strs[i] = EMBED_STR_PLACEHOLDER;
 
 done:
     free(fbuf);
@@ -248,6 +247,7 @@ static bool patch_cksum_sz(uint8_t* rom, size_t rom_sz, size_t script_sz, uint32
 }
 
 bool embed_script(uint8_t* rom, size_t rom_sz, size_t script_sz_max, size_t script_offs,
+        bool use_rom_strtab,
         FILE* fscript, FILE* strtab_scr, FILE* strtab_menu,
         const char* script_path,
         size_t script_fsz, size_t strtab_scr_fsz, size_t strtab_menu_fsz,
@@ -301,8 +301,20 @@ bool embed_script(uint8_t* rom, size_t rom_sz, size_t script_sz_max, size_t scri
     if (conv == (iconv_t)-1)
         goto done;
 
-    ectx_scr = strtab_embed_ctx_with_file(strtab_scr, strtab_scr_fsz);
-    ectx_menu = strtab_embed_ctx_with_file(strtab_menu, strtab_menu_fsz);
+    ectx_scr = strtab_embed_ctx_new();
+    ectx_menu = strtab_embed_ctx_new();
+
+    if (!ectx_scr || !ectx_menu)
+        goto done;
+
+    if (use_rom_strtab &&
+        (!strtab_from_rom(rom, rom_sz, strtab_scr_vma, ectx_scr) ||
+        !strtab_from_rom(rom, rom_sz, strtab_menu_vma, ectx_menu)))
+        goto done;
+
+    if (!strtab_embed_ctx_with_file(strtab_scr, strtab_scr_fsz, ectx_scr) ||
+        !strtab_embed_ctx_with_file(strtab_menu, strtab_menu_fsz, ectx_menu))
+        goto done;
 
     if (!ectx_scr || !ectx_menu)
         goto done;
