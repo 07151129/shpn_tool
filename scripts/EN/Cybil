@@ -288,7 +288,7 @@ LoadBackground(0x0); // 0x478: 00001069
 OP_0x65(); // 0x47e: 00000065
 OP_0x72(0x16); // 0x482: 00001072
 OP_0x1f(0x78); // 0x488: 0000101f
-ShowText((5001)""); // 0x48e: 0000100c
+ShowText((5001)"¥"Hello...hello!?¥" The phone had suddenly gone dead. She tried to call back right away; however, the call would not go through."); // 0x48e: 0000100c
 HandleInput(); // 0x494: 00000010
 ShowText((5002)"¥"Perfect...I wonder what is going on.¥" Her co-worker Sally saw Cybil's flushed face, and could not help making a joke. ¥"It's because you are so hostile. I bet they just don't want to talk to you anymore.¥""); // 0x498: 0000100c
 HandleInput(); // 0x49e: 00000010
