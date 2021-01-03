@@ -2587,7 +2587,7 @@ LoadEffect(0x47, 0x1, 0x1, 0x2); // 0x34f4: 0000406d
 OP_0x65(); // 0x3500: 00000065
 OP_0x6c(0x66); // 0x3504: 0000106c
 OP_0x6e(0x47, 0x1, 0x1, 0x1); // 0x350a: 0000406e
-Choice((650)"Cybil gasps.", (651)"A ) She flees with all her might.", (652)B ) She must fight.""); // 0x3516: 00003011
+Choice((650)"Cybil gasps.", (651)"A ) She flees with all her might.", (652)"B ) She must fight."); // 0x3516: 00003011
 Branch4(0x318, L_0x352c); // 0x3520: 00001004
 Jump(L_0x3540); // 0x3526: 00001001
 L_0x352c:
