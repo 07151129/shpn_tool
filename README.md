@@ -34,6 +34,17 @@ Historically, the first translation was bootstrapped as follows:
 - Embed the fully translated strtabs.
 - Dump the resulting scripts.
 
+### Debugging script execution
+
+Obtain the target command address ```ADDR``` by dumping the script and inspecting the generated
+commentary. Play until a HandleInput, connect via gdb, and execute
+
+```
+ p *(int*)0x3002070=ADDR
+```
+
+to set the next command address to ```ADDR```.
+
 ### Copyright & Acknowledgements
 
 See script/ACKNOWLEDGEMENTS.
