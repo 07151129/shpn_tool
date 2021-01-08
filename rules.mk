@@ -47,7 +47,7 @@ build/$(1).bps: build/$(1).rom
 endef
 
 define MAKE_ROM
-build/$(1).rom: build/Cybil.$(1).rom $(AGB_BINS=%:build/%)
+build/$(1).rom: agb build/Cybil.$(1).rom $(AGB_BINS=%:build/%)
 	@echo make_rom $(1)
 	$$(VERBOSE) $(ENV) cp build/Cybil.$(1).rom build/$(1).rom
 	$(foreach agb_bin_offs,$(AGB_BINS_OFFSETS),\
