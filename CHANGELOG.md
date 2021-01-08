@@ -11,3 +11,4 @@ Known issues:
 - Possible glyph corruption when rendering load menu or backlog
 - No proofreading for EN/RU translations
 - Some static (non-script) strings may be missing translation
+- Wait commands are missing from the translation
