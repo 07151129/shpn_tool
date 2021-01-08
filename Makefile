@@ -51,6 +51,7 @@ include agb/patch.mk
 IPS_TARGETS = $(foreach script,$(SCRIPTS),$(script:%=build/%.ips))
 BPS_TARGETS = $(foreach script,$(SCRIPTS),$(script:%=build/%.bps))
 
+$(foreach script,$(SCRIPTS),$(eval $(call MAKE_BUILD_TAG,$(script))))
 $(foreach script,$(SCRIPTS),$(eval $(call MAKE_ROM,$(script))))
 $(foreach script,$(SCRIPTS),$(eval $(call MAKE_IPS,$(script))))
 $(foreach script,$(SCRIPTS),$(eval $(call MAKE_BPS,$(script))))
