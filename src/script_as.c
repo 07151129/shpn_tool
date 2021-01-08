@@ -370,7 +370,7 @@ static bool process_label_refs(const struct script_stmt* stmt, struct script_as_
                     return false;
                 }
             }
-        } else if (cmd_is_jump(STMT_TO_CMD(stmt))) {
+        } else if (cmd_is_jump(STMT_TO_CMD(bsrc))) {
             /* Label occurs before a jump to it; create source-dst entry to be handled by jump later */
             if (stmt_order(stmt, bsrc) == STMT_ORD_LT) {
                 if ((actx->dst - actx->dst_start) > UINT16_MAX) {
