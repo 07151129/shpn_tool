@@ -3393,7 +3393,7 @@ OP_0x65(); // 0x41a4: 00000065
 OP_0x73(0x1f); // 0x41a8: 00001073
 OP_0x1f(0x3e); // 0x41ae: 0000101f
 OP_0x73(0xc); // 0x41b4: 00001073
-ShowText((1297)"A world without light I could see that the electricity was most likely out in the entire hospital. I pressed the switch on the flashlight on my chest and tried lighting the area."); // 0x41ba: 0000100c
+ShowText((1297)"I could see that the electricity was most likely out in the entire hospital. I pressed the switch on the flashlight on my chest and tried lighting the area."); // 0x41ba: 0000100c
 HandleInput(); // 0x41c0: 00000010
 OP_0x64(); // 0x41c4: 00000064
 LoadBackground(0x55); // 0x41c8: 00001069
