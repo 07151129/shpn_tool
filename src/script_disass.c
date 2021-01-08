@@ -375,6 +375,10 @@ phase:
             }
         }
 
+        /* Got 4B-divisible branch_info */
+        if (!past_info)
+            fprintf(fout, ".end branch_info\n");
+
         script_state_free(&state);
         return true;
     }
