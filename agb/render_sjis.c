@@ -86,11 +86,16 @@ bool isdigit(char c) {
 #define PALETTE_SCRIPT 14 /* render_sjis */
 #define PALETTE_MENU 15 /* render_load_menu */
 
+enum {
+    CTX_RENDER_FRAME,
+    CTX_RENDER_MENU,
+    CTX_RENDER_CHOICE
+};
+
 struct glyph_blit_cfg {
     void* tiles; /* glyph tile data */
     uint16_t oam_idx; /* OAM glyph object index */
-    bool rendering_menu; /* are we rendering a load menu */
-    bool rendering_choice;
+    uint8_t ctx;
     uint16_t row; /* character row the glyph is at */
     uint16_t xoffs; /* horizontal offset in pixels */
     uint16_t yoffs; /* vertical offset in pixels */
@@ -112,10 +117,10 @@ static uint8_t upload_glyph(const struct glyph_blit_cfg* cfg) {
     volatile void* glyph_tiles_vram;
 
     /* Cursor steals OAM slot 112... */
-    if (!cfg->rendering_menu && !cfg->rendering_choice && idx >= CURSOR_OAM_IDX)
+    if (cfg->ctx == CTX_RENDER_FRAME && idx >= CURSOR_OAM_IDX)
         idx++;
 
-    if (cfg->rendering_menu)
+    if (cfg->ctx == CTX_RENDER_MENU)
         glyph_tiles_vram = glyph_vram_addr_menu(idx);
     else
         glyph_tiles_vram = glyph_vram_addr_normal(idx);
@@ -146,11 +151,11 @@ static uint8_t upload_glyph(const struct glyph_blit_cfg* cfg) {
         .Size = 1,
         .CharNo = 4 * idx,
         .Priority = 0,
-        .Pltt = !cfg->rendering_menu ? PALETTE_SCRIPT : PALETTE_MENU,
+        .Pltt = cfg->ctx != CTX_RENDER_MENU ? PALETTE_SCRIPT : PALETTE_MENU,
         .AffineParam = 0
     };
 
-    if (cfg->rendering_menu)
+    if (cfg->ctx == CTX_RENDER_MENU)
         gly_obj.CharNo += 60;
 
     gly_obj.HPos = RENDER_TEXT_LMARGIN;
@@ -209,7 +214,7 @@ uint8_t render_sjis(const char* sjis, uint32_t len, struct glyph_blit_cfg* cfg, 
         row = *cursor_row + 1;
 
     uint32_t delay = RENDER_DELAY_DEFAULT;
-    if (cfg->rendering_menu)
+    if (cfg->ctx == CTX_RENDER_MENU)
         delay = RENDER_DELAY_MENU;
 
     uint8_t rmargin_prev = 0, xpos_prev = RENDER_TEXT_LMARGIN;
@@ -247,8 +252,8 @@ uint8_t render_sjis(const char* sjis, uint32_t len, struct glyph_blit_cfg* cfg, 
         }
 
         /* Prevent overflow */
-        if ((!cfg->rendering_menu && nchars > RENDER_NCHARS_MAX) ||
-            (cfg->rendering_menu && nchars > RENDER_NCHARS_MAX + 1))
+        if ((cfg->ctx != CTX_RENDER_MENU && nchars > RENDER_NCHARS_MAX) ||
+            (cfg->ctx == CTX_RENDER_MENU && nchars > RENDER_NCHARS_MAX + 1))
             break;
 
         if (glyph_is_hw(first)) { /* Known single-byte half-width */
@@ -354,8 +359,7 @@ void render_sjis_entry(const char* sjis, uint32_t len, uint16_t start_at_y, uint
         return;
 
     struct glyph_blit_cfg cfg = {
-        .rendering_menu = false,
-        .rendering_choice = false
+        .ctx = CTX_RENDER_FRAME
     };
 
     render_sjis(sjis, len, &cfg, 0, color, no_delay, a6, a7, 0, NULL);
@@ -393,8 +397,7 @@ void render_sjis_menu_entry(const char* sjis, uint32_t unused, uint32_t row, uin
         color = 9;
 
     struct glyph_blit_cfg cfg = {
-        .rendering_menu = false,
-        .rendering_choice = true
+        .ctx = CTX_RENDER_CHOICE
     };
 
     *cursor_col = render_sjis(sjis, 0, &cfg, true, color, no_delay, 0, 0, *cursor_col, cursor_row);
@@ -491,8 +494,7 @@ void render_load_menu(const char* sjis, uint32_t len, uint32_t x, uint32_t y,
     uint32_t color = req->a1->a2[2] & 0xf;
 
     struct glyph_blit_cfg cfg = {
-        .rendering_menu = true,
-        .rendering_choice = false
+        .ctx = CTX_RENDER_MENU
     };
 
     oam_offs = render_sjis(sjis, 0, &cfg, 0, color, !(flags & 0x80),
