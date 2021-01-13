@@ -3074,7 +3074,7 @@ OP_0x72(0x39); // 0x3f54: 00001072
 OP_0x6e(0x49, 0x1, 0x1); // 0x3f5a: 0000306e
 ShowText((6535)"¥"In my fading consciousness, I can see Harry shaking me."); // 0x3f64: 0000100c
 HandleInput(); // 0x3f6a: 00000010
-ShowText((6536)"Harry has stopped moving. He looks at me and weeps. Then he begins to mov. toward something off in the distance that looks like a dimly shining girl."); // 0x3f6e: 0000100c
+ShowText((6536)"Harry has stopped moving. He looks at me and weeps. Then he begins to move toward something off in the distance that looks like a dimly shining girl."); // 0x3f6e: 0000100c
 HandleInput(); // 0x3f74: 00000010
 ShowText((6537)"I am ok... I can still move. The thing that came out of me is heading for its next target."); // 0x3f78: 0000100c
 HandleInput(); // 0x3f7e: 00000010
