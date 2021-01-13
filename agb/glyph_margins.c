@@ -76,6 +76,7 @@ struct glyph_margins glyph_margin(uint16_t c, bool in_quotes) {
         case '\'': return (struct glyph_margins){0, 12};
         case '[': return (struct glyph_margins){6, 4};
         case ']': return (struct glyph_margins){1, 9};
+        case '*': return (struct glyph_margins){2, 5};
     }
 
     return (struct glyph_margins){0, 0};
@@ -104,6 +105,7 @@ uint16_t glyph_hw_to_fw(char c, bool in_quotes) {
         case '\'': return 0x8166;
         case '[': return 0x816d;
         case ']': return 0x816e;
+        case '*': return 0x8196;
     }
     return c;
 }
