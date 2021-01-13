@@ -4002,7 +4002,7 @@ LoadBackground(0x0); // 0x4e32: 00001069
 OP_0x65(); // 0x4e38: 00000065
 ShowText((1396)"¥"What's wrong? Harry...?¥" ¥"Harry, let me help you. Harry...¥""); // 0x4e3c: 0000100c
 HandleInput(); // 0x4e42: 00000010
-ShowText((1397)".................. Lisa has vanished"); // 0x4e46: 0000100c
+ShowText((1397)".................."); // 0x4e46: 0000100c
 HandleInput(); // 0x4e4c: 00000010
 Jump(L_0x4e56); // 0x4e50: 00001001
 L_0x4e56:
@@ -4399,7 +4399,7 @@ HandleInput(); // 0x56b2: 00000010
 OP_0x6e(0x33, 0x2, 0x1); // 0x56b6: 0000306e
 ShowText((1452)"A cult... Last time I heard anything about it was, gosh, years ago... When several people connected with developing the town died in accidents. People said it was a curse."); // 0x56c0: 0000100c
 HandleInput(); // 0x56c6: 00000010
-ShowText((1453)"Oh, I'm sorry. I'm rambling... I'll shut up. ............................... Lisa is..."); // 0x56ca: 0000100c
+ShowText((1453)"Oh, I'm sorry. I'm rambling... I'll shut up. ..............................."); // 0x56ca: 0000100c
 HandleInput(); // 0x56d0: 00000010
 OP_0x6e(0x0, 0x0, 0x1); // 0x56d4: 0000306e
 OP_0x64(); // 0x56de: 00000064
@@ -8066,7 +8066,7 @@ ShowText((3631)"One round is chambered in the gun."); // 0xa3ee: 0000100c
 HandleInput(); // 0xa3f4: 00000010
 ShowText((3632)"......... Wait... There is one round in the gun... One round?"); // 0xa3f8: 0000100c
 HandleInput(); // 0xa3fe: 00000010
-ShowText((3633)".............................. Daydream recollection"); // 0xa402: 0000100c
+ShowText((3633)".............................."); // 0xa402: 0000100c
 HandleInput(); // 0xa408: 00000010
 Jump(L_0xa412); // 0xa40c: 00001001
 L_0xa412:
@@ -8094,7 +8094,7 @@ ShowText((3638)"I persistently chase him... I look at his back as he runs away..
 HandleInput(); // 0xa480: 00000010
 ShowText((3639)"He sank to the floor in the corner of the hall... What a pathetic end... I place my right leg on his shoulder..."); // 0xa484: 0000100c
 HandleInput(); // 0xa48a: 00000010
-ShowText((3640)".............................. A piercing voice"); // 0xa48e: 0000100c
+ShowText((3640)".............................."); // 0xa48e: 0000100c
 HandleInput(); // 0xa494: 00000010
 Jump(L_0xa49e); // 0xa498: 00001001
 L_0xa49e:
@@ -8126,7 +8126,7 @@ ShowText((3646)"I fly into the sky. I look down on the town wrapped in thick fog
 HandleInput(); // 0xa522: 00000010
 ShowText((3647)"This feels good. It's invigorating. If I close my eyes I feel that I would rise all the way to space."); // 0xa526: 0000100c
 HandleInput(); // 0xa52c: 00000010
-ShowText((3648)"......... On top of the desk"); // 0xa530: 0000100c
+ShowText((3648)"........."); // 0xa530: 0000100c
 HandleInput(); // 0xa536: 00000010
 Jump(L_0xa540); // 0xa53a: 00001001
 L_0xa540:
