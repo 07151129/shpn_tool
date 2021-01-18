@@ -1293,7 +1293,7 @@ ShowText((5152)"Thinking that perhaps there was a memo, Cybil began her search w
 HandleInput(); // 0x19a6: 00000010
 ShowText((5153)"Cybil looked at Cheryl. With the bloody scene in front of her Cheryl was surprisingly calm. From time to time she looked out the window as if she were concerned about something."); // 0x19aa: 0000100c
 HandleInput(); // 0x19b0: 00000010
-ShowText((5154)"¥"Well, your Daddy is not here. Let's look somewhere else.¥" Cybil took Cheryl's hand, and without a word they rushed out into the snowy street once again."); // 0x19b4: 0000100c
+ShowText((5154)"¥"Well, your Daddy is not here. Let's look some place else.¥" Cybil took Cheryl's hand, and without a word they rushed out into the snowy street once again."); // 0x19b4: 0000100c
 HandleInput(); // 0x19ba: 00000010
 Jump(L_0x1a20); // 0x19be: 00001001
 L_0x19c4:
