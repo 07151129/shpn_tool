@@ -1311,7 +1311,7 @@ ShowText((7052)"The bullets scattered about on the floor supported this, as they
 HandleInput(); // 0x1a02: 00000010
 ShowText((7053)"Other than this there did not appear to be anything else out of the ordinary."); // 0x1a06: 0000100c
 HandleInput(); // 0x1a0c: 00000010
-ShowText((7054)"¥"Well, your Daddy is not here. Let's look somewhere else.¥" Cybil took Cheryl's hand, and without a word they rushed out into the snowy street once again."); // 0x1a10: 0000100c
+ShowText((7054)"¥"Well, your Daddy is not here. Let's look some place else.¥" Cybil took Cheryl's hand, and without a word they rushed out into the snowy street once again."); // 0x1a10: 0000100c
 HandleInput(); // 0x1a16: 00000010
 Jump(L_0x1a20); // 0x1a1a: 00001001
 L_0x1a20:
