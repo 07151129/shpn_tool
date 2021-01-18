@@ -1561,7 +1561,7 @@ OP_0x64(); // 0x1a0a: 00000064
 LoadBackground(0x0); // 0x1a0e: 00001069
 OP_0x65(); // 0x1a14: 00000065
 OP_0x6c(0x67); // 0x1a18: 0000106c
-ShowText((1043)"Cybil Bennet. She is a full time police officer working in the neighboring town of Brahms. There was no one else in the cafe other than her and Harry. She took a seat at the counter and waited for Harry to awaken."); // 0x1a1e: 0000100c
+ShowText((1043)"Cybil Bennett. She is a full time police officer working in the neighboring town of Brahms. There was no one else in the cafe other than her and Harry. She took a seat at the counter and waited for Harry to awaken."); // 0x1a1e: 0000100c
 HandleInput(); // 0x1a24: 00000010
 ShowMovie(0x1); // 0x1a28: 0000100d
 OP_0x34(); // 0x1a2e: 00000034
@@ -1583,7 +1583,7 @@ ShowText((1046)"She is wearing a police uniform. The woman smiles a little bit, 
 HandleInput(); // 0x1a8a: 00000010
 ShowText((1047)"¥"It looks like you have come around.¥" ¥"Who are you?¥" I try talking to the unfamiliar woman."); // 0x1a8e: 0000100c
 HandleInput(); // 0x1a94: 00000010
-ShowText((1048)"¥"I'm Cybil. Cybil Bennet. I'm here because all communication with this town suddenly went dead and so I came to investigate.¥""); // 0x1a98: 0000100c
+ShowText((1048)"¥"I'm Cybil. Cybil Bennett. I'm here because all communication with this town suddenly went dead and so I came to investigate.¥""); // 0x1a98: 0000100c
 HandleInput(); // 0x1a9e: 00000010
 ShowText((1049)"¥"I'm...Harry Mason. I brought my daughter to this town for some sightseeing, but on the way there was an accident and I lost consciousness... Oh, yeah, Cybil...You haven't seen a little girl in this town have you?¥""); // 0x1aa2: 0000100c
 HandleInput(); // 0x1aa8: 00000010
