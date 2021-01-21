@@ -281,13 +281,13 @@ L_0x45c:
 Branch5(0x238, L_0x7da); // 0x45c: 00001005
 Jump(L_0x39d8); // 0x462: 00001001
 L_0x468:
-OP_0x62(0x13f, 0x333); // 0x468: 00002062
-OP_0x25(); // 0x470: 00000025
-OP_0x64(); // 0x474: 00000064
+TitleAndSubtitle(0x13f, 0x333); // 0x468: 00002062
+CleanTextRecord(); // 0x470: 00000025
+CleanScreen(); // 0x474: 00000064
 LoadBackground(0x0); // 0x478: 00001069
 OP_0x65(); // 0x47e: 00000065
-OP_0x72(0x16); // 0x482: 00001072
-OP_0x1f(0x78); // 0x488: 0000101f
+PlaySoundFx(0x16); // 0x482: 00001072
+PlaySecondSoundFx(0x78); // 0x488: 0000101f
 ShowText((5001)"¥"Hello...hello!?¥" The phone had suddenly gone dead. She tried to call back right away; however, the call would not go through."); // 0x48e: 0000100c
 HandleInput(); // 0x494: 00000010
 ShowText((5002)"¥"Perfect...I wonder what is going on.¥" Her co-worker Sally saw Cybil's flushed face, and could not help making a joke. ¥"It's because you are so hostile. I bet they just don't want to talk to you anymore.¥""); // 0x498: 0000100c
@@ -299,47 +299,47 @@ HandleInput(); // 0x4b2: 00000010
 ShowText((5005)"Even now, with nothing notable appearing in the local news, Cybil was just having a meaningless conversation about this and that with a friend in the Silent Hill police department. But then suddenly, the line had gone dead."); // 0x4b6: 0000100c
 HandleInput(); // 0x4bc: 00000010
 OP_0x29(); // 0x4c0: 00000029
-OP_0x73(0x18); // 0x4c4: 00001073
+PlaySecondSoundFx(0x18); // 0x4c4: 00001073
 ShowText((5006)"And they had not called back."); // 0x4ca: 0000100c
 HandleInput(); // 0x4d0: 00000010
 ShowText((5007)"¥"...The call won't go through.¥" ¥"Maybe this is happening because someone is trying to tell you not to waste all your time chatting? How about settling down and taking your feet off the desk?¥" Cybil does not care for Sally's big sister-like attitude."); // 0x4d4: 0000100c
 HandleInput(); // 0x4da: 00000010
-OP_0x73(0x18); // 0x4de: 00001073
-OP_0x64(); // 0x4e4: 00000064
+PlaySecondSoundFx(0x18); // 0x4de: 00001073
+CleanScreen(); // 0x4e4: 00000064
 LoadBackground(0xdc); // 0x4e8: 00001069
 OP_0x65(); // 0x4ee: 00000065
 ShowText((5008)"Cybil calls the Silent Hill police station one more time. ¥"Odd,¥" Cybil thought. It seems as if this might be the result of the telephone lines having been severed or something."); // 0x4f2: 0000100c
 HandleInput(); // 0x4f8: 00000010
-OP_0x64(); // 0x4fc: 00000064
+CleanScreen(); // 0x4fc: 00000064
 LoadBackground(0xdd); // 0x500: 00001069
 OP_0x65(); // 0x506: 00000065
-OP_0x73(0x25); // 0x50a: 00001073
+PlaySecondSoundFx(0x25); // 0x50a: 00001073
 ShowText((5009)"Cybil leaps from her chair, causing it to spin, reaches for the helmet on top of a locker, and with it in hand prepares to leave the room."); // 0x510: 0000100c
 HandleInput(); // 0x516: 00000010
 ShowText((5010)"¥"Wait! Just where do you think you are going at this hour?¥" Sally has a look of ¥"you have got to be kidding¥" on her face, and then she absentmindedly allows the coffee cup she was holding in her right hand to fall to the floor."); // 0x51a: 0000100c
 HandleInput(); // 0x520: 00000010
 ShowText((5011)"¥"Ahhhh! Hot! ¥"You can take care of that yourself.¥" Cybil mumbles this in her head, and in the next moment ran out of the room."); // 0x524: 0000100c
 HandleInput(); // 0x52a: 00000010
-OP_0x64(); // 0x52e: 00000064
+CleanScreen(); // 0x52e: 00000064
 LoadBackground(0x0); // 0x532: 00001069
 OP_0x65(); // 0x538: 00000065
-OP_0x73(0xc); // 0x53c: 00001073
-OP_0x1f(0x3c); // 0x542: 0000101f
-OP_0x72(0x33); // 0x548: 00001072
+PlaySecondSoundFx(0xc); // 0x53c: 00001073
+PlaySecondSoundFx(0x3c); // 0x542: 0000101f
+PlaySoundFx(0x33); // 0x548: 00001072
 ShowText((5012)"Cybil straddles the motorcycle in the garage, inserts the key, and revs the engine. The sound of the exhaust resonates in the small space. She pulls out onto the road, and increases her speed as she is bathed from head to toe in the uncomfortably warm wind."); // 0x54e: 0000100c
 HandleInput(); // 0x554: 00000010
 OP_0x2c(0x2, 0x2); // 0x558: 0000202c
-OP_0x1f(0x3c); // 0x560: 0000101f
-OP_0x64(); // 0x566: 00000064
+PlaySecondSoundFx(0x3c); // 0x560: 0000101f
+CleanScreen(); // 0x566: 00000064
 LoadBackground(0xde); // 0x56a: 00001069
 LoadEffect(0xb, 0x3, 0x0); // 0x570: 0000306d
 OP_0x65(); // 0x57a: 00000065
-OP_0x72(0x34); // 0x57e: 00001072
+PlaySoundFx(0x34); // 0x57e: 00001072
 ShowText((5013)"Starlight falls upon her from the clear starlit sky. It doesn't look like the weather could have caused the problem with the phone lines."); // 0x584: 0000100c
 HandleInput(); // 0x58a: 00000010
 ShowText((5014)"Cybil tightly holds onto the handlebars and continues to increase her speed. At this hour there should not be any other cars heading to Silent Hill. The road has been lit in front and behind only by streetlamps since she reached this mountain road, and there is no sign of anyone in the area."); // 0x58e: 0000100c
 HandleInput(); // 0x594: 00000010
-OP_0x64(); // 0x598: 00000064
+CleanScreen(); // 0x598: 00000064
 LoadBackground(0xdf); // 0x59c: 00001069
 OP_0x65(); // 0x5a2: 00000065
 ShowText((5015)"However, after a while she was able to see the tail lights of a vehicle swaying far off in the darkness in front of her. There is a cliff on one side of the road. Whether they realize that or not, the vehicle is heading toward the same destination as Cybil at high speed."); // 0x5a6: 0000100c
@@ -348,12 +348,12 @@ ShowText((5016)"¥"Normally I would pull this guy over.¥" Cybil mutters this, i
 HandleInput(); // 0x5b6: 00000010
 ShowText((5017)"As she passes it, Cybil glances inside the jeep for a moment, quickly smiles, and then blasts in front of it. The jeep quickly becomes smaller and smaller in the side mirrors of her motorcycle."); // 0x5ba: 0000100c
 HandleInput(); // 0x5c0: 00000010
-OP_0x64(); // 0x5c4: 00000064
+CleanScreen(); // 0x5c4: 00000064
 LoadBackground(0x5); // 0x5c8: 00001069
 OP_0x65(); // 0x5ce: 00000065
-OP_0x6e(0xc, 0x1, 0x1); // 0x5d2: 0000306e
+LoadSecondEffect(0xc, 0x1, 0x1); // 0x5d2: 0000306e
 OP_0x2c(0x2, 0x2); // 0x5dc: 0000202c
-OP_0x6c(0x67); // 0x5e4: 0000106c
+PlayMusic(0x67); // 0x5e4: 0000106c
 ShowText((5018)".................."); // 0x5ea: 0000100c
 HandleInput(); // 0x5f0: 00000010
 ShowText((5019)"And then... She started to notice that she could not keep her eyes focused. ¥"Sleepiness. No, I have been on the night shift for a while, and should have gotten plenty of sleep this afternoon.¥""); // 0x5f4: 0000100c
@@ -362,40 +362,40 @@ ShowText((5020)"Her body becomes one with the motorcycle, and it slices through 
 HandleInput(); // 0x604: 00000010
 ShowText((5021)"Her eyelids are heavy. Her mouth has become dry. ¥"What's wrong with me?¥" She lightly shakes her head left and right. Against her will, her right hand turns the grip that will cause her to accelerate. The needle is buried, and madly shakes back and forth. Cybil then stared straight forward."); // 0x608: 0000100c
 HandleInput(); // 0x60e: 00000010
-OP_0x6e(0x0, 0x0, 0x1); // 0x612: 0000306e
+LoadSecondEffect(0x0, 0x0, 0x1); // 0x612: 0000306e
 OP_0x29(); // 0x61c: 00000029
-OP_0x64(); // 0x620: 00000064
+CleanScreen(); // 0x620: 00000064
 LoadBackground(0xe0); // 0x624: 00001069
 LoadEffect(0x41, 0x1, 0x0); // 0x62a: 0000306d
 OP_0x65(); // 0x634: 00000065
 ShowText((5022)"But it was already too late. In the middle of the road a girl stood, with her arms raised to shield her from the light."); // 0x638: 0000100c
 HandleInput(); // 0x63e: 00000010
 ShowText((9998)""); // 0x642: 0000100c
-OP_0x73(0x7); // 0x648: 00001073
-OP_0x6e(0x41, 0x2, 0x0); // 0x64e: 0000306e
+PlaySecondSoundFx(0x7); // 0x648: 00001073
+LoadSecondEffect(0x41, 0x2, 0x0); // 0x64e: 0000306e
 ShowText((5023)"Cybil slammed on the brakes. The last thing she saw was the rapidly approaching rock wall on the side of the road..."); // 0x658: 0000100c
 HandleInput(); // 0x65e: 00000010
 Jump(L_0x668); // 0x662: 00001001
 L_0x668:
-OP_0x62(0x140, 0x334); // 0x668: 00002062
-OP_0x26(0x2); // 0x670: 00001026
-OP_0x25(); // 0x676: 00000025
-OP_0x64(); // 0x67a: 00000064
+TitleAndSubtitle(0x140, 0x334); // 0x668: 00002062
+Area(0x2); // 0x670: 00001026
+CleanTextRecord(); // 0x676: 00000025
+CleanScreen(); // 0x67a: 00000064
 LoadBackground(0x0); // 0x67e: 00001069
 OP_0x65(); // 0x684: 00000065
-OP_0x1f(0x78); // 0x688: 0000101f
+PlaySecondSoundFx(0x78); // 0x688: 0000101f
 ShowText((5024)"Hita... Hita..."); // 0x68e: 0000100c
 HandleInput(); // 0x694: 00000010
 ShowText((5025)"Something cold is touching Cybil's cheek. Cybil slowly opened her eyes."); // 0x698: 0000100c
 HandleInput(); // 0x69e: 00000010
-OP_0x6c(0x68); // 0x6a2: 0000106c
+PlayMusic(0x68); // 0x6a2: 0000106c
 ShowText((5026)"¥"Where am I...¥" She is not yet able to stand up. She does not seem to be hurt; however, her body will not do as she commands. Nevertheless, she is fully conscious."); // 0x6a8: 0000100c
 HandleInput(); // 0x6ae: 00000010
 ShowText((5027)"Large snowflakes are falling all over her body. She is lying face down in the middle of a wide street. ¥"I wonder just how long I have been here like this?¥""); // 0x6b2: 0000100c
 HandleInput(); // 0x6b8: 00000010
 ShowText((5028)"After waiting for the nerves throughout her body to return to normal Cybil lumbered to her feet. Her body was sluggish, like when she wakes up, and she was unable to think straight."); // 0x6bc: 0000100c
 HandleInput(); // 0x6c2: 00000010
-OP_0x64(); // 0x6c6: 00000064
+CleanScreen(); // 0x6c6: 00000064
 LoadBackground(0xf0); // 0x6ca: 00001069
 LoadEffect(0xe, 0x1, 0x0); // 0x6d0: 0000306d
 OP_0x65(); // 0x6da: 00000065
@@ -405,40 +405,40 @@ ShowText((5030)"With nothing else to do, she decided to rest in the cafe facing 
 HandleInput(); // 0x6ee: 00000010
 Jump(L_0x6f8); // 0x6f2: 00001001
 L_0x6f8:
-OP_0x62(0x141, 0x335); // 0x6f8: 00002062
-OP_0x26(0x3); // 0x700: 00001026
+TitleAndSubtitle(0x141, 0x335); // 0x6f8: 00002062
+Area(0x3); // 0x700: 00001026
 OP_0x2c(0x3, 0x1); // 0x706: 0000202c
-OP_0x64(); // 0x70e: 00000064
+CleanScreen(); // 0x70e: 00000064
 LoadBackground(0x1cc); // 0x712: 00001069
 OP_0x65(); // 0x718: 00000065
-OP_0x6e(0xd, 0x1, 0x0); // 0x71c: 0000306e
-OP_0x73(0xc); // 0x726: 00001073
+LoadSecondEffect(0xd, 0x1, 0x0); // 0x71c: 0000306e
+PlaySecondSoundFx(0xc); // 0x726: 00001073
 ShowText((5031)"The inside of the cafe is dead silent. She does not see any customers or employees. This destroys her hopes of getting something warm to drink, so she lets out a sigh."); // 0x72c: 0000100c
 HandleInput(); // 0x732: 00000010
-OP_0x73(0x18); // 0x736: 00001073
+PlaySecondSoundFx(0x18); // 0x736: 00001073
 ShowText((5032)"¥"First I must get in contact with the other officers back in Brahms.¥" Cybil picks up the receiver from the phone on the corner of the counter, but not a single sound can be heard from the speaker."); // 0x73c: 0000100c
 HandleInput(); // 0x742: 00000010
 ShowText((5033)"It seems like somehow the heavy snowfall, which could be called abnormal weather, has damaged the communication systems. There is no doubt that this is the reason why the call got cut off at the (Brahms) station."); // 0x746: 0000100c
 HandleInput(); // 0x74c: 00000010
 ShowText((5034)"Cybil looks around the inside of the cafe. ¥"Ah...¥" She gasps without thinking about it."); // 0x750: 0000100c
 HandleInput(); // 0x756: 00000010
-OP_0x64(); // 0x75a: 00000064
+CleanScreen(); // 0x75a: 00000064
 LoadBackground(0xf1); // 0x75e: 00001069
 OP_0x65(); // 0x764: 00000065
-OP_0x6e(0xd, 0x1, 0x0); // 0x768: 0000306e
-OP_0x6c(0x65); // 0x772: 0000106c
+LoadSecondEffect(0xd, 0x1, 0x0); // 0x768: 0000306e
+PlayMusic(0x65); // 0x772: 0000106c
 ShowText((5035)"She can see a man lying down on one of the long bench seats lined up along the windows. ¥"A customer? No, this place isn't open.¥" She moves near him and looks down at his sleeping face. His face is twisting in agony, as if he is having a frightening dream."); // 0x778: 0000100c
 HandleInput(); // 0x77e: 00000010
 Jump(L_0x788); // 0x782: 00001001
 L_0x788:
-OP_0x62(0x142, 0x336); // 0x788: 00002062
-OP_0x26(0x4); // 0x790: 00001026
-OP_0x64(); // 0x796: 00000064
+TitleAndSubtitle(0x142, 0x336); // 0x788: 00002062
+Area(0x4); // 0x790: 00001026
+CleanScreen(); // 0x796: 00000064
 LoadBackground(0xf1); // 0x79a: 00001069
 LoadEffect(0xd, 0x1, 0x0, 0x2); // 0x7a0: 0000406d
 OP_0x65(); // 0x7ac: 00000065
-OP_0x6e(0xd, 0x1, 0x0, 0x1); // 0x7b0: 0000406e
-OP_0x6c(0x65, 0x1); // 0x7bc: 0000206c
+LoadSecondEffect(0xd, 0x1, 0x0, 0x1); // 0x7b0: 0000406e
+PlayMusic(0x65, 0x1); // 0x7bc: 0000206c
 Choice((500)"Cybil hesitates.", (501)"A ) She waits for the man to wake up.", (502)"B ) She wakes the man up."); // 0x7c4: 00003011
 Branch4(0x23f, L_0x7da); // 0x7ce: 00001004
 Jump(L_0x7ee); // 0x7d4: 00001001
@@ -449,27 +449,27 @@ Jump(L_0xa30); // 0x7e4: 00001001
 L_0x7ea:
 Nop7(); // 0x7ea: 00000007
 L_0x7ee:
-OP_0x62(0x143, 0x337); // 0x7ee: 00002062
-OP_0x26(0x5); // 0x7f6: 00001026
-OP_0x64(); // 0x7fc: 00000064
+TitleAndSubtitle(0x143, 0x337); // 0x7ee: 00002062
+Area(0x5); // 0x7f6: 00001026
+CleanScreen(); // 0x7fc: 00000064
 LoadBackground(0xf1); // 0x800: 00001069
 LoadEffect(0xd, 0x1, 0x0, 0x2); // 0x806: 0000406d
 OP_0x65(); // 0x812: 00000065
-OP_0x6e(0xd, 0x1, 0x0, 0x1); // 0x816: 0000406e
-OP_0x6c(0x65, 0x1); // 0x822: 0000206c
+LoadSecondEffect(0xd, 0x1, 0x0, 0x1); // 0x816: 0000406e
+PlayMusic(0x65, 0x1); // 0x822: 0000206c
 ShowText((5036)"Cybil was relieved to know that she was not the only person in the town. She sat down at the counter and waited for the man to awaken."); // 0x82a: 0000100c
 HandleInput(); // 0x830: 00000010
 ShowText((5037)"After a bit Cybil thought that the man's breathing had become troubled. As she thought this he forcefully sat up."); // 0x834: 0000100c
 HandleInput(); // 0x83a: 00000010
-OP_0x64(); // 0x83e: 00000064
+CleanScreen(); // 0x83e: 00000064
 LoadBackground(0x0); // 0x842: 00001069
 OP_0x65(); // 0x848: 00000065
 ShowMovie(0x1); // 0x84c: 0000100d
-OP_0x64(); // 0x852: 00000064
+CleanScreen(); // 0x852: 00000064
 LoadBackground(0x1cc); // 0x856: 00001069
 OP_0x65(); // 0x85c: 00000065
-OP_0x6e(0xd, 0x1, 0x0); // 0x860: 0000306e
-OP_0x6e(0x5f, 0x2, 0x1); // 0x86a: 0000306e
+LoadSecondEffect(0xd, 0x1, 0x0); // 0x860: 0000306e
+LoadSecondEffect(0x5f, 0x2, 0x1); // 0x86a: 0000306e
 ShowText((5038)"Cybil moved over to the man until she was able to look down at him and then folded her arms. She was relieved. That was how she honestly felt."); // 0x874: 0000100c
 HandleInput(); // 0x87a: 00000010
 ShowText((5039)"¥"It looks like you have come around.¥" ¥"Who are you?¥" The man asked this while heavily shaking his head."); // 0x87e: 0000100c
@@ -480,16 +480,16 @@ ShowText((5041)"¥"I'm...Harry Mason. I brought my daughter to this town for som
 HandleInput(); // 0x898: 00000010
 Jump(L_0x8a2); // 0x89c: 00001001
 L_0x8a2:
-OP_0x62(0x144, 0x338); // 0x8a2: 00002062
-OP_0x26(0x6); // 0x8aa: 00001026
-OP_0x64(); // 0x8b0: 00000064
+TitleAndSubtitle(0x144, 0x338); // 0x8a2: 00002062
+Area(0x6); // 0x8aa: 00001026
+CleanScreen(); // 0x8b0: 00000064
 LoadBackground(0x1cc); // 0x8b4: 00001069
 LoadEffect(0xd, 0x1, 0x0, 0x2); // 0x8ba: 0000406d
 LoadEffect(0x5f, 0x2, 0x1, 0x2); // 0x8c6: 0000406d
 OP_0x65(); // 0x8d2: 00000065
-OP_0x6e(0xd, 0x1, 0x0, 0x1); // 0x8d6: 0000406e
-OP_0x6c(0x65, 0x1); // 0x8e2: 0000206c
-OP_0x6e(0x5f, 0x1, 0x1); // 0x8ea: 0000306e
+LoadSecondEffect(0xd, 0x1, 0x0, 0x1); // 0x8d6: 0000406e
+PlayMusic(0x65, 0x1); // 0x8e2: 0000206c
+LoadSecondEffect(0x5f, 0x1, 0x1); // 0x8ea: 0000306e
 ShowText((5042)"For a moment Cybil could not hide her astonishment, but then because of her profession she quickly feigned a more resolute attitude."); // 0x8f4: 0000100c
 HandleInput(); // 0x8fa: 00000010
 ShowText((5043)"¥"A little girl... No, I haven't seen her...¥" ¥"When I came to after the accident my daughter was nowhere to be seen. The passenger door was open and she was gone."); // 0x8fe: 0000100c
@@ -500,7 +500,7 @@ ShowText((5045)"Are you familiar with this area? There is no sign of anyone, and
 HandleInput(); // 0x918: 00000010
 ShowText((5046)"¥"I'm afraid I don't know either. I still haven't seen anyone other than you. It's like the town is as silent as a graveyard, left without even the means to contact any neighboring towns.¥" ¥"I see.¥""); // 0x91c: 0000100c
 HandleInput(); // 0x922: 00000010
-OP_0x6e(0x5f, 0x2, 0x1); // 0x926: 0000306e
+LoadSecondEffect(0x5f, 0x2, 0x1); // 0x926: 0000306e
 ShowText((5047)"¥"So you also had an accident? I thought it was a good idea to head to the police station in this town alone on my motorcycle, but... I guess I was going a little too fast."); // 0x930: 0000100c
 HandleInput(); // 0x936: 00000010
 ShowText((5048)"A girl suddenly jumped out into the road...I am pretty sure it was a girl...I almost hit her. I cut the handlebars hard in order to avoid her... After that I can barely remember anything..."); // 0x93a: 0000100c
@@ -513,20 +513,20 @@ ShowText((5051)"¥"Well, the situation is definitely strange. I will head back t
 HandleInput(); // 0x95e: 00000010
 Jump(L_0x968); // 0x962: 00001001
 L_0x968:
-OP_0x62(0x145, 0x339); // 0x968: 00002062
-OP_0x26(0x7); // 0x970: 00001026
-OP_0x64(); // 0x976: 00000064
+TitleAndSubtitle(0x145, 0x339); // 0x968: 00002062
+Area(0x7); // 0x970: 00001026
+CleanScreen(); // 0x976: 00000064
 LoadBackground(0x1cc); // 0x97a: 00001069
 LoadEffect(0xd, 0x1, 0x0, 0x2); // 0x980: 0000406d
 LoadEffect(0x5f, 0x2, 0x1, 0x2); // 0x98c: 0000406d
 OP_0x65(); // 0x998: 00000065
-OP_0x6e(0xd, 0x1, 0x0, 0x1); // 0x99c: 0000406e
-OP_0x6c(0x65, 0x1); // 0x9a8: 0000206c
-OP_0x6e(0x5f, 0x2, 0x1, 0x1); // 0x9b0: 0000406e
+LoadSecondEffect(0xd, 0x1, 0x0, 0x1); // 0x99c: 0000406e
+PlayMusic(0x65, 0x1); // 0x9a8: 0000206c
+LoadSecondEffect(0x5f, 0x2, 0x1, 0x1); // 0x9b0: 0000406e
 ShowText((5052)"¥"I've got to look for Cheryl... There is no way I can just leave her here alone.¥""); // 0x9bc: 0000100c
 HandleInput(); // 0x9c2: 00000010
-OP_0x6e(0x0, 0x0, 0x1); // 0x9c6: 0000306e
-OP_0x64(); // 0x9d0: 00000064
+LoadSecondEffect(0x0, 0x0, 0x1); // 0x9c6: 0000306e
+CleanScreen(); // 0x9d0: 00000064
 LoadBackground(0x18); // 0x9d4: 00001069
 LoadEffect(0x0, 0x0, 0x0); // 0x9da: 0000306d
 OP_0x65(); // 0x9e4: 00000065
@@ -542,35 +542,35 @@ ShowText((5057)"¥"Harry. Don't go shooting me by mistake or anything. I haven't
 HandleInput(); // 0xa16: 00000010
 ShowText((5058)"She smiled after saying this, opened the door of the cafe, and then headed out into the thick fog."); // 0xa1a: 0000100c
 HandleInput(); // 0xa20: 00000010
-OP_0x73(0xc); // 0xa24: 00001073
+PlaySecondSoundFx(0xc); // 0xa24: 00001073
 Jump(L_0xb2e); // 0xa2a: 00001001
 L_0xa30:
-OP_0x62(0x146, 0x33a); // 0xa30: 00002062
-OP_0x26(0x8); // 0xa38: 00001026
-OP_0x64(); // 0xa3e: 00000064
+TitleAndSubtitle(0x146, 0x33a); // 0xa30: 00002062
+Area(0x8); // 0xa38: 00001026
+CleanScreen(); // 0xa3e: 00000064
 LoadBackground(0xf1); // 0xa42: 00001069
 LoadEffect(0xd, 0x1, 0x0, 0x2); // 0xa48: 0000406d
 OP_0x65(); // 0xa54: 00000065
-OP_0x6e(0xd, 0x1, 0x0, 0x1); // 0xa58: 0000406e
-OP_0x6c(0x65, 0x1); // 0xa64: 0000206c
+LoadSecondEffect(0xd, 0x1, 0x0, 0x1); // 0xa58: 0000406e
+PlayMusic(0x65, 0x1); // 0xa64: 0000206c
 ShowText((7001)"Cybil approaches the man and holds her arms out in a way that suggests that she is going to shake his shoulders."); // 0xa6c: 0000100c
 HandleInput(); // 0xa72: 00000010
-OP_0x64(); // 0xa76: 00000064
+CleanScreen(); // 0xa76: 00000064
 LoadBackground(0x0); // 0xa7a: 00001069
 OP_0x65(); // 0xa80: 00000065
 ShowMovie(0x1); // 0xa84: 0000100d
-OP_0x64(); // 0xa8a: 00000064
+CleanScreen(); // 0xa8a: 00000064
 LoadBackground(0x0); // 0xa8e: 00001069
 OP_0x65(); // 0xa94: 00000065
 OP_0x34(); // 0xa98: 00000034
 ShowText((7002)"At that moment the man woke up with a look of surprise on his face. He shook his body in a way to brush Cybil's hands away, and then stared at her."); // 0xa9c: 0000100c
 HandleInput(); // 0xaa2: 00000010
-OP_0x73(0x25); // 0xaa6: 00001073
-OP_0x64(); // 0xaac: 00000064
+PlaySecondSoundFx(0x25); // 0xaa6: 00001073
+CleanScreen(); // 0xaac: 00000064
 LoadBackground(0x1cc); // 0xab0: 00001069
 OP_0x65(); // 0xab6: 00000065
-OP_0x6e(0xd, 0x1, 0x0); // 0xaba: 0000306e
-OP_0x6e(0x5f, 0x2, 0x1); // 0xac4: 0000306e
+LoadSecondEffect(0xd, 0x1, 0x0); // 0xaba: 0000306e
+LoadSecondEffect(0x5f, 0x2, 0x1); // 0xac4: 0000306e
 ShowText((7003)"¥"Human? Are you human?¥" Cybil makes an effort to compose herself and then sits down on a nearby chair. ¥"Of course I am. Were you having a bad dream or something?¥""); // 0xace: 0000100c
 HandleInput(); // 0xad4: 00000010
 ShowText((7004)"The man finally regains his composure as well, and then he adjusts his position on the bench seat. ¥"...Sorry. I was attacked by mysterious monsters before I came here.¥" ¥"Mysterious... monsters?¥""); // 0xad8: 0000100c
@@ -591,21 +591,21 @@ ShowText((7011)"Harry stands up and glances at the out of season snow that conti
 HandleInput(); // 0xb24: 00000010
 Jump(L_0x968); // 0xb28: 00001001
 L_0xb2e:
-OP_0x62(0x147, 0x33b); // 0xb2e: 00002062
-OP_0x26(0x9); // 0xb36: 00001026
-OP_0x25(); // 0xb3c: 00000025
-OP_0x64(); // 0xb40: 00000064
+TitleAndSubtitle(0x147, 0x33b); // 0xb2e: 00002062
+Area(0x9); // 0xb36: 00001026
+CleanTextRecord(); // 0xb3c: 00000025
+CleanScreen(); // 0xb40: 00000064
 LoadBackground(0x104); // 0xb44: 00001069
 LoadEffect(0xe, 0x1, 0x0); // 0xb4a: 0000306d
 OP_0x65(); // 0xb54: 00000065
-OP_0x6c(0x68); // 0xb58: 0000106c
+PlayMusic(0x68); // 0xb58: 0000106c
 ShowText((5059)"Cybil looks back and sees that the cafe has disappeared into the fog. Having lost her motorcycle, Cybil can only wander about on foot and alone in the eerie town."); // 0xb5e: 0000100c
 HandleInput(); // 0xb64: 00000010
 ShowText((5060)"¥"It's too quiet. There is no sense of anyone at all. I would like to hail a taxi or something, but there is not a single car running.¥""); // 0xb68: 0000100c
 HandleInput(); // 0xb6e: 00000010
 ShowText((5061)"At some point Cybil had began to run. Above all she must get out of Silent Hill. However, after running for a bit Cybil's hopes were crushed."); // 0xb72: 0000100c
 HandleInput(); // 0xb78: 00000010
-OP_0x64(); // 0xb7c: 00000064
+CleanScreen(); // 0xb7c: 00000064
 LoadBackground(0x105); // 0xb80: 00001069
 LoadEffect(0xe, 0x1, 0x0); // 0xb86: 0000306d
 OP_0x65(); // 0xb90: 00000065
@@ -621,30 +621,30 @@ ShowText((5066)"It was not long before a black, wriggling object appeared in her
 HandleInput(); // 0xbc2: 00000010
 Jump(L_0xbcc); // 0xbc6: 00001001
 L_0xbcc:
-OP_0x62(0x148, 0x33c); // 0xbcc: 00002062
-OP_0x26(0xa); // 0xbd4: 00001026
-OP_0x6e(0x0, 0x0, 0x1); // 0xbda: 0000306e
-OP_0x64(); // 0xbe4: 00000064
+TitleAndSubtitle(0x148, 0x33c); // 0xbcc: 00002062
+Area(0xa); // 0xbd4: 00001026
+LoadSecondEffect(0x0, 0x0, 0x1); // 0xbda: 0000306e
+CleanScreen(); // 0xbe4: 00000064
 LoadBackground(0x107); // 0xbe8: 00001069
 LoadEffect(0xe, 0x1, 0x0); // 0xbee: 0000306d
 OP_0x65(); // 0xbf8: 00000065
-OP_0x6c(0x66); // 0xbfc: 0000106c
-OP_0x6e(0x42, 0x1, 0x1); // 0xc02: 0000306e
+PlayMusic(0x66); // 0xbfc: 0000106c
+LoadSecondEffect(0x42, 0x1, 0x1); // 0xc02: 0000306e
 ShowText((5067)"¥"What... is that?¥" From off in the fog, the four-legged thing moved at a slow pace as it gradually closed the distance between it and her."); // 0xc0c: 0000100c
 HandleInput(); // 0xc12: 00000010
 ShowText((5068)"And then as soon as it detected Cybil it began to ferociously run toward her, scattering the fog as it moved."); // 0xc16: 0000100c
 HandleInput(); // 0xc1c: 00000010
 Jump(L_0xc26); // 0xc20: 00001001
 L_0xc26:
-OP_0x62(0x149, 0x33d); // 0xc26: 00002062
-OP_0x26(0xb); // 0xc2e: 00001026
-OP_0x64(); // 0xc34: 00000064
+TitleAndSubtitle(0x149, 0x33d); // 0xc26: 00002062
+Area(0xb); // 0xc2e: 00001026
+CleanScreen(); // 0xc34: 00000064
 LoadBackground(0x107); // 0xc38: 00001069
 LoadEffect(0xe, 0x1, 0x0, 0x1); // 0xc3e: 0000406d
 LoadEffect(0x42, 0x1, 0x1, 0x2); // 0xc4a: 0000406d
 OP_0x65(); // 0xc56: 00000065
-OP_0x6c(0x66, 0x1); // 0xc5a: 0000206c
-OP_0x6e(0x42, 0x1, 0x1, 0x1); // 0xc62: 0000406e
+PlayMusic(0x66, 0x1); // 0xc5a: 0000206c
+LoadSecondEffect(0x42, 0x1, 0x1, 0x1); // 0xc62: 0000406e
 Choice((510)"The monster...", (511)"A ) attacked Cybil.", (512)"B ) just ran away."); // 0xc6e: 00003011
 Branch4(0x24d, L_0xc84); // 0xc78: 00001004
 Jump(L_0xc98); // 0xc7e: 00001001
@@ -655,55 +655,55 @@ Jump(L_0xd74); // 0xc8e: 00001001
 L_0xc94:
 Nop7(); // 0xc94: 00000007
 L_0xc98:
-OP_0x62(0x14a, 0x33e); // 0xc98: 00002062
-OP_0x26(0xc); // 0xca0: 00001026
-OP_0x64(); // 0xca6: 00000064
+TitleAndSubtitle(0x14a, 0x33e); // 0xc98: 00002062
+Area(0xc); // 0xca0: 00001026
+CleanScreen(); // 0xca6: 00000064
 LoadBackground(0x106); // 0xcaa: 00001069
 LoadEffect(0x42, 0x0, 0x1); // 0xcb0: 0000306d
 OP_0x65(); // 0xcba: 00000065
-OP_0x6c(0x66, 0x1); // 0xcbe: 0000206c
-OP_0x6e(0x42, 0x3, 0x1); // 0xcc6: 0000306e
-OP_0x73(0x25); // 0xcd0: 00001073
-OP_0x6e(0x0, 0x0, 0x1); // 0xcd6: 0000306e
-OP_0x6e(0x0, 0x0, 0x0); // 0xce0: 0000306e
+PlayMusic(0x66, 0x1); // 0xcbe: 0000206c
+LoadSecondEffect(0x42, 0x3, 0x1); // 0xcc6: 0000306e
+PlaySecondSoundFx(0x25); // 0xcd0: 00001073
+LoadSecondEffect(0x0, 0x0, 0x1); // 0xcd6: 0000306e
+LoadSecondEffect(0x0, 0x0, 0x0); // 0xce0: 0000306e
 ShowText((5070)"¥"KYA!¥" Cybil just manages to duck in time and the fierce monster passes over her head. It continues forward just a little bit, and then turns around. It is clear that it is coming after Cybil."); // 0xcea: 0000100c
 HandleInput(); // 0xcf0: 00000010
 ShowText((5071)"Cybil places her hand on her belt to draw her handgun. She utters, ¥"Oh!¥" She had just given her handgun to Harry not long ago. She went pale."); // 0xcf4: 0000100c
 HandleInput(); // 0xcfa: 00000010
 ShowText((5072)"Cybil forcefully stands up and begins to run with all her strength. The sound of the monster's footsteps and its panting close in on her as it persistently chases her from behind."); // 0xcfe: 0000100c
 HandleInput(); // 0xd04: 00000010
-OP_0x64(); // 0xd08: 00000064
+CleanScreen(); // 0xd08: 00000064
 LoadBackground(0x104); // 0xd0c: 00001069
 LoadEffect(0xe, 0x1, 0x0); // 0xd12: 0000306d
 OP_0x65(); // 0xd1c: 00000065
-OP_0x73(0x9); // 0xd20: 00001073
+PlaySecondSoundFx(0x9); // 0xd20: 00001073
 ShowText((5073)"She stomps on the pavement as she moves forward. In the corner of her eye Cybil sees buildings appear out of and disappear into the fog, and at some point she ends up losing her bearings and becomes unsure of her location. She then notices that she no longer senses the presence of the monster."); // 0xd26: 0000100c
 HandleInput(); // 0xd2c: 00000010
 Jump(L_0xd36); // 0xd30: 00001001
 L_0xd36:
-OP_0x62(0x14b, 0x33f); // 0xd36: 00002062
-OP_0x26(0xd); // 0xd3e: 00001026
-OP_0x64(); // 0xd44: 00000064
+TitleAndSubtitle(0x14b, 0x33f); // 0xd36: 00002062
+Area(0xd); // 0xd3e: 00001026
+CleanScreen(); // 0xd44: 00000064
 LoadBackground(0x43); // 0xd48: 00001069
 LoadEffect(0xe, 0x1, 0x0); // 0xd4e: 0000306d
 OP_0x65(); // 0xd58: 00000065
-OP_0x6c(0x66, 0x1); // 0xd5c: 0000206c
+PlayMusic(0x66, 0x1); // 0xd5c: 0000206c
 ShowText((5074)"She stops and leans against an antique lamppost and presses on her chest. She waits as the time between her continuous white breaths gradually increases, and then begins walking again."); // 0xd64: 0000100c
 HandleInput(); // 0xd6a: 00000010
 Jump(L_0x46b6); // 0xd6e: 00001001
 L_0xd74:
-OP_0x62(0x14c, 0x340); // 0xd74: 00002062
-OP_0x26(0xe); // 0xd7c: 00001026
-OP_0x64(); // 0xd82: 00000064
+TitleAndSubtitle(0x14c, 0x340); // 0xd74: 00002062
+Area(0xe); // 0xd7c: 00001026
+CleanScreen(); // 0xd82: 00000064
 LoadBackground(0x107); // 0xd86: 00001069
 LoadEffect(0xe, 0x1, 0x0, 0x1); // 0xd8c: 0000406d
 LoadEffect(0x42, 0x1, 0x1, 0x2); // 0xd98: 0000406d
 OP_0x65(); // 0xda4: 00000065
-OP_0x6c(0x66, 0x1); // 0xda8: 0000206c
-OP_0x6e(0x42, 0x1, 0x1, 0x1); // 0xdb0: 0000406e
-OP_0x6e(0x42, 0x2, 0x1); // 0xdbc: 0000306e
-OP_0x6e(0x42, 0x0, 0x1); // 0xdc6: 0000306e
-OP_0x6e(0x0, 0x0, 0x1); // 0xdd0: 0000306e
+PlayMusic(0x66, 0x1); // 0xda8: 0000206c
+LoadSecondEffect(0x42, 0x1, 0x1, 0x1); // 0xdb0: 0000406e
+LoadSecondEffect(0x42, 0x2, 0x1); // 0xdbc: 0000306e
+LoadSecondEffect(0x42, 0x0, 0x1); // 0xdc6: 0000306e
+LoadSecondEffect(0x0, 0x0, 0x1); // 0xdd0: 0000306e
 ShowText((7012)"The monster just moves right past Cybil, and then continues away from her. ¥"Clearly... Clearly it is headed somewhere with some purpose.¥""); // 0xdda: 0000100c
 HandleInput(); // 0xde0: 00000010
 ShowText((7013)"Various concerns run through the back of Cybil's mind. Instinctively, she begins to chase after the monster."); // 0xde4: 0000100c
@@ -714,34 +714,34 @@ ShowText((7015)"Cybil continues to run for a while, but ends up completely losin
 HandleInput(); // 0xdfe: 00000010
 Jump(L_0xd36); // 0xe02: 00001001
 L_0xe08:
-OP_0x62(0x14d, 0x341); // 0xe08: 00002062
-OP_0x26(0xf); // 0xe10: 00001026
-OP_0x25(); // 0xe16: 00000025
+TitleAndSubtitle(0x14d, 0x341); // 0xe08: 00002062
+Area(0xf); // 0xe10: 00001026
+CleanTextRecord(); // 0xe16: 00000025
 OP_0x2c(0x3, 0x2); // 0xe1a: 0000202c
-OP_0x1f(0x3c); // 0xe22: 0000101f
-OP_0x64(); // 0xe28: 00000064
+PlaySecondSoundFx(0x3c); // 0xe22: 0000101f
+CleanScreen(); // 0xe28: 00000064
 LoadBackground(0x43); // 0xe2c: 00001069
 LoadEffect(0xe, 0x1, 0x0, 0x1); // 0xe32: 0000406d
 OP_0x65(); // 0xe3e: 00000065
-OP_0x6c(0x68); // 0xe42: 0000106c
+PlayMusic(0x68); // 0xe42: 0000106c
 ShowText((5075)"Being unable to escape from Silent Hill, Cybil then worried about what she should do next. Since all the people have vanished she cannot even talk to anyone about what is happening here."); // 0xe48: 0000100c
 HandleInput(); // 0xe4e: 00000010
 ShowText((5076)"¥"I should look for the police station. Even if the person I was talking on the phone with earlier isn't there, I might be able to get some other information there.¥" She has visited this town many times. Following the thread of her memory, she begins walking along the complicated intersecting streets."); // 0xe52: 0000100c
 HandleInput(); // 0xe58: 00000010
 Jump(L_0xe62); // 0xe5c: 00001001
 L_0xe62:
-OP_0x62(0x14e, 0x342); // 0xe62: 00002062
-OP_0x26(0x10); // 0xe6a: 00001026
-OP_0x64(); // 0xe70: 00000064
+TitleAndSubtitle(0x14e, 0x342); // 0xe62: 00002062
+Area(0x10); // 0xe6a: 00001026
+CleanScreen(); // 0xe70: 00000064
 LoadBackground(0x118); // 0xe74: 00001069
 LoadEffect(0xe, 0x1, 0x0); // 0xe7a: 0000306d
 OP_0x65(); // 0xe84: 00000065
-OP_0x6c(0x68, 0x1); // 0xe88: 0000206c
+PlayMusic(0x68, 0x1); // 0xe88: 0000206c
 ShowText((5077)"¥"Just how long have I been walking?¥" As she saw the word ¥"POLICE¥" appear from out of the fog, her entire body was completely exhausted."); // 0xe90: 0000100c
 HandleInput(); // 0xe96: 00000010
 OP_0x29(); // 0xe9a: 00000029
-OP_0x73(0xc); // 0xe9e: 00001073
-OP_0x64(); // 0xea4: 00000064
+PlaySecondSoundFx(0xc); // 0xe9e: 00001073
+CleanScreen(); // 0xea4: 00000064
 LoadBackground(0x119); // 0xea8: 00001069
 LoadEffect(0x0, 0x0, 0x0); // 0xeae: 0000306d
 OP_0x65(); // 0xeb8: 00000065
@@ -753,12 +753,12 @@ ShowText((5080)"Compared to the same room at the Brahms station, this one is qui
 HandleInput(); // 0xed6: 00000010
 Jump(L_0xee0); // 0xeda: 00001001
 L_0xee0:
-OP_0x62(0x14f, 0x343); // 0xee0: 00002062
-OP_0x26(0x11); // 0xee8: 00001026
-OP_0x64(); // 0xeee: 00000064
+TitleAndSubtitle(0x14f, 0x343); // 0xee0: 00002062
+Area(0x11); // 0xee8: 00001026
+CleanScreen(); // 0xeee: 00000064
 LoadBackground(0x119); // 0xef2: 00001069
 OP_0x65(); // 0xef8: 00000065
-OP_0x6c(0x67); // 0xefc: 0000106c
+PlayMusic(0x67); // 0xefc: 0000106c
 Choice((520)"¥"Ah......¥"", (521)"A ) The phone is off the hook...", (522)"B ) Someone is here..."); // 0xf02: 00003011
 Branch4(0x25b, L_0xf18); // 0xf0c: 00001004
 Jump(L_0xf2c); // 0xf12: 00001001
@@ -769,19 +769,19 @@ Jump(L_0x109c); // 0xf22: 00001001
 L_0xf28:
 Nop7(); // 0xf28: 00000007
 L_0xf2c:
-OP_0x62(0x150, 0x344); // 0xf2c: 00002062
-OP_0x26(0x12); // 0xf34: 00001026
-OP_0x64(); // 0xf3a: 00000064
+TitleAndSubtitle(0x150, 0x344); // 0xf2c: 00002062
+Area(0x12); // 0xf34: 00001026
+CleanScreen(); // 0xf3a: 00000064
 LoadBackground(0x119); // 0xf3e: 00001069
 OP_0x65(); // 0xf44: 00000065
-OP_0x6c(0x67, 0x1); // 0xf48: 0000206c
+PlayMusic(0x67, 0x1); // 0xf48: 0000206c
 ShowText((5081)"Two long simple folding tables are lined up next to each other in this room, which is about 140 square feet in size."); // 0xf50: 0000100c
 HandleInput(); // 0xf56: 00000010
 ShowText((5082)"Folding chairs surround the tables. The disorderly state of the chairs makes the empty station seem unnatural."); // 0xf5a: 0000100c
 HandleInput(); // 0xf60: 00000010
 ShowText((5083)"A telephone is on top of the small wooden desk that has been placed in the corner of the room. The telephone receiver is dangling in the air just above the floor, as if it had fallen off. It is bouncing up and down."); // 0xf64: 0000100c
 HandleInput(); // 0xf6a: 00000010
-OP_0x73(0x18); // 0xf6e: 00001073
+PlaySecondSoundFx(0x18); // 0xf6e: 00001073
 ShowText((5084)"¥"I wonder if this the phone that I was connected to?¥" Cybil hangs the receiver up, but then picks it back up again and places it against her ear. ¥"Of course it is not working.¥""); // 0xf74: 0000100c
 HandleInput(); // 0xf7a: 00000010
 ShowText((5085)"The problem is that the police station is completely empty. Even Cybil, who had been skeptical about the condition of the town up to this point, now had to accept things as they were. She thought, ¥"Something terrible has happened here.¥""); // 0xf7e: 0000100c
@@ -789,13 +789,13 @@ HandleInput(); // 0xf84: 00000010
 ShowText((9905)"There is a phone. A scribbled memo has been placed next to it.(38*2647*)"); // 0xf88: 0000100c
 HandleInput(); // 0xf8e: 00000010
 Puzzle(0x4); // 0xf92: 00001061
-OP_0x64(); // 0xf98: 00000064
+CleanScreen(); // 0xf98: 00000064
 LoadBackground(0x0); // 0xf9c: 00001069
 OP_0x65(); // 0xfa2: 00000065
-OP_0x72(0x1d); // 0xfa6: 00001072
-OP_0x1f(0xf0); // 0xfac: 0000101f
+PlaySoundFx(0x1d); // 0xfa6: 00001072
+PlaySecondSoundFx(0xf0); // 0xfac: 0000101f
 OP_0x29(); // 0xfb2: 00000029
-OP_0x73(0x18); // 0xfb6: 00001073
+PlaySecondSoundFx(0x18); // 0xfb6: 00001073
 ShowText((9906)"¥"...Da......¥""); // 0xfbc: 0000100c
 HandleInput(); // 0xfc2: 00000010
 ShowText((9907)"Cybil hastily repositioned the telephone receiver."); // 0xfc6: 0000100c
@@ -808,23 +808,23 @@ ShowText((9910)"¥"...Da......help me...¥" The voice is muddled, so Cybil canno
 HandleInput(); // 0xfea: 00000010
 ShowText((9911)"¥"...the...in the......elementary school......¥""); // 0xfee: 0000100c
 HandleInput(); // 0xff4: 00000010
-OP_0x72(0x16); // 0xff8: 00001072
+PlaySoundFx(0x16); // 0xff8: 00001072
 ShowText((9912)"The phone went dead."); // 0xffe: 0000100c
 HandleInput(); // 0x1004: 00000010
 OP_0x29(); // 0x1008: 00000029
-OP_0x73(0x18); // 0x100c: 00001073
+PlaySecondSoundFx(0x18); // 0x100c: 00001073
 Jump(L_0x1018); // 0x1012: 00001001
 L_0x1018:
-OP_0x62(0x151, 0x345); // 0x1018: 00002062
-OP_0x26(0x13); // 0x1020: 00001026
-OP_0x64(); // 0x1026: 00000064
+TitleAndSubtitle(0x151, 0x345); // 0x1018: 00002062
+Area(0x13); // 0x1020: 00001026
+CleanScreen(); // 0x1026: 00000064
 LoadBackground(0x0); // 0x102a: 00001069
 OP_0x65(); // 0x1030: 00000065
-OP_0x1f(0x78); // 0x1034: 0000101f
-OP_0x73(0xc); // 0x103a: 00001073
+PlaySecondSoundFx(0x78); // 0x1034: 0000101f
+PlaySecondSoundFx(0xc); // 0x103a: 00001073
 ShowText((5086)"¥"What was that all about?¥" Cybil left the police station. Cybil is once again in the city streets where the snow is falling. ¥"That's right...¥" Cybil recalled her conversation with Harry."); // 0x1040: 0000100c
 HandleInput(); // 0x1046: 00000010
-OP_0x64(); // 0x104a: 00000064
+CleanScreen(); // 0x104a: 00000064
 LoadBackground(0x11a); // 0x104e: 00001069
 OP_0x65(); // 0x1054: 00000065
 ShowText((5087)"(Oh, yeah, Cybil... You haven't seen a little girl in this town have you?)"); // 0x1058: 0000100c
@@ -835,18 +835,18 @@ ShowText((5089)"But Cybil is a police officer. To find and protect Cheryl is her
 HandleInput(); // 0x1072: 00000010
 ShowText((5090)"Realizing this Cybil could not sit still, and in the next moment she was gone."); // 0x1076: 0000100c
 HandleInput(); // 0x107c: 00000010
-OP_0x64(); // 0x1080: 00000064
+CleanScreen(); // 0x1080: 00000064
 LoadBackground(0x0); // 0x1084: 00001069
 OP_0x65(); // 0x108a: 00000065
 OP_0x2c(0x3, 0x2); // 0x108e: 0000202c
 Jump(L_0x10ee); // 0x1096: 00001001
 L_0x109c:
-OP_0x62(0x152, 0x346); // 0x109c: 00002062
-OP_0x26(0x14); // 0x10a4: 00001026
-OP_0x64(); // 0x10aa: 00000064
+TitleAndSubtitle(0x152, 0x346); // 0x109c: 00002062
+Area(0x14); // 0x10a4: 00001026
+CleanScreen(); // 0x10aa: 00000064
 LoadBackground(0x119); // 0x10ae: 00001069
 OP_0x65(); // 0x10b4: 00000065
-OP_0x6c(0x67, 0x1); // 0x10b8: 0000206c
+PlayMusic(0x67, 0x1); // 0x10b8: 0000206c
 ShowText((7016)"Cybil senses someone... Somewhere in this small room..."); // 0x10c0: 0000100c
 HandleInput(); // 0x10c6: 00000010
 ShowText((7017)"Underneath the lined up tables... Behind the folding chairs... Cybil cautiously checked all the places that someone could hide in, but... It does not appear that anyone is here."); // 0x10ca: 0000100c
@@ -857,10 +857,10 @@ ShowText((7019)"She is uneasy. She wants to talk to someone, to anyone. These fe
 HandleInput(); // 0x10e4: 00000010
 Jump(L_0x1018); // 0x10e8: 00001001
 L_0x10ee:
-OP_0x62(0x153, 0x347); // 0x10ee: 00002062
-OP_0x26(0x15); // 0x10f6: 00001026
-OP_0x25(); // 0x10fc: 00000025
-OP_0x64(); // 0x1100: 00000064
+TitleAndSubtitle(0x153, 0x347); // 0x10ee: 00002062
+Area(0x15); // 0x10f6: 00001026
+CleanTextRecord(); // 0x10fc: 00000025
+CleanScreen(); // 0x1100: 00000064
 LoadBackground(0x0); // 0x1104: 00001069
 OP_0x65(); // 0x110a: 00000065
 ShowText((5091)"¥"There should be an elementary school on the edge of town.¥" Cybil followed her intuition and decided that Cheryl probably headed for the school after wandering around town."); // 0x110e: 0000100c
@@ -869,40 +869,40 @@ ShowText((5092)"Per her training in child psychology, she has learned that if a 
 HandleInput(); // 0x111e: 00000010
 ShowText((5093)"However, ahead of her all knowledge, either a bit instinctively, or due to a sense similar that to that of a memory coming back, she believed somewhere within her heart that Cheryl was probably at the elementary school."); // 0x1122: 0000100c
 HandleInput(); // 0x1128: 00000010
-OP_0x64(); // 0x112c: 00000064
+CleanScreen(); // 0x112c: 00000064
 LoadBackground(0x29); // 0x1130: 00001069
 LoadEffect(0xe, 0x1, 0x0); // 0x1136: 0000306d
 OP_0x65(); // 0x1140: 00000065
-OP_0x6c(0x69); // 0x1144: 0000106c
+PlayMusic(0x69); // 0x1144: 0000106c
 ShowText((5094)"Cybil may have been drawn here by someone. As she nears the elementary school part of her shirt becomes soaked with clammy sweat."); // 0x114a: 0000100c
 HandleInput(); // 0x1150: 00000010
 ShowText((5095)"¥"Is it really okay to go inside?¥" She asks herself this many times."); // 0x1154: 0000100c
 HandleInput(); // 0x115a: 00000010
 Jump(L_0x1164); // 0x115e: 00001001
 L_0x1164:
-OP_0x62(0x154, 0x348); // 0x1164: 00002062
-OP_0x26(0x16); // 0x116c: 00001026
-OP_0x64(); // 0x1172: 00000064
+TitleAndSubtitle(0x154, 0x348); // 0x1164: 00002062
+Area(0x16); // 0x116c: 00001026
+CleanScreen(); // 0x1172: 00000064
 LoadBackground(0x29); // 0x1176: 00001069
 LoadEffect(0xe, 0x1, 0x0, 0x1); // 0x117c: 0000406d
 OP_0x65(); // 0x1188: 00000065
-OP_0x6c(0x69, 0x1); // 0x118c: 0000206c
+PlayMusic(0x69, 0x1); // 0x118c: 0000206c
 ShowText((5096)"As she reached the edge of the school grounds her conscientious sense of duty as a police officer rose up within her along with her sense of reason, and she began to walk naturally towards the school."); // 0x1194: 0000100c
 HandleInput(); // 0x119a: 00000010
 ShowText((5097)"It is now too late for her to turn back. She readies herself, and then using both hands she pushes the door in front of her open with all her strength."); // 0x119e: 0000100c
 HandleInput(); // 0x11a4: 00000010
-OP_0x64(); // 0x11a8: 00000064
+CleanScreen(); // 0x11a8: 00000064
 LoadBackground(0x0); // 0x11ac: 00001069
 LoadEffect(0x0, 0x0, 0x0); // 0x11b2: 0000306d
 OP_0x65(); // 0x11bc: 00000065
-OP_0x73(0x14); // 0x11c0: 00001073
-OP_0x1f(0x3c); // 0x11c6: 0000101f
-OP_0x73(0x15); // 0x11cc: 00001073
+PlaySecondSoundFx(0x14); // 0x11c0: 00001073
+PlaySecondSoundFx(0x3c); // 0x11c6: 0000101f
+PlaySecondSoundFx(0x15); // 0x11cc: 00001073
 ShowText((5098)"The aged building reeked of a peculiar mildew. However, its insides were much cleaner than she had expected, and Cybil found this a bit surprising."); // 0x11d2: 0000100c
 HandleInput(); // 0x11d8: 00000010
 ShowText((5099)"Perhaps it was just the result of her enduring the cold wind for so long, but she had a terrible headache. Cybil pressed her fingers to her temples, and eventually began to walk aimlessly again."); // 0x11dc: 0000100c
 HandleInput(); // 0x11e2: 00000010
-OP_0x64(); // 0x11e6: 00000064
+CleanScreen(); // 0x11e6: 00000064
 LoadBackground(0x2a); // 0x11ea: 00001069
 OP_0x65(); // 0x11f0: 00000065
 ShowText((5100)"Cybil opened a door leading to a long hallway. She looked through the glass windows placed in the doors of the classrooms while slowly walking. There was no sign of Cheryl."); // 0x11f4: 0000100c
@@ -914,19 +914,19 @@ HandleInput(); // 0x120e: 00000010
 ShowText((5103)"We should have made plans to rendezvous somewhere...¥" Cybil thought this, but at this point nothing could be done."); // 0x1212: 0000100c
 HandleInput(); // 0x1218: 00000010
 OP_0x2c(0x3, 0x1); // 0x121c: 0000202c
-OP_0x64(); // 0x1224: 00000064
+CleanScreen(); // 0x1224: 00000064
 LoadBackground(0x0); // 0x1228: 00001069
 OP_0x65(); // 0x122e: 00000065
 ShowText((5104)"At any rate, there was her horrible headache. It is gradually getting worse, dulling her sense of time and space. A sluggishness similar to sleepiness grasps her entire body."); // 0x1232: 0000100c
 HandleInput(); // 0x1238: 00000010
 Jump(L_0x1242); // 0x123c: 00001001
 L_0x1242:
-OP_0x62(0x155, 0x349); // 0x1242: 00002062
-OP_0x26(0x17); // 0x124a: 00001026
-OP_0x64(); // 0x1250: 00000064
+TitleAndSubtitle(0x155, 0x349); // 0x1242: 00002062
+Area(0x17); // 0x124a: 00001026
+CleanScreen(); // 0x1250: 00000064
 LoadBackground(0x0); // 0x1254: 00001069
 OP_0x65(); // 0x125a: 00000065
-OP_0x6e(0x1d, 0x1, 0x0); // 0x125e: 0000306e
+LoadSecondEffect(0x1d, 0x1, 0x0); // 0x125e: 0000306e
 ShowText((5105)"¥"Perhaps I am just dreaming all of this?¥", Cybil thought. It is difficult for a person to tell whether they are dreaming or not while in a dream, but for her to accept these conditions is just as difficult."); // 0x1268: 0000100c
 HandleInput(); // 0x126e: 00000010
 ShowText((5106)"She has no memory of how she got to this town, so it seemed natural for her to think that she has been in a deep sleep since the moment of the motorcycle accident until now."); // 0x1272: 0000100c
@@ -935,15 +935,15 @@ ShowText((5107)"¥"Or possibly from even before then... From the time of the pho
 HandleInput(); // 0x1282: 00000010
 ShowText((5108)"While contemplating the many possibilities, Cybil climbed the stairs to the second floor of the school."); // 0x1286: 0000100c
 HandleInput(); // 0x128c: 00000010
-OP_0x64(); // 0x1290: 00000064
+CleanScreen(); // 0x1290: 00000064
 LoadBackground(0x0); // 0x1294: 00001069
 LoadEffect(0x0, 0x0, 0x0); // 0x129a: 0000306d
 OP_0x65(); // 0x12a4: 00000065
 Jump(L_0x12ae); // 0x12a8: 00001001
 L_0x12ae:
-OP_0x26(0x18); // 0x12ae: 00001026
-OP_0x62(0x156, 0x34a); // 0x12b4: 00002062
-OP_0x64(); // 0x12bc: 00000064
+Area(0x18); // 0x12ae: 00001026
+TitleAndSubtitle(0x156, 0x34a); // 0x12b4: 00002062
+CleanScreen(); // 0x12bc: 00000064
 LoadBackground(0x0); // 0x12c0: 00001069
 OP_0x65(); // 0x12c6: 00000065
 Choice((530)"And then...", (531)"A ) She heard a melody being played on a piano.", (532)"B ) She heard the scream of a little girl."); // 0x12ca: 00003011
@@ -956,31 +956,31 @@ Jump(L_0x155c); // 0x12ea: 00001001
 L_0x12f0:
 Nop7(); // 0x12f0: 00000007
 L_0x12f4:
-OP_0x62(0x157, 0x34b); // 0x12f4: 00002062
-OP_0x26(0x19); // 0x12fc: 00001026
-OP_0x64(); // 0x1302: 00000064
+TitleAndSubtitle(0x157, 0x34b); // 0x12f4: 00002062
+Area(0x19); // 0x12fc: 00001026
+CleanScreen(); // 0x1302: 00000064
 LoadBackground(0x0); // 0x1306: 00001069
 OP_0x65(); // 0x130c: 00000065
-OP_0x6c(0x74); // 0x1310: 0000106c
+PlayMusic(0x74); // 0x1310: 0000106c
 ShowText((5109)"And then she heard a melody being played on a piano from one of the classrooms."); // 0x1316: 0000100c
 HandleInput(); // 0x131c: 00000010
 ShowText((5110)"A nervous look ran across Cybil's face. And at the same time she felt relief. As if being drawn by the sound of the piano Cybil cautiously moves toward the room where the music is coming from while feeling along the wall with her hand."); // 0x1320: 0000100c
 HandleInput(); // 0x1326: 00000010
 Jump(L_0x1330); // 0x132a: 00001001
 L_0x1330:
-OP_0x62(0x158, 0x34c); // 0x1330: 00002062
-OP_0x26(0x1a); // 0x1338: 00001026
-OP_0x64(); // 0x133e: 00000064
+TitleAndSubtitle(0x158, 0x34c); // 0x1330: 00002062
+Area(0x1a); // 0x1338: 00001026
+CleanScreen(); // 0x133e: 00000064
 LoadBackground(0x0); // 0x1342: 00001069
 OP_0x65(); // 0x1348: 00000065
-OP_0x6c(0x74, 0x1); // 0x134c: 0000206c
+PlayMusic(0x74, 0x1); // 0x134c: 0000206c
 ShowText((5111)"¥"Music Room¥" is written on the door. The beautiful melody is definitely being played by someone in this room. Cybil places her hand on the door."); // 0x1354: 0000100c
 HandleInput(); // 0x135a: 00000010
 OP_0x29(); // 0x135e: 00000029
 ShowText((5112)"And at that moment... The music suddenly stopped and the area was enveloped in silence."); // 0x1362: 0000100c
 HandleInput(); // 0x1368: 00000010
-OP_0x73(0x1f); // 0x136c: 00001073
-OP_0x64(); // 0x1372: 00000064
+PlaySecondSoundFx(0x1f); // 0x136c: 00001073
+CleanScreen(); // 0x1372: 00000064
 LoadBackground(0x2b); // 0x1376: 00001069
 OP_0x65(); // 0x137c: 00000065
 ShowText((5113)"¥"Who's there?¥" She says this and then opens the door. Inside the center of the room a grand piano has been placed. The piano appears cramped within the cozy room."); // 0x1380: 0000100c
@@ -995,10 +995,10 @@ ShowText((5117)"There is only one entrance to this room. There is no other way t
 HandleInput(); // 0x13ae: 00000010
 ShowText((5118)"Having become a little spooked, she turned to leave the room. In the next instant Cybil's heart nearly stopped."); // 0x13b2: 0000100c
 HandleInput(); // 0x13b8: 00000010
-OP_0x64(); // 0x13bc: 00000064
+CleanScreen(); // 0x13bc: 00000064
 LoadBackground(0x12c); // 0x13c0: 00001069
 OP_0x65(); // 0x13c6: 00000065
-OP_0x6c(0x71); // 0x13ca: 0000106c
+PlayMusic(0x71); // 0x13ca: 0000106c
 ShowText((5119)"At the entrance to the music room a white faced girl was sitting still, and just looking at Cybil. She appeared to be afraid of something, and her wide eyes were filled with tears that looked like jewels."); // 0x13d0: 0000100c
 HandleInput(); // 0x13d6: 00000010
 ShowText((5120)"¥"Cheryl...? Are you Cheryl...?¥" Cybil regained her composure and approached the little girl. She kneeled and softly placed her hands on the girl's shoulders, and the girl nodded."); // 0x13da: 0000100c
@@ -1009,12 +1009,12 @@ ShowText((5122)"Cybil thought of the monster that she had seen in town as she sp
 HandleInput(); // 0x13f4: 00000010
 Jump(L_0x13fe); // 0x13f8: 00001001
 L_0x13fe:
-OP_0x26(0x1b); // 0x13fe: 00001026
-OP_0x62(0x159, 0x34d); // 0x1404: 00002062
-OP_0x64(); // 0x140c: 00000064
+Area(0x1b); // 0x13fe: 00001026
+TitleAndSubtitle(0x159, 0x34d); // 0x1404: 00002062
+CleanScreen(); // 0x140c: 00000064
 LoadBackground(0x12c); // 0x1410: 00001069
 OP_0x65(); // 0x1416: 00000065
-OP_0x6c(0x71, 0x1); // 0x141a: 0000206c
+PlayMusic(0x71, 0x1); // 0x141a: 0000206c
 Choice((540)"Cheryl...", (541)"A ) shakes her head ¥"no¥".", (542)"B ) shakes her head ¥"yes¥"."); // 0x1422: 00003011
 Branch4(0x277, L_0x1438); // 0x142c: 00001004
 Jump(L_0x144c); // 0x1432: 00001001
@@ -1025,12 +1025,12 @@ Jump(L_0x17c8); // 0x1442: 00001001
 L_0x1448:
 Nop7(); // 0x1448: 00000007
 L_0x144c:
-OP_0x62(0x15a, 0x34e); // 0x144c: 00002062
-OP_0x26(0x1c); // 0x1454: 00001026
-OP_0x64(); // 0x145a: 00000064
+TitleAndSubtitle(0x15a, 0x34e); // 0x144c: 00002062
+Area(0x1c); // 0x1454: 00001026
+CleanScreen(); // 0x145a: 00000064
 LoadBackground(0x12c); // 0x145e: 00001069
 OP_0x65(); // 0x1464: 00000065
-OP_0x6c(0x71, 0x1); // 0x1468: 0000206c
+PlayMusic(0x71, 0x1); // 0x1468: 0000206c
 ShowText((5123)"Cheryl shakes her head no."); // 0x1470: 0000100c
 HandleInput(); // 0x1476: 00000010
 ShowText((5124)"¥"I see. Well, at any rate something strange is happening in this town. All the people have completely vanished. If we don't get out of here soon then we might disappear as well.¥""); // 0x147a: 0000100c
@@ -1043,13 +1043,13 @@ ShowText((5127)"Saying this, Cybil takes Cheryl's hand in hers, and they leave t
 HandleInput(); // 0x149e: 00000010
 Jump(L_0x14a8); // 0x14a2: 00001001
 L_0x14a8:
-OP_0x62(0x15b, 0x34f); // 0x14a8: 00002062
-OP_0x26(0x1d); // 0x14b0: 00001026
+TitleAndSubtitle(0x15b, 0x34f); // 0x14a8: 00002062
+Area(0x1d); // 0x14b0: 00001026
 OP_0x2c(0x3, 0x1); // 0x14b6: 0000202c
-OP_0x64(); // 0x14be: 00000064
+CleanScreen(); // 0x14be: 00000064
 LoadBackground(0x0); // 0x14c2: 00001069
 OP_0x65(); // 0x14c8: 00000065
-OP_0x73(0xc); // 0x14cc: 00001073
+PlaySecondSoundFx(0xc); // 0x14cc: 00001073
 ShowText((5128)"By chance... The two of them happen to look out a window. ¥"That's...¥""); // 0x14d2: 0000100c
 HandleInput(); // 0x14d8: 00000010
 ShowText((5129)"From where they are the visible courtyard has become completely enveloped in darkness. For it to become night so soon..."); // 0x14dc: 0000100c
@@ -1058,12 +1058,12 @@ ShowText((5130)"For a moment Cybil cannot believe her eyes, but then she was onl
 HandleInput(); // 0x14ec: 00000010
 Jump(L_0x14f6); // 0x14f0: 00001001
 L_0x14f6:
-OP_0x62(0x15c, 0x350); // 0x14f6: 00002062
-OP_0x26(0x1e); // 0x14fe: 00001026
-OP_0x64(); // 0x1504: 00000064
+TitleAndSubtitle(0x15c, 0x350); // 0x14f6: 00002062
+Area(0x1e); // 0x14fe: 00001026
+CleanScreen(); // 0x1504: 00000064
 LoadBackground(0x0); // 0x1508: 00001069
 OP_0x65(); // 0x150e: 00000065
-OP_0x6c(0x71, 0x1); // 0x1512: 0000206c
+PlayMusic(0x71, 0x1); // 0x1512: 0000206c
 ShowText((5131)"The two of them walk down the pitch black hallway. Because of the difference in their strides their footsteps overlap as they echo."); // 0x151a: 0000100c
 HandleInput(); // 0x1520: 00000010
 ShowText((5133)"At the moment they approached the entrance to the school grounds Cheryl spoke directly for the first time."); // 0x1524: 0000100c
@@ -1078,12 +1078,12 @@ ShowText((5137)"Saying that Cybil begins walking again. After a bit she stops an
 HandleInput(); // 0x1552: 00000010
 Jump(L_0x1824); // 0x1556: 00001001
 L_0x155c:
-OP_0x62(0x15d, 0x351); // 0x155c: 00002062
-OP_0x26(0x1f); // 0x1564: 00001026
-OP_0x64(); // 0x156a: 00000064
+TitleAndSubtitle(0x15d, 0x351); // 0x155c: 00002062
+Area(0x1f); // 0x1564: 00001026
+CleanScreen(); // 0x156a: 00000064
 LoadBackground(0x2a); // 0x156e: 00001069
 OP_0x65(); // 0x1574: 00000065
-OP_0x6c(0x69); // 0x1578: 0000106c
+PlayMusic(0x69); // 0x1578: 0000106c
 ShowText((7020)"Suddenly Cybil heard the scream of a little girl from in front of her. ¥"What...?¥" A nervous look ran across Cybil's face. ¥"Cheryl? A scream... That could mean...¥""); // 0x157e: 0000100c
 HandleInput(); // 0x1584: 00000010
 ShowText((7021)"However, there was also a feeling of relief deep inside Cybil's heart. The presence of another human... Someone else who could sympathize with her about this isolated world..."); // 0x1588: 0000100c
@@ -1094,12 +1094,12 @@ ShowText((7023)"And as she approached a certain room..."); // 0x159c: 0000100c
 HandleInput(); // 0x15a2: 00000010
 Jump(L_0x15ac); // 0x15a6: 00001001
 L_0x15ac:
-OP_0x26(0x20); // 0x15ac: 00001026
-OP_0x62(0x15e, 0x352); // 0x15b2: 00002062
-OP_0x64(); // 0x15ba: 00000064
+Area(0x20); // 0x15ac: 00001026
+TitleAndSubtitle(0x15e, 0x352); // 0x15b2: 00002062
+CleanScreen(); // 0x15ba: 00000064
 LoadBackground(0x2a); // 0x15be: 00001069
 OP_0x65(); // 0x15c4: 00000065
-OP_0x6c(0x69, 0x1); // 0x15c8: 0000206c
+PlayMusic(0x69, 0x1); // 0x15c8: 0000206c
 Choice((550)"Cybil noticed something.", (551)"A ) The figure of a person.", (552)"B ) Something at her feet..."); // 0x15d0: 00003011
 Branch4(0x285, L_0x15e6); // 0x15da: 00001004
 Jump(L_0x15fa); // 0x15e0: 00001001
@@ -1110,26 +1110,26 @@ Jump(L_0x16e0); // 0x15f0: 00001001
 L_0x15f6:
 Nop7(); // 0x15f6: 00000007
 L_0x15fa:
-OP_0x62(0x15f, 0x353); // 0x15fa: 00002062
-OP_0x26(0x21); // 0x1602: 00001026
+TitleAndSubtitle(0x15f, 0x353); // 0x15fa: 00002062
+Area(0x21); // 0x1602: 00001026
 OP_0x2c(0x3, 0x1); // 0x1608: 0000202c
-OP_0x64(); // 0x1610: 00000064
+CleanScreen(); // 0x1610: 00000064
 LoadBackground(0x2a); // 0x1614: 00001069
 OP_0x65(); // 0x161a: 00000065
 ShowText((7024)"Through the small window in the door Cybil thought that she saw a small figure swaying back and forth. She stops moving."); // 0x161e: 0000100c
 HandleInput(); // 0x1624: 00000010
 ShowText((7025)"¥"This is...¥" ¥"Music Room¥" is written on the door. She opens the door without hesitation and rushes into the room."); // 0x1628: 0000100c
 HandleInput(); // 0x162e: 00000010
-OP_0x73(0x1f); // 0x1632: 00001073
-OP_0x64(); // 0x1638: 00000064
+PlaySecondSoundFx(0x1f); // 0x1632: 00001073
+CleanScreen(); // 0x1638: 00000064
 LoadBackground(0x0); // 0x163c: 00001069
 OP_0x65(); // 0x1642: 00000065
 ShowText((7026)"¥"You...¥""); // 0x1646: 0000100c
 HandleInput(); // 0x164c: 00000010
-OP_0x64(); // 0x1650: 00000064
+CleanScreen(); // 0x1650: 00000064
 LoadBackground(0x12c); // 0x1654: 00001069
 OP_0x65(); // 0x165a: 00000065
-OP_0x6c(0x71); // 0x165e: 0000106c
+PlayMusic(0x71); // 0x165e: 0000106c
 ShowText((7027)"In the corner of the room a white faced girl was sitting still, and just looking at Cybil. She appeared to be afraid of something, and her wide eyes were filled with tears that looked like jewels."); // 0x1664: 0000100c
 HandleInput(); // 0x166a: 00000010
 ShowText((7028)"¥"Were you the one that screamed?¥" The little girl does not answer. Cybil swallows and looks at the little girl again."); // 0x166e: 0000100c
@@ -1140,12 +1140,12 @@ ShowText((7030)"¥"My name is Cybil. Your daddy is looking for you. If we don't 
 HandleInput(); // 0x1688: 00000010
 Jump(L_0x13fe); // 0x168c: 00001001
 L_0x1692:
-OP_0x26(0x22); // 0x1692: 00001026
-OP_0x62(0x160, 0x354); // 0x1698: 00002062
-OP_0x64(); // 0x16a0: 00000064
+Area(0x22); // 0x1692: 00001026
+TitleAndSubtitle(0x160, 0x354); // 0x1698: 00002062
+CleanScreen(); // 0x16a0: 00000064
 LoadBackground(0x16); // 0x16a4: 00001069
 OP_0x65(); // 0x16aa: 00000065
-OP_0x6c(0x6e, 0x1); // 0x16ae: 0000206c
+PlayMusic(0x6e, 0x1); // 0x16ae: 0000206c
 Choice((560)"Cybil...", (561)"A ) began to search the area.", (562)"B ) cautiously moved towards the monster."); // 0x16b6: 00003011
 Branch4(0x293, L_0x16cc); // 0x16c0: 00001004
 Jump(L_0x197c); // 0x16c6: 00001001
@@ -1156,23 +1156,23 @@ Jump(L_0x19c4); // 0x16d6: 00001001
 L_0x16dc:
 Nop7(); // 0x16dc: 00000007
 L_0x16e0:
-OP_0x62(0x161, 0x355); // 0x16e0: 00002062
-OP_0x26(0x23); // 0x16e8: 00001026
-OP_0x64(); // 0x16ee: 00000064
+TitleAndSubtitle(0x161, 0x355); // 0x16e0: 00002062
+Area(0x23); // 0x16e8: 00001026
+CleanScreen(); // 0x16ee: 00000064
 LoadBackground(0x2a); // 0x16f2: 00001069
 OP_0x65(); // 0x16f8: 00000065
-OP_0x6c(0x69, 0x1); // 0x16fc: 0000206c
+PlayMusic(0x69, 0x1); // 0x16fc: 0000206c
 ShowText((7031)"Something is tangling and twisting around Cybil's feet."); // 0x1704: 0000100c
 HandleInput(); // 0x170a: 00000010
 ShowText((7032)"It feels slippery, and has bound Cybil's feet like a long piece of tape. She falls down and lands hard on her butt."); // 0x170e: 0000100c
 HandleInput(); // 0x1714: 00000010
-OP_0x73(0x25); // 0x1718: 00001073
+PlaySecondSoundFx(0x25); // 0x1718: 00001073
 ShowText((7033)"¥"What...is this...!¥""); // 0x171e: 0000100c
 HandleInput(); // 0x1724: 00000010
-OP_0x64(); // 0x1728: 00000064
+CleanScreen(); // 0x1728: 00000064
 LoadBackground(0x2a); // 0x172c: 00001069
 OP_0x65(); // 0x1732: 00000065
-OP_0x6c(0x66); // 0x1736: 0000106c
+PlayMusic(0x66); // 0x1736: 0000106c
 ShowText((7034)"Through her boots she can feel the jelly-like substance moving up her body. It is accompanied by a horrible smell that makes her want to vomit. ¥"KYAA!¥""); // 0x173c: 0000100c
 HandleInput(); // 0x1742: 00000010
 ShowText((7035)"She tried as hard as she as she could to free herself, but the more she struggled, the more it spread, and in no time it had moved to her upper body."); // 0x1746: 0000100c
@@ -1182,10 +1182,10 @@ HandleInput(); // 0x1756: 00000010
 OP_0x29(); // 0x175a: 00000029
 ShowText((7037)"¥"Please stop.¥" The voice is a little girl's. Obeying the voice the jelly stops its movement, and appears to sink into Cybil's clothing as it dissipates."); // 0x175e: 0000100c
 HandleInput(); // 0x1764: 00000010
-OP_0x64(); // 0x1768: 00000064
+CleanScreen(); // 0x1768: 00000064
 LoadBackground(0x12d); // 0x176c: 00001069
 OP_0x65(); // 0x1772: 00000065
-OP_0x6c(0x71); // 0x1776: 0000106c
+PlayMusic(0x71); // 0x1776: 0000106c
 ShowText((7038)"Cybil raises her head. ¥"Music Room¥" is written on the door. The door is halfway open, and a little girl appears from inside. Her soft black hair stands out against her fair complexion."); // 0x177c: 0000100c
 HandleInput(); // 0x1782: 00000010
 ShowText((7039)"¥"Cheryl...? Are you Cheryl...?¥" Cybil regained her composure and approached the little girl. She kneeled and softly placed her hands on the girl's shoulders, and the girl nodded."); // 0x1786: 0000100c
@@ -1202,12 +1202,12 @@ ShowText((7044)"Cybil says this, takes Cheryl's hand in hers and they begin to r
 HandleInput(); // 0x17be: 00000010
 Jump(L_0x14a8); // 0x17c2: 00001001
 L_0x17c8:
-OP_0x62(0x162, 0x356); // 0x17c8: 00002062
-OP_0x26(0x24); // 0x17d0: 00001026
-OP_0x64(); // 0x17d6: 00000064
+TitleAndSubtitle(0x162, 0x356); // 0x17c8: 00002062
+Area(0x24); // 0x17d0: 00001026
+CleanScreen(); // 0x17d6: 00000064
 LoadBackground(0x12c); // 0x17da: 00001069
 OP_0x65(); // 0x17e0: 00000065
-OP_0x6c(0x71, 0x1); // 0x17e4: 0000206c
+PlayMusic(0x71, 0x1); // 0x17e4: 0000206c
 ShowText((7045)"¥"Yeah. You mean the one that looks like a dog? I have seen it. But he was not ferocious. He won't attack anyone or anything like that.¥""); // 0x17ec: 0000100c
 HandleInput(); // 0x17f2: 00000010
 ShowText((7046)"Cybil spoke with surprise. ¥"It attacked me. And I had given my handgun to your Daddy... I thought I was going to die.¥""); // 0x17f6: 0000100c
@@ -1220,15 +1220,15 @@ ShowText((7049)"Saying this, Cybil takes Cheryl's hand in hers, and they leave t
 HandleInput(); // 0x181a: 00000010
 Jump(L_0x14a8); // 0x181e: 00001001
 L_0x1824:
-OP_0x62(0x163, 0x357); // 0x1824: 00002062
-OP_0x26(0x25); // 0x182c: 00001026
-OP_0x25(); // 0x1832: 00000025
+TitleAndSubtitle(0x163, 0x357); // 0x1824: 00002062
+Area(0x25); // 0x182c: 00001026
+CleanTextRecord(); // 0x1832: 00000025
 OP_0x2c(0x3, 0x2); // 0x1836: 0000202c
-OP_0x64(); // 0x183e: 00000064
+CleanScreen(); // 0x183e: 00000064
 LoadBackground(0x140); // 0x1842: 00001069
 LoadEffect(0xe, 0x1, 0x0); // 0x1848: 0000306d
 OP_0x65(); // 0x1852: 00000065
-OP_0x6c(0x68); // 0x1856: 0000106c
+PlayMusic(0x68); // 0x1856: 0000106c
 ShowText((5138)"¥"Just what time is it now?¥" Cybil curses the fact that she forgot her watch at the Brahms station. ¥"It is probably late at night.¥" She no longer feels the headache or sleepiness from just before."); // 0x185c: 0000100c
 HandleInput(); // 0x1862: 00000010
 ShowText((5139)"Holding Cheryl's cold hand Cybil focuses her mind on locating Harry."); // 0x1866: 0000100c
@@ -1241,16 +1241,16 @@ ShowText((5142)"She had encountered a strange monster on her way to the school, 
 HandleInput(); // 0x188a: 00000010
 Jump(L_0x1894); // 0x188e: 00001001
 L_0x1894:
-OP_0x62(0x164, 0x358); // 0x1894: 00002062
-OP_0x26(0x26); // 0x189c: 00001026
-OP_0x64(); // 0x18a2: 00000064
+TitleAndSubtitle(0x164, 0x358); // 0x1894: 00002062
+Area(0x26); // 0x189c: 00001026
+CleanScreen(); // 0x18a2: 00000064
 LoadBackground(0x140); // 0x18a6: 00001069
 LoadEffect(0xe, 0x1, 0x0, 0x1); // 0x18ac: 0000406d
 OP_0x65(); // 0x18b8: 00000065
-OP_0x6c(0x68, 0x1); // 0x18bc: 0000206c
+PlayMusic(0x68, 0x1); // 0x18bc: 0000206c
 ShowText((5143)"The sky began to get light while Cybil walked and contemplated the route to the cafe. This made her think that perhaps time is rapidly passing in this town alone. Although the fog was present as ever to decrease visibility, she could see a lot better now."); // 0x18c4: 0000100c
 HandleInput(); // 0x18ca: 00000010
-OP_0x64(); // 0x18ce: 00000064
+CleanScreen(); // 0x18ce: 00000064
 LoadBackground(0x141); // 0x18d2: 00001069
 LoadEffect(0xe, 0x1, 0x0); // 0x18d8: 0000306d
 OP_0x65(); // 0x18e2: 00000065
@@ -1260,15 +1260,15 @@ ShowText((5145)"¥"...Something isn't right.¥" Cybil feels a sense of discord w
 HandleInput(); // 0x18f6: 00000010
 Jump(L_0x1900); // 0x18fa: 00001001
 L_0x1900:
-OP_0x62(0x165, 0x359); // 0x1900: 00002062
-OP_0x26(0x27); // 0x1908: 00001026
+TitleAndSubtitle(0x165, 0x359); // 0x1900: 00002062
+Area(0x27); // 0x1908: 00001026
 OP_0x2c(0x3, 0x1); // 0x190e: 0000202c
-OP_0x73(0x1f); // 0x1916: 00001073
-OP_0x64(); // 0x191c: 00000064
+PlaySecondSoundFx(0x1f); // 0x1916: 00001073
+CleanScreen(); // 0x191c: 00000064
 LoadBackground(0x16); // 0x1920: 00001069
 LoadEffect(0x0, 0x0, 0x0); // 0x1926: 0000306d
 OP_0x65(); // 0x1930: 00000065
-OP_0x6c(0x6e); // 0x1934: 0000106c
+PlayMusic(0x6e); // 0x1934: 0000106c
 ShowText((5146)"Cybil led Cheryl through the entrance of the cafe. The inside of the cafe had been ravaged. The glass windows facing the street were broken and several tables were knocked on their sides, so Cybil could not move any further in."); // 0x193a: 0000100c
 HandleInput(); // 0x1940: 00000010
 ShowText((5147)"¥"...Oh my god... I wonder if Harry is alright?¥" A red pool of liquid reflects vividly in Cybil's eyes. She prayed that it was not Harry's blood."); // 0x1944: 0000100c
@@ -1283,12 +1283,12 @@ ShowText((5151)"Since Harry was no longer here she guessed that he defeated this
 HandleInput(); // 0x1972: 00000010
 Jump(L_0x1692); // 0x1976: 00001001
 L_0x197c:
-OP_0x62(0x166, 0x35a); // 0x197c: 00002062
-OP_0x26(0x28); // 0x1984: 00001026
-OP_0x64(); // 0x198a: 00000064
+TitleAndSubtitle(0x166, 0x35a); // 0x197c: 00002062
+Area(0x28); // 0x1984: 00001026
+CleanScreen(); // 0x198a: 00000064
 LoadBackground(0x16); // 0x198e: 00001069
 OP_0x65(); // 0x1994: 00000065
-OP_0x6c(0x6e, 0x1); // 0x1998: 0000206c
+PlayMusic(0x6e, 0x1); // 0x1998: 0000206c
 ShowText((5152)"Thinking that perhaps there was a memo, Cybil began her search with the counter; however, there did not appear to be anything there. ¥"Maybe Harry left here in a hurry after being attacked by the monster.¥""); // 0x19a0: 0000100c
 HandleInput(); // 0x19a6: 00000010
 ShowText((5153)"Cybil looked at Cheryl. With the bloody scene in front of her Cheryl was surprisingly calm. From time to time she looked out the window as if she were concerned about something."); // 0x19aa: 0000100c
@@ -1297,12 +1297,12 @@ ShowText((5154)"¥"Well, your Daddy is not here. Let's look some place else.¥" 
 HandleInput(); // 0x19ba: 00000010
 Jump(L_0x1a20); // 0x19be: 00001001
 L_0x19c4:
-OP_0x62(0x167, 0x35b); // 0x19c4: 00002062
-OP_0x26(0x29); // 0x19cc: 00001026
-OP_0x64(); // 0x19d2: 00000064
+TitleAndSubtitle(0x167, 0x35b); // 0x19c4: 00002062
+Area(0x29); // 0x19cc: 00001026
+CleanScreen(); // 0x19d2: 00000064
 LoadBackground(0x16); // 0x19d6: 00001069
 OP_0x65(); // 0x19dc: 00000065
-OP_0x6c(0x6e, 0x1); // 0x19e0: 0000206c
+PlayMusic(0x6e, 0x1); // 0x19e0: 0000206c
 ShowText((7050)"Cybil cautiously searches the monster. There is no doubt about it, the bullets lodged inside the monster's body were the ones loaded into the handgun that she had given Harry."); // 0x19e8: 0000100c
 HandleInput(); // 0x19ee: 00000010
 ShowText((7051)"¥"Normally these should have gone all the way through...¥" The bullets told a tale about the endurance and hardness of the monster."); // 0x19f2: 0000100c
@@ -1315,18 +1315,18 @@ ShowText((7054)"¥"Well, your Daddy is not here. Let's look some place else.¥" 
 HandleInput(); // 0x1a16: 00000010
 Jump(L_0x1a20); // 0x1a1a: 00001001
 L_0x1a20:
-OP_0x62(0x168, 0x35c); // 0x1a20: 00002062
-OP_0x26(0x2a); // 0x1a28: 00001026
-OP_0x25(); // 0x1a2e: 00000025
+TitleAndSubtitle(0x168, 0x35c); // 0x1a20: 00002062
+Area(0x2a); // 0x1a28: 00001026
+CleanTextRecord(); // 0x1a2e: 00000025
 OP_0x29(); // 0x1a32: 00000029
-OP_0x73(0x1f); // 0x1a36: 00001073
-OP_0x1f(0x3c); // 0x1a3c: 0000101f
-OP_0x64(); // 0x1a42: 00000064
+PlaySecondSoundFx(0x1f); // 0x1a36: 00001073
+PlaySecondSoundFx(0x3c); // 0x1a3c: 0000101f
+CleanScreen(); // 0x1a42: 00000064
 LoadBackground(0x43); // 0x1a46: 00001069
 LoadEffect(0xe, 0x1, 0x0); // 0x1a4c: 0000306d
 OP_0x65(); // 0x1a56: 00000065
-OP_0x72(0x1b); // 0x1a5a: 00001072
-OP_0x73(0xc); // 0x1a60: 00001073
+PlaySoundFx(0x1b); // 0x1a5a: 00001072
+PlaySecondSoundFx(0xc); // 0x1a60: 00001073
 ShowText((5155)"Ding... Dong... A church bell is ringing. The bell rings forcefully, almost as if it had been waiting for them to leave the cafe."); // 0x1a66: 0000100c
 HandleInput(); // 0x1a6c: 00000010
 ShowText((5156)"¥"There are still... other people here.¥" Cybil's eyes glittered. ¥"This might be Harry's way of telling me where he is.¥""); // 0x1a70: 0000100c
@@ -1337,31 +1337,31 @@ ShowText((5158)"Cybil's feet naturally pointed toward the church. Expecting to f
 HandleInput(); // 0x1a8a: 00000010
 Jump(L_0x1a94); // 0x1a8e: 00001001
 L_0x1a94:
-OP_0x62(0x169, 0x35d); // 0x1a94: 00002062
-OP_0x26(0x2b); // 0x1a9c: 00001026
-OP_0x64(); // 0x1aa2: 00000064
+TitleAndSubtitle(0x169, 0x35d); // 0x1a94: 00002062
+Area(0x2b); // 0x1a9c: 00001026
+CleanScreen(); // 0x1aa2: 00000064
 LoadBackground(0x43); // 0x1aa6: 00001069
 LoadEffect(0xe, 0x1, 0x0, 0x1); // 0x1aac: 0000406d
 OP_0x65(); // 0x1ab8: 00000065
-OP_0x72(0x1b, 0x1); // 0x1abc: 00002072
+PlaySoundFx(0x1b, 0x1); // 0x1abc: 00002072
 ShowText((5159)"Once they arrived at the church the ringing stopped, and the large door at the entrance began to open from the inside."); // 0x1ac4: 0000100c
 HandleInput(); // 0x1aca: 00000010
 ShowText((5160)"Cybil then thought that perhaps someone had been watching her movements all this time. She looked up at the top of the church and then began to look around nervously until a voice saying ¥"This way¥" brought her back to her senses."); // 0x1ace: 0000100c
 HandleInput(); // 0x1ad4: 00000010
-OP_0x64(); // 0x1ad8: 00000064
+CleanScreen(); // 0x1ad8: 00000064
 LoadBackground(0x0); // 0x1adc: 00001069
 LoadEffect(0x0, 0x0, 0x0); // 0x1ae2: 0000306d
 OP_0x65(); // 0x1aec: 00000065
 OP_0x29(); // 0x1af0: 00000029
-OP_0x73(0x14); // 0x1af4: 00001073
-OP_0x1f(0x3c); // 0x1afa: 0000101f
-OP_0x73(0x15); // 0x1b00: 00001073
+PlaySecondSoundFx(0x14); // 0x1af4: 00001073
+PlaySecondSoundFx(0x3c); // 0x1afa: 0000101f
+PlaySecondSoundFx(0x15); // 0x1b00: 00001073
 ShowMovie(0x2); // 0x1b06: 0000100d
-OP_0x64(); // 0x1b0c: 00000064
+CleanScreen(); // 0x1b0c: 00000064
 LoadBackground(0x44); // 0x1b10: 00001069
 OP_0x65(); // 0x1b16: 00000065
-OP_0x6e(0x65, 0x1, 0x1); // 0x1b1a: 0000306e
-OP_0x6c(0x67); // 0x1b24: 0000106c
+LoadSecondEffect(0x65, 0x1, 0x1); // 0x1b1a: 0000306e
+PlayMusic(0x67); // 0x1b24: 0000106c
 ShowText((5161)"Cybil faced the eerie woman from a distance. The woman once more called out to Cybil: ¥"This way¥" Cybil mysteriously moved towards the woman."); // 0x1b2a: 0000100c
 HandleInput(); // 0x1b30: 00000010
 ShowText((5162)"¥"Were you the one ringing that bell?¥" ¥"Ku ku ku...¥" (Onomatopoeia for a chuckle) The woman's face suddenly twisted and she began laughing loudly. She saw Cybil's perplexed expression, but thought nothing of it and just waved her hand left and right in front of Cybil's face."); // 0x1b34: 0000100c
@@ -1387,8 +1387,8 @@ HandleInput(); // 0x1b94: 00000010
 ShowText((5172)"Cybil was shocked to be called by name. As she watched Dahlia quickly depart she was unable to speak."); // 0x1b98: 0000100c
 HandleInput(); // 0x1b9e: 00000010
 OP_0x2c(0x3, 0x1); // 0x1ba2: 0000202c
-OP_0x73(0xc); // 0x1baa: 00001073
-OP_0x64(); // 0x1bb0: 00000064
+PlaySecondSoundFx(0xc); // 0x1baa: 00001073
+CleanScreen(); // 0x1bb0: 00000064
 LoadBackground(0x0); // 0x1bb4: 00001069
 LoadEffect(0x0, 0x0, 0x1); // 0x1bba: 0000306d
 OP_0x65(); // 0x1bc4: 00000065
@@ -1396,16 +1396,16 @@ ShowText((5173)"After Dahlia disappeared behind a door Cybil regained herself. S
 HandleInput(); // 0x1bce: 00000010
 Jump(L_0x1bd8); // 0x1bd2: 00001001
 L_0x1bd8:
-OP_0x62(0x16a, 0x35e); // 0x1bd8: 00002062
-OP_0x26(0x2c); // 0x1be0: 00001026
-OP_0x73(0x14); // 0x1be6: 00001073
-OP_0x1f(0x3c); // 0x1bec: 0000101f
-OP_0x73(0x15); // 0x1bf2: 00001073
-OP_0x64(); // 0x1bf8: 00000064
+TitleAndSubtitle(0x16a, 0x35e); // 0x1bd8: 00002062
+Area(0x2c); // 0x1be0: 00001026
+PlaySecondSoundFx(0x14); // 0x1be6: 00001073
+PlaySecondSoundFx(0x3c); // 0x1bec: 0000101f
+PlaySecondSoundFx(0x15); // 0x1bf2: 00001073
+CleanScreen(); // 0x1bf8: 00000064
 LoadEffect(0xe, 0x1, 0x0); // 0x1bfc: 0000306d
 LoadBackground(0x43); // 0x1c06: 00001069
 OP_0x65(); // 0x1c0c: 00000065
-OP_0x6c(0x68); // 0x1c10: 0000106c
+PlayMusic(0x68); // 0x1c10: 0000106c
 ShowText((5174)"Right after they left the church Cheryl began to speak."); // 0x1c16: 0000100c
 HandleInput(); // 0x1c1c: 00000010
 ShowText((5175)"¥"Hey... Miss? I am fine by myself now. This is not my first time coming here, and I have met that lady we just saw before.¥" Cybil stops in surprise."); // 0x1c20: 0000100c
@@ -1418,13 +1418,13 @@ ShowText((5178)"¥"You're wrong. My Daddy must not find me. Someone is waiting f
 HandleInput(); // 0x1c44: 00000010
 Jump(L_0x1c4e); // 0x1c48: 00001001
 L_0x1c4e:
-OP_0x62(0x16b, 0x35f); // 0x1c4e: 00002062
-OP_0x26(0x2d); // 0x1c56: 00001026
-OP_0x64(); // 0x1c5c: 00000064
+TitleAndSubtitle(0x16b, 0x35f); // 0x1c4e: 00002062
+Area(0x2d); // 0x1c56: 00001026
+CleanScreen(); // 0x1c5c: 00000064
 LoadEffect(0xe, 0x1, 0x0, 0x1); // 0x1c60: 0000406d
 LoadBackground(0x43); // 0x1c6c: 00001069
 OP_0x65(); // 0x1c72: 00000065
-OP_0x6c(0x68, 0x1); // 0x1c76: 0000206c
+PlayMusic(0x68, 0x1); // 0x1c76: 0000206c
 Choice((570)"Cybil let out a short sigh.", (571)"A ) She snaps at and scolds Cheryl.", (572)"B ) She kindly admonishes Cheryl."); // 0x1c7e: 00003011
 Branch4(0x2a1, L_0x1c94); // 0x1c88: 00001004
 Jump(L_0x1ca8); // 0x1c8e: 00001001
@@ -1435,39 +1435,39 @@ Jump(L_0x1d3c); // 0x1c9e: 00001001
 L_0x1ca4:
 Nop7(); // 0x1ca4: 00000007
 L_0x1ca8:
-OP_0x62(0x16c, 0x360); // 0x1ca8: 00002062
-OP_0x26(0x2e); // 0x1cb0: 00001026
-OP_0x64(); // 0x1cb6: 00000064
+TitleAndSubtitle(0x16c, 0x360); // 0x1ca8: 00002062
+Area(0x2e); // 0x1cb0: 00001026
+CleanScreen(); // 0x1cb6: 00000064
 LoadEffect(0xe, 0x1, 0x0, 0x1); // 0x1cba: 0000406d
 LoadBackground(0x43); // 0x1cc6: 00001069
 OP_0x65(); // 0x1ccc: 00000065
-OP_0x6c(0x68, 0x1); // 0x1cd0: 0000206c
+PlayMusic(0x68, 0x1); // 0x1cd0: 0000206c
 ShowText((5179)"¥"Just stop it and be quiet!¥" Cybil snapped at Cheryl."); // 0x1cd8: 0000100c
 HandleInput(); // 0x1cde: 00000010
 ShowText((5180)"¥"A child like you should not be left alone in a dangerous town like this. Please do not be so difficult. I am a police officer. It is my job to return you to your Daddy. Please understand.¥""); // 0x1ce2: 0000100c
 HandleInput(); // 0x1ce8: 00000010
 Jump(L_0x1cf2); // 0x1cec: 00001001
 L_0x1cf2:
-OP_0x62(0x16d, 0x361); // 0x1cf2: 00002062
-OP_0x26(0x2f); // 0x1cfa: 00001026
-OP_0x64(); // 0x1d00: 00000064
+TitleAndSubtitle(0x16d, 0x361); // 0x1cf2: 00002062
+Area(0x2f); // 0x1cfa: 00001026
+CleanScreen(); // 0x1d00: 00000064
 LoadEffect(0xe, 0x1, 0x0, 0x1); // 0x1d04: 0000406d
 LoadBackground(0x43); // 0x1d10: 00001069
 OP_0x65(); // 0x1d16: 00000065
-OP_0x6c(0x68, 0x1); // 0x1d1a: 0000206c
+PlayMusic(0x68, 0x1); // 0x1d1a: 0000206c
 ShowText((5181)"Once more, Cybil began to walk down the foggy street with Cheryl in tow. At first Cheryl resisted holding Cybil's hand as hard as she could, but once she realized this was futile she reluctantly followed along behind Cybil, while wiping away her tears."); // 0x1d22: 0000100c
 HandleInput(); // 0x1d28: 00000010
 ShowText((5182)"Cheryl muttered something so that it could not be heard."); // 0x1d2c: 0000100c
 HandleInput(); // 0x1d32: 00000010
 Jump(L_0x4710); // 0x1d36: 00001001
 L_0x1d3c:
-OP_0x62(0x16e, 0x362); // 0x1d3c: 00002062
-OP_0x26(0x30); // 0x1d44: 00001026
-OP_0x64(); // 0x1d4a: 00000064
+TitleAndSubtitle(0x16e, 0x362); // 0x1d3c: 00002062
+Area(0x30); // 0x1d44: 00001026
+CleanScreen(); // 0x1d4a: 00000064
 LoadEffect(0xe, 0x1, 0x0, 0x1); // 0x1d4e: 0000406d
 LoadBackground(0x43); // 0x1d5a: 00001069
 OP_0x65(); // 0x1d60: 00000065
-OP_0x6c(0x68, 0x1); // 0x1d64: 0000206c
+PlayMusic(0x68, 0x1); // 0x1d64: 0000206c
 ShowText((7055)"¥"Hey wait... Come on Cheryl.¥" Cybil made an effort to calmly end Cheryl's speaking."); // 0x1d6c: 0000100c
 HandleInput(); // 0x1d72: 00000010
 ShowText((7056)"¥"You must have just had a bad dream or something. But something more frightening is actually occurring in this town. Come on, please take my hand.¥""); // 0x1d76: 0000100c
@@ -1476,28 +1476,28 @@ ShowText((7057)"Cheryl placed her small hand into Cybil's palm. ¥"I will protec
 HandleInput(); // 0x1d86: 00000010
 Jump(L_0x1cf2); // 0x1d8a: 00001001
 L_0x1d90:
-OP_0x62(0x16f, 0x363); // 0x1d90: 00002062
-OP_0x26(0x31); // 0x1d98: 00001026
-OP_0x64(); // 0x1d9e: 00000064
+TitleAndSubtitle(0x16f, 0x363); // 0x1d90: 00002062
+Area(0x31); // 0x1d98: 00001026
+CleanScreen(); // 0x1d9e: 00000064
 LoadEffect(0x0, 0x0, 0x0); // 0x1da2: 0000306d
 LoadBackground(0x0); // 0x1dac: 00001069
 OP_0x65(); // 0x1db2: 00000065
 ShowText((5183)"After walking for a bit the two of them started to notice that the murmuring of water had began to interfere with their conversation. ¥"Ah¥" Cheryl stopped walking."); // 0x1db6: 0000100c
 HandleInput(); // 0x1dbc: 00000010
-OP_0x64(); // 0x1dc0: 00000064
+CleanScreen(); // 0x1dc0: 00000064
 LoadBackground(0x168); // 0x1dc4: 00001069
 OP_0x65(); // 0x1dca: 00000065
-OP_0x72(0x31); // 0x1dce: 00001072
+PlaySoundFx(0x31); // 0x1dce: 00001072
 ShowText((5184)"Water was splashing up from the strong current in the old aqueduct through the white fog. Due to the bad weather, the water level had risen up to the fortified concrete embankment. So rather than an aqueduct, it was more like an overflowing river that was in a dangerous state."); // 0x1dd4: 0000100c
 HandleInput(); // 0x1dda: 00000010
 Jump(L_0x1de4); // 0x1dde: 00001001
 L_0x1de4:
-OP_0x26(0x32); // 0x1de4: 00001026
-OP_0x62(0x170, 0x364); // 0x1dea: 00002062
-OP_0x64(); // 0x1df2: 00000064
+Area(0x32); // 0x1de4: 00001026
+TitleAndSubtitle(0x170, 0x364); // 0x1dea: 00002062
+CleanScreen(); // 0x1df2: 00000064
 LoadBackground(0x168); // 0x1df6: 00001069
 OP_0x65(); // 0x1dfc: 00000065
-OP_0x72(0x31, 0x1); // 0x1e00: 00002072
+PlaySoundFx(0x31, 0x1); // 0x1e00: 00002072
 Choice((580)"¥"What's that...¥"", (581)"A ) A girl is drowning.", (582)"B ) A boy is drowning."); // 0x1e08: 00003011
 Branch4(0x2af, L_0x1e1e); // 0x1e12: 00001004
 Jump(L_0x1e32); // 0x1e18: 00001001
@@ -1508,25 +1508,25 @@ Jump(L_0x220e); // 0x1e28: 00001001
 L_0x1e2e:
 Nop7(); // 0x1e2e: 00000007
 L_0x1e32:
-OP_0x62(0x171, 0x365); // 0x1e32: 00002062
-OP_0x26(0x33); // 0x1e3a: 00001026
-OP_0x64(); // 0x1e40: 00000064
+TitleAndSubtitle(0x171, 0x365); // 0x1e32: 00002062
+Area(0x33); // 0x1e3a: 00001026
+CleanScreen(); // 0x1e40: 00000064
 LoadBackground(0x169); // 0x1e44: 00001069
 LoadEffect(0x44, 0x1, 0x0); // 0x1e4a: 0000306d
 OP_0x65(); // 0x1e54: 00000065
-OP_0x72(0x31, 0x1); // 0x1e58: 00002072
+PlaySoundFx(0x31, 0x1); // 0x1e58: 00002072
 ShowText((5185)"A girl stood alone in the current. She was fighting the strong current, and appeared to be holding on to a fragile protrusion with all her might."); // 0x1e60: 0000100c
 HandleInput(); // 0x1e66: 00000010
-OP_0x64(); // 0x1e6a: 00000064
+CleanScreen(); // 0x1e6a: 00000064
 LoadBackground(0x181); // 0x1e6e: 00001069
 LoadEffect(0x0, 0x0, 0x0); // 0x1e74: 0000306d
 OP_0x65(); // 0x1e7e: 00000065
 ShowText((5186)"¥"Miss! Look!¥" Cheryl screamed, broke away from Cybil's hand, and then began to run toward the girl."); // 0x1e82: 0000100c
 HandleInput(); // 0x1e88: 00000010
-OP_0x64(); // 0x1e8c: 00000064
+CleanScreen(); // 0x1e8c: 00000064
 LoadBackground(0x16a); // 0x1e90: 00001069
 OP_0x65(); // 0x1e96: 00000065
-OP_0x73(0x9); // 0x1e9a: 00001073
+PlaySecondSoundFx(0x9); // 0x1e9a: 00001073
 ShowText((5187)"¥"Cheryl! That's dangerous!¥" Cybil instantly chased after her. A stone barrier runs parallel to the aqueduct. It is about shoulder-width and about the height of a child."); // 0x1ea0: 0000100c
 HandleInput(); // 0x1ea6: 00000010
 ShowText((5188)"Falling to the right from this barrier could result in injury, and falling to the left would probably result in being swallowed up by the current."); // 0x1eaa: 0000100c
@@ -1535,12 +1535,12 @@ ShowText((5189)"Cheryl nimbly ran along the top of the narrow barrier. ¥"Wait! 
 HandleInput(); // 0x1eba: 00000010
 Jump(L_0x1ec4); // 0x1ebe: 00001001
 L_0x1ec4:
-OP_0x62(0x172, 0x366); // 0x1ec4: 00002062
-OP_0x26(0x34); // 0x1ecc: 00001026
-OP_0x64(); // 0x1ed2: 00000064
+TitleAndSubtitle(0x172, 0x366); // 0x1ec4: 00002062
+Area(0x34); // 0x1ecc: 00001026
+CleanScreen(); // 0x1ed2: 00000064
 LoadBackground(0x181); // 0x1ed6: 00001069
 OP_0x65(); // 0x1edc: 00000065
-OP_0x72(0x31, 0x1); // 0x1ee0: 00002072
+PlaySoundFx(0x31, 0x1); // 0x1ee0: 00002072
 ShowText((5190)"By the time Cybil caught up to Cheryl she was lying prone on top of the barrier and reaching out towards the embankment trying to grasp the girl's hair."); // 0x1ee8: 0000100c
 HandleInput(); // 0x1eee: 00000010
 ShowText((5191)"¥"That's dangerous! You will fall in! It's too much for you.¥" ¥"We will save this girl. Help me Miss! Please!¥""); // 0x1ef2: 0000100c
@@ -1553,7 +1553,7 @@ ShowText((5194)"Cybil's footing is quickly being eaten away by the strong curren
 HandleInput(); // 0x1f16: 00000010
 ShowText((5195)"The water is up to Cybil's knees. As the water pulls at her legs Cybil reaches her hand out toward the girl. The girl's face is covered in the white splashes, so Cybil cannot see it very well."); // 0x1f1a: 0000100c
 HandleInput(); // 0x1f20: 00000010
-OP_0x64(); // 0x1f24: 00000064
+CleanScreen(); // 0x1f24: 00000064
 LoadBackground(0x16b); // 0x1f28: 00001069
 OP_0x65(); // 0x1f2e: 00000065
 ShowText((5196)"¥"Everything's all right, don't worry.¥" Cybil shouts out to give the girl hope. But the girl just appears to be caught on the protrusion like a rag, and perhaps that is the best way to describe her."); // 0x1f32: 0000100c
@@ -1568,19 +1568,19 @@ ShowText((5200)"Cheryl calls out to Cybil from behind. Cybil has a maternal feel
 HandleInput(); // 0x1f60: 00000010
 Jump(L_0x1f6a); // 0x1f64: 00001001
 L_0x1f6a:
-OP_0x62(0x173, 0x367); // 0x1f6a: 00002062
-OP_0x26(0x35); // 0x1f72: 00001026
-OP_0x64(); // 0x1f78: 00000064
+TitleAndSubtitle(0x173, 0x367); // 0x1f6a: 00002062
+Area(0x35); // 0x1f72: 00001026
+CleanScreen(); // 0x1f78: 00000064
 LoadBackground(0x16b); // 0x1f7c: 00001069
 OP_0x65(); // 0x1f82: 00000065
-OP_0x72(0x31, 0x1); // 0x1f86: 00002072
+PlaySoundFx(0x31, 0x1); // 0x1f86: 00002072
 ShowText((5201)"¥"It will be okay... just a little more...¥" At that moment... Cybil unfortunately loses her footing and falls into the current."); // 0x1f8e: 0000100c
 HandleInput(); // 0x1f94: 00000010
 ShowText((5202)"And at the same time she sees the face of the drowning girl for the first time."); // 0x1f98: 0000100c
 HandleInput(); // 0x1f9e: 00000010
 ShowText((5203)"¥".........Eh...¥""); // 0x1fa2: 0000100c
 HandleInput(); // 0x1fa8: 00000010
-OP_0x64(); // 0x1fac: 00000064
+CleanScreen(); // 0x1fac: 00000064
 LoadBackground(0x16c); // 0x1fb0: 00001069
 OP_0x65(); // 0x1fb6: 00000065
 OP_0x29(); // 0x1fba: 00000029
@@ -1590,19 +1590,19 @@ ShowText((5205)"She didn't understand it. She couldn't believe anything. Still h
 HandleInput(); // 0x1fce: 00000010
 Jump(L_0x1fd8); // 0x1fd2: 00001001
 L_0x1fd8:
-OP_0x62(0x174, 0x368); // 0x1fd8: 00002062
-OP_0x26(0x36); // 0x1fe0: 00001026
-OP_0x64(); // 0x1fe6: 00000064
+TitleAndSubtitle(0x174, 0x368); // 0x1fd8: 00002062
+Area(0x36); // 0x1fe0: 00001026
+CleanScreen(); // 0x1fe6: 00000064
 LoadBackground(0x0); // 0x1fea: 00001069
 OP_0x65(); // 0x1ff0: 00000065
 ShowText((5206)"........."); // 0x1ff4: 0000100c
 HandleInput(); // 0x1ffa: 00000010
 ShowText((5207)"Everything is dark. There is not even a single sound. Cybil cannot tell whether her eyes are open or closed. The hand gripping Cybil's hand suddenly moved."); // 0x1ffe: 0000100c
 HandleInput(); // 0x2004: 00000010
-OP_0x64(); // 0x2008: 00000064
+CleanScreen(); // 0x2008: 00000064
 LoadBackground(0x0); // 0x200c: 00001069
 OP_0x65(); // 0x2012: 00000065
-OP_0x6c(0x67); // 0x2016: 0000106c
+PlayMusic(0x67); // 0x2016: 0000106c
 ShowText((5208)"(I, I may have used you Miss...)"); // 0x201c: 0000100c
 HandleInput(); // 0x2022: 00000010
 ShowText((5209)"Cybil made a face like ¥"Wha?¥" and immediately asked: (What are you saying?)"); // 0x2026: 0000100c
@@ -1620,15 +1620,15 @@ ShowText((5214)"Once again, there is silence. (Your true? Your true what?) (Do y
 HandleInput(); // 0x2062: 00000010
 Jump(L_0x206c); // 0x2066: 00001001
 L_0x206c:
-OP_0x62(0x175, 0x369); // 0x206c: 00002062
-OP_0x26(0x37); // 0x2074: 00001026
-OP_0x64(); // 0x207a: 00000064
+TitleAndSubtitle(0x175, 0x369); // 0x206c: 00002062
+Area(0x37); // 0x2074: 00001026
+CleanScreen(); // 0x207a: 00000064
 LoadBackground(0x16d); // 0x207e: 00001069
 OP_0x65(); // 0x2084: 00000065
-OP_0x72(0x39); // 0x2088: 00001072
+PlaySoundFx(0x39); // 0x2088: 00001072
 ShowText((5215)"And then, the low sound of a motor runs through the floor and causes a slight quiver in Cybil's stomach. To her front she has only a glimpse of a single shaft of light. The light thinly extends up and down, and eventually expands to the left and right, revealing a small room. It is an elevator."); // 0x208e: 0000100c
 HandleInput(); // 0x2094: 00000010
-OP_0x64(); // 0x2098: 00000064
+CleanScreen(); // 0x2098: 00000064
 LoadBackground(0x16e); // 0x209c: 00001069
 LoadEffect(0x4c, 0x1, 0x0); // 0x20a2: 0000306d
 OP_0x65(); // 0x20ac: 00000065
@@ -1644,13 +1644,13 @@ ShowText((5220)"The girl is not there in the light. The thing that Cybil is hold
 HandleInput(); // 0x20de: 00000010
 Jump(L_0x20e8); // 0x20e2: 00001001
 L_0x20e8:
-OP_0x26(0x38); // 0x20e8: 00001026
-OP_0x62(0x176, 0x36a); // 0x20ee: 00002062
-OP_0x64(); // 0x20f6: 00000064
+Area(0x38); // 0x20e8: 00001026
+TitleAndSubtitle(0x176, 0x36a); // 0x20ee: 00002062
+CleanScreen(); // 0x20f6: 00000064
 LoadBackground(0x16e); // 0x20fa: 00001069
 LoadEffect(0x4c, 0x1, 0x0, 0x1); // 0x2100: 0000406d
 OP_0x65(); // 0x210c: 00000065
-OP_0x72(0x39, 0x1); // 0x2110: 00002072
+PlaySoundFx(0x39, 0x1); // 0x2110: 00002072
 Choice((590)"Cybil suppressed a shriek. ¥"This...¥"", (591)"A ) It was a green jelly-like object.", (592)"B ) It was a slightly dirty, but familiar doll."); // 0x2118: 00003011
 Branch4(0x2bd, L_0x212e); // 0x2122: 00001004
 Jump(L_0x2142); // 0x2128: 00001001
@@ -1661,13 +1661,13 @@ Jump(L_0x23a6); // 0x2138: 00001001
 L_0x213e:
 Nop7(); // 0x213e: 00000007
 L_0x2142:
-OP_0x62(0x177, 0x36b); // 0x2142: 00002062
-OP_0x26(0x39); // 0x214a: 00001026
-OP_0x64(); // 0x2150: 00000064
+TitleAndSubtitle(0x177, 0x36b); // 0x2142: 00002062
+Area(0x39); // 0x214a: 00001026
+CleanScreen(); // 0x2150: 00000064
 LoadBackground(0x16f); // 0x2154: 00001069
 LoadEffect(0x4d, 0x1, 0x0); // 0x215a: 0000306d
 OP_0x65(); // 0x2164: 00000065
-OP_0x72(0x39, 0x1); // 0x2168: 00002072
+PlaySoundFx(0x39, 0x1); // 0x2168: 00002072
 ShowText((5221)"It was an unknown green jelly-like object."); // 0x2170: 0000100c
 HandleInput(); // 0x2176: 00000010
 ShowText((5222)"Cybil instantly stands up. It drips down in strands through the spaces between Cybil's fingers, connecting her hand with the tiles of the floor."); // 0x217a: 0000100c
@@ -1680,13 +1680,13 @@ ShowText((5225)"........."); // 0x2198: 0000100c
 HandleInput(); // 0x219e: 00000010
 Jump(L_0x21a8); // 0x21a2: 00001001
 L_0x21a8:
-OP_0x62(0x178, 0x36c); // 0x21a8: 00002062
-OP_0x26(0x3a); // 0x21b0: 00001026
-OP_0x64(); // 0x21b6: 00000064
+TitleAndSubtitle(0x178, 0x36c); // 0x21a8: 00002062
+Area(0x3a); // 0x21b0: 00001026
+CleanScreen(); // 0x21b6: 00000064
 LoadBackground(0x170); // 0x21ba: 00001069
 LoadEffect(0x4e, 0x1, 0x0); // 0x21c0: 0000306d
 OP_0x65(); // 0x21ca: 00000065
-OP_0x72(0x39, 0x1); // 0x21ce: 00002072
+PlaySoundFx(0x39, 0x1); // 0x21ce: 00002072
 ShowText((5226)"¥"I'm losing my mind...¥" She sobbed alone inside the elevator. The town, along with the lives of several people, had been swallowed up within the devil's dark garb."); // 0x21d6: 0000100c
 HandleInput(); // 0x21dc: 00000010
 ShowText((5227)"Inside the small box she calmed her breathing while shaking her shoulders hard. ¥"First of all I should look for Harry. And then work with him to escape from this wretched world.¥""); // 0x21e0: 0000100c
@@ -1695,35 +1695,35 @@ ShowText((5228)"Quite a bit of time passed since the ¥"1¥" lamp had gone out o
 HandleInput(); // 0x21f0: 00000010
 ShowText((5229)"Staring at the display of ¥"B1¥", she had pushed her back against the wall and slumped. Is there something in the basement of this building, deep in the ground? And if Cybil was brought here, then what was the reason?"); // 0x21f4: 0000100c
 HandleInput(); // 0x21fa: 00000010
-OP_0x6e(0x4e, 0x0, 0x0); // 0x21fe: 0000306e
+LoadSecondEffect(0x4e, 0x0, 0x0); // 0x21fe: 0000306e
 Jump(L_0x2434); // 0x2208: 00001001
 L_0x220e:
-OP_0x62(0x179, 0x36d); // 0x220e: 00002062
-OP_0x26(0x3b); // 0x2216: 00001026
-OP_0x64(); // 0x221c: 00000064
+TitleAndSubtitle(0x179, 0x36d); // 0x220e: 00002062
+Area(0x3b); // 0x2216: 00001026
+CleanScreen(); // 0x221c: 00000064
 LoadBackground(0x169); // 0x2220: 00001069
 LoadEffect(0x45, 0x1, 0x0); // 0x2226: 0000306d
 OP_0x65(); // 0x2230: 00000065
-OP_0x72(0x31, 0x1); // 0x2234: 00002072
+PlaySoundFx(0x31, 0x1); // 0x2234: 00002072
 ShowText((7058)"A boy stood alone in the current. He was fighting the current, and appeared to be holding on to a fragile protrusion with all his might."); // 0x223c: 0000100c
 HandleInput(); // 0x2242: 00000010
-OP_0x64(); // 0x2246: 00000064
+CleanScreen(); // 0x2246: 00000064
 LoadBackground(0x181); // 0x224a: 00001069
 LoadEffect(0x0, 0x0, 0x0); // 0x2250: 0000306d
 OP_0x65(); // 0x225a: 00000065
 ShowText((7059)"¥"Miss! Look!¥" Cheryl screamed, broke away from Cybil's hand, and then began to run toward the boy."); // 0x225e: 0000100c
 HandleInput(); // 0x2264: 00000010
-OP_0x64(); // 0x2268: 00000064
+CleanScreen(); // 0x2268: 00000064
 LoadBackground(0x16a); // 0x226c: 00001069
 OP_0x65(); // 0x2272: 00000065
-OP_0x73(0x9); // 0x2276: 00001073
+PlaySecondSoundFx(0x9); // 0x2276: 00001073
 ShowText((7060)"¥"Cheryl! That's dangerous!¥" Cybil instantly chased after her. A stone barrier runs parallel to the aqueduct. It is about shoulder-width and about the height of a child."); // 0x227c: 0000100c
 HandleInput(); // 0x2282: 00000010
 ShowText((7061)"Falling to the right from this barrier could result in injury, and falling to the left would probably result in being swallowed up by the current."); // 0x2286: 0000100c
 HandleInput(); // 0x228c: 00000010
 ShowText((7062)"Cheryl nimbly ran along the top of the narrow barrier. ¥"Wait! That is dangerous!¥" Her words were ineffective. Using her innate physical prowess, Cybil got on top of the barrier; however, she could not run along it as nimbly as Cheryl."); // 0x2290: 0000100c
 HandleInput(); // 0x2296: 00000010
-OP_0x64(); // 0x229a: 00000064
+CleanScreen(); // 0x229a: 00000064
 LoadBackground(0x181); // 0x229e: 00001069
 OP_0x65(); // 0x22a4: 00000065
 ShowText((7063)"By the time Cybil caught up to Cheryl she was lying prone on top of the barrier and reaching out towards the embankment trying to grasp the boy's hair."); // 0x22a8: 0000100c
@@ -1736,7 +1736,7 @@ ShowText((7066)"¥"Cheryl, you stay right there and don't move. I will be sure t
 HandleInput(); // 0x22cc: 00000010
 ShowText((7067)"Cybil's footing is quickly being eaten away by the strong current. As long as snow continues to pour into the entire town the aqueduct will certainly continue to overflow."); // 0x22d0: 0000100c
 HandleInput(); // 0x22d6: 00000010
-OP_0x64(); // 0x22da: 00000064
+CleanScreen(); // 0x22da: 00000064
 LoadBackground(0x0); // 0x22de: 00001069
 OP_0x65(); // 0x22e4: 00000065
 ShowText((7068)"The water is up to Cybil's knees. As the water pulls at her legs Cybil reaches her hand out toward the boy. The boy's face is covered in the white splashes, so Cybil cannot see it very well."); // 0x22e8: 0000100c
@@ -1747,14 +1747,14 @@ ShowText((7070)"Cybil eventually grasps the boy's left arm and is relieved a lit
 HandleInput(); // 0x2302: 00000010
 ShowText((7071)"However, the current of the water is faster than she had imagined. Pulling the boy against the current will not be easy. There is nowhere to grab on, so she cannot put any strength into it. The freezing cold is robbing her body of its warmth and her fingertips are going numb."); // 0x2306: 0000100c
 HandleInput(); // 0x230c: 00000010
-OP_0x64(); // 0x2310: 00000064
+CleanScreen(); // 0x2310: 00000064
 LoadBackground(0x181); // 0x2314: 00001069
 OP_0x65(); // 0x231a: 00000065
 ShowText((7072)"¥"Miss! It is impossible! You too will be swept away by the current!¥" Cheryl calls out to Cybil from behind. Cybil has a maternal feeling that she must save this boy, even if it means she will end up getting swept away."); // 0x231e: 0000100c
 HandleInput(); // 0x2324: 00000010
 ShowText((7073)"¥"It will be okay... just a little more...¥" Got it. Cybil gets a firm grasp on the boy's arm, and then successfully pulls his small body up."); // 0x2328: 0000100c
 HandleInput(); // 0x232e: 00000010
-OP_0x64(); // 0x2332: 00000064
+CleanScreen(); // 0x2332: 00000064
 LoadBackground(0x0); // 0x2336: 00001069
 OP_0x65(); // 0x233c: 00000065
 ShowText((7074)"¥"Haa...Great... Are you okay?¥" The boy does not answer right away, and just takes troubled breaths over and over. It is not surprising because he just nearly drown."); // 0x2340: 0000100c
@@ -1764,10 +1764,10 @@ HandleInput(); // 0x2350: 00000010
 ShowText((7076)"¥"Not you. Her! It was that child!¥" The boy rushes at Cheryl. Before Cybil could even think to stop him the boy grabbed Cheryl's arm and pulled her towards the current."); // 0x2354: 0000100c
 HandleInput(); // 0x235a: 00000010
 OP_0x2c(0x2, 0x2); // 0x235e: 0000202c
-OP_0x64(); // 0x2366: 00000064
+CleanScreen(); // 0x2366: 00000064
 LoadBackground(0x171); // 0x236a: 00001069
 OP_0x65(); // 0x2370: 00000065
-OP_0x6c(0x6f); // 0x2374: 0000106c
+PlayMusic(0x6f); // 0x2374: 0000106c
 ShowText((7077)"¥"What are you doing! Stop it now!¥" (Cybil) ¥"What do you know! Why don't you tell her to stop!¥" (Andy) Cheryl falls into the water and begins to be swept away by the strong current."); // 0x237a: 0000100c
 HandleInput(); // 0x2380: 00000010
 ShowText((7078)"She would have to question the boy later. Cybil stomps as she runs along the concrete to keep up with Cheryl. ¥"Cheryl!¥""); // 0x2384: 0000100c
@@ -1777,13 +1777,13 @@ ShowText((7079)"Ah... Cybil's weak shouts were replaced by the sound of the wate
 HandleInput(); // 0x239c: 00000010
 Jump(L_0x1fd8); // 0x23a0: 00001001
 L_0x23a6:
-OP_0x62(0x17a, 0x36e); // 0x23a6: 00002062
-OP_0x26(0x3c); // 0x23ae: 00001026
-OP_0x64(); // 0x23b4: 00000064
+TitleAndSubtitle(0x17a, 0x36e); // 0x23a6: 00002062
+Area(0x3c); // 0x23ae: 00001026
+CleanScreen(); // 0x23b4: 00000064
 LoadBackground(0x172); // 0x23b8: 00001069
 LoadEffect(0x4f, 0x1, 0x0); // 0x23be: 0000306d
 OP_0x65(); // 0x23c8: 00000065
-OP_0x72(0x39, 0x1); // 0x23cc: 00002072
+PlaySoundFx(0x39, 0x1); // 0x23cc: 00002072
 ShowText((7080)"It was a slightly dirty, but familiar doll."); // 0x23d4: 0000100c
 HandleInput(); // 0x23da: 00000010
 ShowText((7081)"Countless blue fireworks went off in front of Cybil's eyes. Memories of the past... Unforgettable memories... Memories that should have been tightly sealed away within her..."); // 0x23de: 0000100c
@@ -1804,17 +1804,17 @@ ShowText((7088)"Cheryl was gone, and all that was left was the unpleasant feelin
 HandleInput(); // 0x242a: 00000010
 Jump(L_0x21a8); // 0x242e: 00001001
 L_0x2434:
-OP_0x62(0x17b, 0x36f); // 0x2434: 00002062
-OP_0x26(0x3d); // 0x243c: 00001026
-OP_0x25(); // 0x2442: 00000025
+TitleAndSubtitle(0x17b, 0x36f); // 0x2434: 00002062
+Area(0x3d); // 0x243c: 00001026
+CleanTextRecord(); // 0x2442: 00000025
 OP_0x2c(0x2, 0x2); // 0x2446: 0000202c
-OP_0x64(); // 0x244e: 00000064
+CleanScreen(); // 0x244e: 00000064
 LoadBackground(0x0); // 0x2452: 00001069
 OP_0x65(); // 0x2458: 00000065
-OP_0x6c(0x68); // 0x245c: 0000106c
+PlayMusic(0x68); // 0x245c: 0000106c
 ShowText((5230)"Eventually the elevator begins to gradually slow its descent, and at the same time that it comes to a complete stop the B1 lamp lights up. And then its doors open... Cybil dully felt this series of movements."); // 0x2462: 0000100c
 HandleInput(); // 0x2468: 00000010
-OP_0x64(); // 0x246c: 00000064
+CleanScreen(); // 0x246c: 00000064
 LoadBackground(0x190); // 0x2470: 00001069
 OP_0x65(); // 0x2476: 00000065
 ShowText((5231)"With the doors open, the light that illuminates the passage that extends in front of her pours into the elevator."); // 0x247a: 0000100c
@@ -1823,12 +1823,12 @@ ShowText((5232)"As Cybil begins to walk forward it almost looks like that light 
 HandleInput(); // 0x248a: 00000010
 Jump(L_0x2494); // 0x248e: 00001001
 L_0x2494:
-OP_0x62(0x17c, 0x370); // 0x2494: 00002062
-OP_0x26(0x3e); // 0x249c: 00001026
-OP_0x64(); // 0x24a2: 00000064
+TitleAndSubtitle(0x17c, 0x370); // 0x2494: 00002062
+Area(0x3e); // 0x249c: 00001026
+CleanScreen(); // 0x24a2: 00000064
 LoadBackground(0x191); // 0x24a6: 00001069
 OP_0x65(); // 0x24ac: 00000065
-OP_0x6c(0x68, 0x1); // 0x24b0: 0000206c
+PlayMusic(0x68, 0x1); // 0x24b0: 0000206c
 ShowText((5233)"Eventually a single door appears. The passage ends with this door. Perhaps all the mysteries of B1 will lie in this room?"); // 0x24b8: 0000100c
 HandleInput(); // 0x24be: 00000010
 ShowText((5234)"(I didn't want to get you wrapped up in this.) The voice of the girl flitted about in the back of Cybil's mind. ¥"What was the girl's goal? And where is Harry? Perhaps Harry has come here in the same manner as well. Or?¥""); // 0x24c2: 0000100c
@@ -1839,34 +1839,34 @@ ShowText((5236)"It is hot, and Cybil immediately takes her hand off the knob. So
 HandleInput(); // 0x24dc: 00000010
 Jump(L_0x24e6); // 0x24e0: 00001001
 L_0x24e6:
-OP_0x62(0x17d, 0x371); // 0x24e6: 00002062
-OP_0x26(0x3f); // 0x24ee: 00001026
-OP_0x64(); // 0x24f4: 00000064
+TitleAndSubtitle(0x17d, 0x371); // 0x24e6: 00002062
+Area(0x3f); // 0x24ee: 00001026
+CleanScreen(); // 0x24f4: 00000064
 LoadBackground(0x191); // 0x24f8: 00001069
 OP_0x65(); // 0x24fe: 00000065
 OP_0x29(); // 0x2502: 00000029
-OP_0x73(0x28); // 0x2506: 00001073
+PlaySecondSoundFx(0x28); // 0x2506: 00001073
 ShowText((5237)"She kicks the door with all her might. With a hopeful feeling, she continues to kick the door over and over with the thick sole of her boot. Finally the knob breaks, and the door forcefully opens inward. At the same time hot wind singes Cybil's hair."); // 0x250c: 0000100c
 HandleInput(); // 0x2512: 00000010
-OP_0x64(); // 0x2516: 00000064
+CleanScreen(); // 0x2516: 00000064
 LoadBackground(0x192); // 0x251a: 00001069
 LoadEffect(0x2e, 0x1, 0x1); // 0x2520: 0000306d
 OP_0x65(); // 0x252a: 00000065
-OP_0x72(0x26); // 0x252e: 00001072
+PlaySoundFx(0x26); // 0x252e: 00001072
 ShowText((5238)"And then Cybil saw it. The room is about as large as a movie theater. Fire has spread all throughout, and it has began to collapse."); // 0x2534: 0000100c
 HandleInput(); // 0x253a: 00000010
 ShowText((5239)"Beyond the debris and flames a man is holding something to his chest and heading toward another exit in order to get out. And just as he reached the exit the vigorously burning flames lit the side of his face."); // 0x253e: 0000100c
 HandleInput(); // 0x2544: 00000010
 Jump(L_0x254e); // 0x2548: 00001001
 L_0x254e:
-OP_0x26(0x40); // 0x254e: 00001026
-OP_0x62(0x17e, 0x372); // 0x2554: 00002062
-OP_0x64(); // 0x255c: 00000064
+Area(0x40); // 0x254e: 00001026
+TitleAndSubtitle(0x17e, 0x372); // 0x2554: 00002062
+CleanScreen(); // 0x255c: 00000064
 LoadBackground(0x192); // 0x2560: 00001069
 LoadEffect(0x2e, 0x1, 0x1, 0x2); // 0x2566: 0000406d
 OP_0x65(); // 0x2572: 00000065
-OP_0x6e(0x2e, 0x1, 0x1, 0x1); // 0x2576: 0000406e
-OP_0x72(0x26, 0x1); // 0x2582: 00002072
+LoadSecondEffect(0x2e, 0x1, 0x1, 0x1); // 0x2576: 0000406e
+PlaySoundFx(0x26, 0x1); // 0x2582: 00002072
 Choice((600)"It was...", (601)"A ) unmistakably Harry.", (602)"B ) an unfamiliar man."); // 0x258a: 00003011
 Branch4(0x2cb, L_0x25a0); // 0x2594: 00001004
 Jump(L_0x25b4); // 0x259a: 00001001
@@ -1877,41 +1877,41 @@ Jump(L_0x2812); // 0x25aa: 00001001
 L_0x25b0:
 Nop7(); // 0x25b0: 00000007
 L_0x25b4:
-OP_0x62(0x17f, 0x373); // 0x25b4: 00002062
-OP_0x26(0x41); // 0x25bc: 00001026
-OP_0x64(); // 0x25c2: 00000064
+TitleAndSubtitle(0x17f, 0x373); // 0x25b4: 00002062
+Area(0x41); // 0x25bc: 00001026
+CleanScreen(); // 0x25c2: 00000064
 LoadBackground(0x192); // 0x25c6: 00001069
 LoadEffect(0x2e, 0x1, 0x1, 0x2); // 0x25cc: 0000406d
 OP_0x65(); // 0x25d8: 00000065
-OP_0x6e(0x2e, 0x1, 0x1, 0x1); // 0x25dc: 0000406e
-OP_0x72(0x26, 0x1); // 0x25e8: 00002072
+LoadSecondEffect(0x2e, 0x1, 0x1, 0x1); // 0x25dc: 0000406e
+PlaySoundFx(0x26, 0x1); // 0x25e8: 00002072
 ShowText((5240)"And it was unmistakably Harry."); // 0x25f0: 0000100c
 HandleInput(); // 0x25f6: 00000010
 ShowText((5241)"¥"Harry!¥" Cybil's voice was a scream. Without backing away, she ran into the room, which had become hell-like. A piece of rubble enveloped in flames fell right in front of her. ¥"KYA!¥""); // 0x25fa: 0000100c
 HandleInput(); // 0x2600: 00000010
-OP_0x73(0x2f); // 0x2604: 00001073
-OP_0x1f(0x3c); // 0x260a: 0000101f
-OP_0x73(0x25); // 0x2610: 00001073
+PlaySecondSoundFx(0x2f); // 0x2604: 00001073
+PlaySecondSoundFx(0x3c); // 0x260a: 0000101f
+PlaySecondSoundFx(0x25); // 0x2610: 00001073
 ShowText((5242)"Cybil had fallen back on her behind, but instantly stood up, moved around the obstacle and proceeded further into the room. However, she had lost Harry. ¥"Harry!¥" She once again yelled out his name."); // 0x2616: 0000100c
 HandleInput(); // 0x261c: 00000010
 Jump(L_0x2626); // 0x2620: 00001001
 L_0x2626:
-OP_0x62(0x180, 0x374); // 0x2626: 00002062
-OP_0x26(0x42); // 0x262e: 00001026
-OP_0x64(); // 0x2634: 00000064
+TitleAndSubtitle(0x180, 0x374); // 0x2626: 00002062
+Area(0x42); // 0x262e: 00001026
+CleanScreen(); // 0x2634: 00000064
 LoadBackground(0x192); // 0x2638: 00001069
 LoadEffect(0x2e, 0x1, 0x1, 0x2); // 0x263e: 0000406d
 OP_0x65(); // 0x264a: 00000065
-OP_0x6e(0x2e, 0x1, 0x1, 0x1); // 0x264e: 0000406e
-OP_0x72(0x26, 0x1); // 0x265a: 00002072
+LoadSecondEffect(0x2e, 0x1, 0x1, 0x1); // 0x264e: 0000406e
+PlaySoundFx(0x26, 0x1); // 0x265a: 00002072
 ShowText((5243)"Someone is collapsed at her feet."); // 0x2662: 0000100c
 HandleInput(); // 0x2668: 00000010
 OP_0x2c(0x2, 0x1); // 0x266c: 0000202c
-OP_0x64(); // 0x2674: 00000064
+CleanScreen(); // 0x2674: 00000064
 LoadBackground(0x193); // 0x2678: 00001069
 LoadEffect(0x2e, 0x1, 0x1); // 0x267e: 0000306d
 OP_0x65(); // 0x2688: 00000065
-OP_0x6c(0x71); // 0x268c: 0000106c
+PlayMusic(0x71); // 0x268c: 0000106c
 ShowText((5244)"A girl dressed in white clothing is lying face down, and her back moves up and down along with her breathing. Cybil stops, kneels down, and places her hand on the girl's shoulder."); // 0x2692: 0000100c
 HandleInput(); // 0x2698: 00000010
 ShowText((5245)"¥"Are you okay? If you stay here you will be burned to death. Hurry and get up!¥" The girl just remains face down and does not even try to look up."); // 0x269c: 0000100c
@@ -1924,14 +1924,14 @@ ShowText((5248)"¥"Cheryl... Why are you here...!?¥" Cybil carries Cheryl's sma
 HandleInput(); // 0x26c0: 00000010
 Jump(L_0x26ca); // 0x26c4: 00001001
 L_0x26ca:
-OP_0x62(0x181, 0x375); // 0x26ca: 00002062
-OP_0x26(0x43); // 0x26d2: 00001026
-OP_0x64(); // 0x26d8: 00000064
+TitleAndSubtitle(0x181, 0x375); // 0x26ca: 00002062
+Area(0x43); // 0x26d2: 00001026
+CleanScreen(); // 0x26d8: 00000064
 LoadBackground(0x193); // 0x26dc: 00001069
 LoadEffect(0x2e, 0x1, 0x1, 0x2); // 0x26e2: 0000406d
 OP_0x65(); // 0x26ee: 00000065
-OP_0x6e(0x2e, 0x1, 0x1, 0x1); // 0x26f2: 0000406e
-OP_0x6c(0x71, 0x1); // 0x26fe: 0000206c
+LoadSecondEffect(0x2e, 0x1, 0x1, 0x1); // 0x26f2: 0000406e
+PlayMusic(0x71, 0x1); // 0x26fe: 0000206c
 ShowText((5249)"Cheryl has suffered serious burns on her entire body. If they don't get out quickly then not only Cheryl, but Cybil as well will be burned to ash."); // 0x2706: 0000100c
 HandleInput(); // 0x270c: 00000010
 ShowText((5250)"Black smoke rises from Cheryl's white clothing. The girl is just barely conscious, and her face is pale. Part of her hair is burned, and her right cheek is red and swollen. Cybil sheds tears."); // 0x2710: 0000100c
@@ -1942,14 +1942,14 @@ ShowText((5252)"In order to save the faint life in front of her Cybil risks her 
 HandleInput(); // 0x272a: 00000010
 Jump(L_0x2734); // 0x272e: 00001001
 L_0x2734:
-OP_0x62(0x182, 0x376); // 0x2734: 00002062
-OP_0x26(0x44); // 0x273c: 00001026
-OP_0x64(); // 0x2742: 00000064
+TitleAndSubtitle(0x182, 0x376); // 0x2734: 00002062
+Area(0x44); // 0x273c: 00001026
+CleanScreen(); // 0x2742: 00000064
 LoadBackground(0x193); // 0x2746: 00001069
 LoadEffect(0x2e, 0x1, 0x1, 0x2); // 0x274c: 0000406d
 OP_0x65(); // 0x2758: 00000065
-OP_0x6e(0x2e, 0x1, 0x1, 0x1); // 0x275c: 0000406e
-OP_0x6c(0x71, 0x1); // 0x2768: 0000206c
+LoadSecondEffect(0x2e, 0x1, 0x1, 0x1); // 0x275c: 0000406e
+PlayMusic(0x71, 0x1); // 0x2768: 0000206c
 ShowText((5253)"Cybil avoids debris as she heads towards the exit. At the same time she thinks."); // 0x2770: 0000100c
 HandleInput(); // 0x2776: 00000010
 ShowText((5254)"The man she just saw... He seems to have just abandoned this girl. And if that is the case..."); // 0x277a: 0000100c
@@ -1957,37 +1957,37 @@ HandleInput(); // 0x2780: 00000010
 OP_0x2c(0x3, 0x1); // 0x2784: 0000202c
 Jump(L_0x2792); // 0x278c: 00001001
 L_0x2792:
-OP_0x62(0x183, 0x377); // 0x2792: 00002062
-OP_0x26(0x45); // 0x279a: 00001026
-OP_0x6e(0x0, 0x0, 0x1); // 0x27a0: 0000306e
-OP_0x64(); // 0x27aa: 00000064
+TitleAndSubtitle(0x183, 0x377); // 0x2792: 00002062
+Area(0x45); // 0x279a: 00001026
+LoadSecondEffect(0x0, 0x0, 0x1); // 0x27a0: 0000306e
+CleanScreen(); // 0x27aa: 00000064
 LoadBackground(0x194); // 0x27ae: 00001069
 OP_0x65(); // 0x27b4: 00000065
 ShowText((5255)"Cybil finally arrives at the exit, and places her foot on the white staircase that extends in front of her. And then she races up it."); // 0x27b8: 0000100c
 HandleInput(); // 0x27be: 00000010
-OP_0x73(0x2f); // 0x27c2: 00001073
+PlaySecondSoundFx(0x2f); // 0x27c2: 00001073
 ShowText((5256)"From behind the loudest explosion yet occurs. A sea of fire is just behind Cybil, and is closing in on her."); // 0x27c8: 0000100c
 HandleInput(); // 0x27ce: 00000010
 ShowText((5257)"As she climbs the long staircase Cybil has the goal of reaching the light coming from above the ground. Or perhaps she just senses that it is her last hope, so she runs stronger and faster up the stairs. Cybil glances down at Cheryl's face."); // 0x27d2: 0000100c
 HandleInput(); // 0x27d8: 00000010
-OP_0x64(); // 0x27dc: 00000064
+CleanScreen(); // 0x27dc: 00000064
 LoadBackground(0x0); // 0x27e0: 00001069
 OP_0x65(); // 0x27e6: 00000065
-OP_0x6c(0x65); // 0x27ea: 0000106c
+PlayMusic(0x65); // 0x27ea: 0000106c
 PlayCredits(); // 0x27f0: 0000005f
 OP_0x2c(0x3, 0x3); // 0x27f4: 0000202c
-OP_0x1f(0x78); // 0x27fc: 0000101f
+PlaySecondSoundFx(0x78); // 0x27fc: 0000101f
 GiveCard(0x14, 0x16, 0x19, 0x1a); // 0x2802: 00004060
 Stop(); // 0x280e: 00000063
 L_0x2812:
-OP_0x62(0x184, 0x378); // 0x2812: 00002062
-OP_0x26(0x46); // 0x281a: 00001026
-OP_0x64(); // 0x2820: 00000064
+TitleAndSubtitle(0x184, 0x378); // 0x2812: 00002062
+Area(0x46); // 0x281a: 00001026
+CleanScreen(); // 0x2820: 00000064
 LoadBackground(0x192); // 0x2824: 00001069
 LoadEffect(0x2e, 0x1, 0x1, 0x2); // 0x282a: 0000406d
 OP_0x65(); // 0x2836: 00000065
-OP_0x6e(0x2e, 0x1, 0x1, 0x1); // 0x283a: 0000406e
-OP_0x72(0x26, 0x1); // 0x2846: 00002072
+LoadSecondEffect(0x2e, 0x1, 0x1, 0x1); // 0x283a: 0000406e
+PlaySoundFx(0x26, 0x1); // 0x2846: 00002072
 ShowText((7089)"It is not Harry. It is a slightly plump middle aged man."); // 0x284e: 0000100c
 HandleInput(); // 0x2854: 00000010
 ShowText((7090)"That man is holding what looks like a white paper bag to his chest and is running out of the room."); // 0x2858: 0000100c
@@ -1998,59 +1998,59 @@ ShowText((7092)"Cybil begins to run in order to chase him, but almost stumbles o
 HandleInput(); // 0x2872: 00000010
 Jump(L_0x2626); // 0x2876: 00001001
 L_0x287c:
-OP_0x62(0x185, 0x379); // 0x287c: 00002062
-OP_0x26(0x47); // 0x2884: 00001026
-OP_0x25(); // 0x288a: 00000025
+TitleAndSubtitle(0x185, 0x379); // 0x287c: 00002062
+Area(0x47); // 0x2884: 00001026
+CleanTextRecord(); // 0x288a: 00000025
 OP_0x2c(0x3, 0x1); // 0x288e: 0000202c
-OP_0x64(); // 0x2896: 00000064
+CleanScreen(); // 0x2896: 00000064
 LoadBackground(0x43); // 0x289a: 00001069
 LoadEffect(0xe, 0x1, 0x0, 0x1); // 0x28a0: 0000406d
 OP_0x65(); // 0x28ac: 00000065
-OP_0x6c(0x68); // 0x28b0: 0000106c
+PlayMusic(0x68); // 0x28b0: 0000106c
 ShowText((6001)"Being unable to escape from Silent Hill, Cybil then worried about what she should do next. Since all the people have vanished she cannot even talk to anyone about what is happening here."); // 0x28b6: 0000100c
 HandleInput(); // 0x28bc: 00000010
 ShowText((6002)"¥"I should look for the police station. Even if the person I was talking on the phone with earlier isn't there. I might be able to get some other information there.¥" She has visited this town many times. Following her the thread of her memory, she begins walking along the complicated intersecting streets."); // 0x28c0: 0000100c
 HandleInput(); // 0x28c6: 00000010
 Jump(L_0x28d0); // 0x28ca: 00001001
 L_0x28d0:
-OP_0x62(0x186, 0x37a); // 0x28d0: 00002062
-OP_0x26(0x48); // 0x28d8: 00001026
-OP_0x64(); // 0x28de: 00000064
+TitleAndSubtitle(0x186, 0x37a); // 0x28d0: 00002062
+Area(0x48); // 0x28d8: 00001026
+CleanScreen(); // 0x28de: 00000064
 LoadBackground(0x118); // 0x28e2: 00001069
 LoadEffect(0xe, 0x1, 0x0); // 0x28e8: 0000306d
 OP_0x65(); // 0x28f2: 00000065
-OP_0x6c(0x68, 0x1); // 0x28f6: 0000206c
+PlayMusic(0x68, 0x1); // 0x28f6: 0000206c
 ShowText((6003)"¥"Just how long have I been walking?¥" As she saw the word ¥"POLICE¥" appear from out of the fog her entire body was completely exhausted."); // 0x28fe: 0000100c
 HandleInput(); // 0x2904: 00000010
 OP_0x2c(0x3, 0x1); // 0x2908: 0000202c
-OP_0x64(); // 0x2910: 00000064
+CleanScreen(); // 0x2910: 00000064
 LoadBackground(0x119); // 0x2914: 00001069
 LoadEffect(0x0, 0x0, 0x0); // 0x291a: 0000306d
 OP_0x65(); // 0x2924: 00000065
-OP_0x73(0x1f); // 0x2928: 00001073
+PlaySecondSoundFx(0x1f); // 0x2928: 00001073
 ShowText((6004)"She opens the glass door at the entrance and heads inside. As she does this she sees that no one is here, which is just as she had expected. The lack of any sound is painful to her ears."); // 0x292e: 0000100c
 HandleInput(); // 0x2934: 00000010
 ShowText((6005)"After she walked around the reception area for a bit she moved toward a room that door had been left open for. The plate beside the door says ¥"Meeting Room¥". Compared to the same room at the Brahms station, this one is quite small. She looked around the room."); // 0x2938: 0000100c
 HandleInput(); // 0x293e: 00000010
 ShowText((6006)"Clunk. At the same time Cybil entered the room one of the disorderly arranged folding chairs moved quite a bit. She readied herself. ¥"Who's there?¥""); // 0x2942: 0000100c
 HandleInput(); // 0x2948: 00000010
-OP_0x64(); // 0x294c: 00000064
+CleanScreen(); // 0x294c: 00000064
 LoadBackground(0x119); // 0x2950: 00001069
 OP_0x65(); // 0x2956: 00000065
-OP_0x6e(0x53, 0x1, 0x2); // 0x295a: 0000306e
-OP_0x6c(0x67); // 0x2964: 0000106c
+LoadSecondEffect(0x53, 0x1, 0x2); // 0x295a: 0000306e
+PlayMusic(0x67); // 0x2964: 0000106c
 ShowText((6007)"A man jumped up right away and pointed a black handgun at Cybil."); // 0x296a: 0000100c
 HandleInput(); // 0x2970: 00000010
 Jump(L_0x297a); // 0x2974: 00001001
 L_0x297a:
-OP_0x26(0x49); // 0x297a: 00001026
-OP_0x62(0x187, 0x37b); // 0x2980: 00002062
-OP_0x64(); // 0x2988: 00000064
+Area(0x49); // 0x297a: 00001026
+TitleAndSubtitle(0x187, 0x37b); // 0x2980: 00002062
+CleanScreen(); // 0x2988: 00000064
 LoadBackground(0x119); // 0x298c: 00001069
 LoadEffect(0x53, 0x1, 0x2, 0x2); // 0x2992: 0000406d
 OP_0x65(); // 0x299e: 00000065
-OP_0x6e(0x53, 0x1, 0x2, 0x1); // 0x29a2: 0000406e
-OP_0x6c(0x67, 0x1); // 0x29ae: 0000206c
+LoadSecondEffect(0x53, 0x1, 0x2, 0x1); // 0x29a2: 0000406e
+PlayMusic(0x67, 0x1); // 0x29ae: 0000206c
 Choice((610)"The man...", (611)"A ) lowers the gun.", (612)"B ) fires at Cybil."); // 0x29b6: 00003011
 Branch4(0x2d9, L_0x29cc); // 0x29c0: 00001004
 Jump(L_0x29e0); // 0x29c6: 00001001
@@ -2061,19 +2061,19 @@ Jump(L_0x2ae6); // 0x29d6: 00001001
 L_0x29dc:
 Nop7(); // 0x29dc: 00000007
 L_0x29e0:
-OP_0x62(0x188, 0x37c); // 0x29e0: 00002062
-OP_0x26(0x4a); // 0x29e8: 00001026
-OP_0x64(); // 0x29ee: 00000064
+TitleAndSubtitle(0x188, 0x37c); // 0x29e0: 00002062
+Area(0x4a); // 0x29e8: 00001026
+CleanScreen(); // 0x29ee: 00000064
 LoadBackground(0x119); // 0x29f2: 00001069
 LoadEffect(0x53, 0x1, 0x2, 0x2); // 0x29f8: 0000406d
 OP_0x65(); // 0x2a04: 00000065
-OP_0x6c(0x67, 0x1); // 0x2a08: 0000206c
-OP_0x6e(0x63, 0x1, 0x2); // 0x2a10: 0000306e
+PlayMusic(0x67, 0x1); // 0x2a08: 0000206c
+LoadSecondEffect(0x63, 0x1, 0x2); // 0x2a10: 0000306e
 ShowText((6008)"The man slowly returns the weapon to his side. ¥"Cybil...¥" ¥"Harry!¥""); // 0x2a1a: 0000100c
 HandleInput(); // 0x2a20: 00000010
 ShowText((6009)"¥"Sorry. I thought that another monster had appeared. So I instantly hid behind a chair.¥" ¥"Me too... All this is not good for my heart, you know.¥""); // 0x2a24: 0000100c
 HandleInput(); // 0x2a2a: 00000010
-OP_0x6e(0x64, 0x1, 0x2); // 0x2a2e: 0000306e
+LoadSecondEffect(0x64, 0x1, 0x2); // 0x2a2e: 0000306e
 ShowText((6010)"¥"Before I came here I found a steel pipe. I will give the handgun back to you. Like you said, I might end up shooting a human by mistake.¥""); // 0x2a38: 0000100c
 HandleInput(); // 0x2a3e: 00000010
 ShowText((6011)"Saying that Harry plops the handgun into Cybil's hand. Cybil nods slightly. ¥"Have you found your daughter?¥""); // 0x2a42: 0000100c
@@ -2085,20 +2085,20 @@ HandleInput(); // 0x2a5c: 00000010
 OP_0x2c(0x3, 0x1); // 0x2a60: 0000202c
 ShowText((6014)"¥"OK.¥" (Harry) They ran out of the police station with Harry in the lead."); // 0x2a68: 0000100c
 HandleInput(); // 0x2a6e: 00000010
-OP_0x64(); // 0x2a72: 00000064
+CleanScreen(); // 0x2a72: 00000064
 LoadBackground(0x0); // 0x2a76: 00001069
 LoadEffect(0x0, 0x0, 0x2); // 0x2a7c: 0000306d
 OP_0x65(); // 0x2a86: 00000065
-OP_0x73(0xc); // 0x2a8a: 00001073
+PlaySecondSoundFx(0xc); // 0x2a8a: 00001073
 Jump(L_0x2a96); // 0x2a90: 00001001
 L_0x2a96:
-OP_0x62(0x189, 0x37d); // 0x2a96: 00002062
-OP_0x26(0x4b); // 0x2a9e: 00001026
-OP_0x64(); // 0x2aa4: 00000064
+TitleAndSubtitle(0x189, 0x37d); // 0x2a96: 00002062
+Area(0x4b); // 0x2a9e: 00001026
+CleanScreen(); // 0x2aa4: 00000064
 LoadBackground(0x43); // 0x2aa8: 00001069
 LoadEffect(0xe, 0x1, 0x0); // 0x2aae: 0000306d
 OP_0x65(); // 0x2ab8: 00000065
-OP_0x6c(0x68); // 0x2abc: 0000106c
+PlayMusic(0x68); // 0x2abc: 0000106c
 ShowText((6015)"On the way to the church Harry tells Cybil about the events that occurred in the cafe while running out of breath."); // 0x2ac2: 0000100c
 HandleInput(); // 0x2ac8: 00000010
 ShowText((6016)"¥"Indeed... Something is wrong here.¥" (Cybil) ¥"I was glad to have received the handgun from you...¥" Cheryl doesn't have any weapons. And she is just a little girl...¥""); // 0x2acc: 0000100c
@@ -2107,18 +2107,18 @@ ShowText((6017)"Hoping that Cheryl would be at the church Cybil carefully ran ov
 HandleInput(); // 0x2adc: 00000010
 Jump(L_0x2bba); // 0x2ae0: 00001001
 L_0x2ae6:
-OP_0x62(0x18a, 0x37e); // 0x2ae6: 00002062
-OP_0x26(0x4c); // 0x2aee: 00001026
-OP_0x64(); // 0x2af4: 00000064
+TitleAndSubtitle(0x18a, 0x37e); // 0x2ae6: 00002062
+Area(0x4c); // 0x2aee: 00001026
+CleanScreen(); // 0x2af4: 00000064
 LoadBackground(0x119); // 0x2af8: 00001069
 LoadEffect(0x53, 0x1, 0x2, 0x2); // 0x2afe: 0000406d
 OP_0x65(); // 0x2b0a: 00000065
-OP_0x6c(0x67, 0x1); // 0x2b0e: 0000206c
-OP_0x6e(0x53, 0x1, 0x2, 0x1); // 0x2b16: 0000406e
-OP_0x73(0xf); // 0x2b22: 00001073
+PlayMusic(0x67, 0x1); // 0x2b0e: 0000206c
+LoadSecondEffect(0x53, 0x1, 0x2, 0x1); // 0x2b16: 0000406e
+PlaySecondSoundFx(0xf); // 0x2b22: 00001073
 ShowText((7093)"(Bang!) The bullet grazes Cybil's temple and impacts on the wall of the meeting room. Shocked, Cybil sank to the floor."); // 0x2b28: 0000100c
 HandleInput(); // 0x2b2e: 00000010
-OP_0x6e(0x63, 0x1, 0x2); // 0x2b32: 0000306e
+LoadSecondEffect(0x63, 0x1, 0x2); // 0x2b32: 0000306e
 ShowText((7094)"¥"Cybil!¥" All the color has drained out of the face of the man that is standing in front of the still unable to speak Cybil. It was unmistakable... It was Harry."); // 0x2b3c: 0000100c
 HandleInput(); // 0x2b42: 00000010
 ShowText((7095)"¥"Sorry...! Are you alright?¥" ¥"...I was shocked... If you had been just a little more over then you would have hit me!¥" Harry sighs deeply."); // 0x2b46: 0000100c
@@ -2131,24 +2131,24 @@ ShowText((7098)"The inside of the station was ominously silent. Even if the othe
 HandleInput(); // 0x2b6a: 00000010
 ShowText((7099)"¥"Let's look somewhere else. There should be a church just over the river. Maybe she is in custody there?¥" ¥"OK.¥" After muttering this Harry holds the gun out to Cybil as if he has realized something."); // 0x2b6e: 0000100c
 HandleInput(); // 0x2b74: 00000010
-OP_0x6e(0x64, 0x1, 0x2); // 0x2b78: 0000306e
+LoadSecondEffect(0x64, 0x1, 0x2); // 0x2b78: 0000306e
 ShowText((7100)"¥"I will give this back to you. I have had a few opportunities to use it, but this seems more suited to me.¥" Harry says this and readies a long steel pipe that he picked up somewhere."); // 0x2b82: 0000100c
 HandleInput(); // 0x2b88: 00000010
 ShowText((7101)"¥"I see. But you would be better off just getting used to using it.¥" Harry has a sorrowful look on his face. Cybil gives him a contemptuous glance and then a smile appears on her face. Then she runs out of the station."); // 0x2b8c: 0000100c
 HandleInput(); // 0x2b92: 00000010
-OP_0x64(); // 0x2b96: 00000064
+CleanScreen(); // 0x2b96: 00000064
 LoadBackground(0x0); // 0x2b9a: 00001069
 LoadEffect(0x0, 0x0, 0x2); // 0x2ba0: 0000306d
 OP_0x65(); // 0x2baa: 00000065
-OP_0x73(0xc); // 0x2bae: 00001073
+PlaySecondSoundFx(0xc); // 0x2bae: 00001073
 Jump(L_0x2a96); // 0x2bb4: 00001001
 L_0x2bba:
-OP_0x62(0x18b, 0x37f); // 0x2bba: 00002062
-OP_0x26(0x4d); // 0x2bc2: 00001026
-OP_0x25(); // 0x2bc8: 00000025
+TitleAndSubtitle(0x18b, 0x37f); // 0x2bba: 00002062
+Area(0x4d); // 0x2bc2: 00001026
+CleanTextRecord(); // 0x2bc8: 00000025
 OP_0x29(); // 0x2bcc: 00000029
-OP_0x73(0x14); // 0x2bd0: 00001073
-OP_0x64(); // 0x2bd6: 00000064
+PlaySecondSoundFx(0x14); // 0x2bd0: 00001073
+CleanScreen(); // 0x2bd6: 00000064
 LoadBackground(0x0); // 0x2bda: 00001069
 LoadEffect(0x0, 0x0, 0x0); // 0x2be0: 0000306d
 OP_0x65(); // 0x2bea: 00000065
@@ -2158,15 +2158,15 @@ ShowText((6019)"No churchgoers are present on any of the long benches which have
 HandleInput(); // 0x2bfe: 00000010
 Jump(L_0x2c08); // 0x2c02: 00001001
 L_0x2c08:
-OP_0x62(0x18c, 0x380); // 0x2c08: 00002062
-OP_0x26(0x4e); // 0x2c10: 00001026
+TitleAndSubtitle(0x18c, 0x380); // 0x2c08: 00002062
+Area(0x4e); // 0x2c10: 00001026
 ShowMovie(0x2); // 0x2c16: 0000100d
-OP_0x64(); // 0x2c1c: 00000064
+CleanScreen(); // 0x2c1c: 00000064
 LoadBackground(0x44); // 0x2c20: 00001069
 LoadEffect(0x0, 0x0, 0x0); // 0x2c26: 0000306d
 OP_0x65(); // 0x2c30: 00000065
-OP_0x6e(0x65, 0x1, 0x1); // 0x2c34: 0000306e
-OP_0x6c(0x6e); // 0x2c3e: 0000106c
+LoadSecondEffect(0x65, 0x1, 0x1); // 0x2c34: 0000306e
+PlayMusic(0x6e); // 0x2c3e: 0000106c
 ShowText((6020)"¥"You are too late.¥" The woman mutters this and stands. ¥"You are too late. The girl that you are looking for just left here.¥""); // 0x2c44: 0000100c
 HandleInput(); // 0x2c4a: 00000010
 ShowText((6021)"The color of Harry's face changes. ¥"Cheryl...? Was it Cheryl? She is a 7 year old girl with black hair...¥" The woman at the altar puts one hand up to silence Harry."); // 0x2c4e: 0000100c
@@ -2185,14 +2185,14 @@ ShowText((6027)"¥"If those girls happened to be separated then it would certain
 HandleInput(); // 0x2c90: 00000010
 Jump(L_0x2c9a); // 0x2c94: 00001001
 L_0x2c9a:
-OP_0x62(0x18d, 0x381); // 0x2c9a: 00002062
-OP_0x26(0x4f); // 0x2ca2: 00001026
-OP_0x64(); // 0x2ca8: 00000064
+TitleAndSubtitle(0x18d, 0x381); // 0x2c9a: 00002062
+Area(0x4f); // 0x2ca2: 00001026
+CleanScreen(); // 0x2ca8: 00000064
 LoadBackground(0x44); // 0x2cac: 00001069
 LoadEffect(0x65, 0x1, 0x1, 0x2); // 0x2cb2: 0000406d
 OP_0x65(); // 0x2cbe: 00000065
-OP_0x6e(0x65, 0x1, 0x1, 0x1); // 0x2cc2: 0000406e
-OP_0x6c(0x6e, 0x1); // 0x2cce: 0000206c
+LoadSecondEffect(0x65, 0x1, 0x1, 0x1); // 0x2cc2: 0000406e
+PlayMusic(0x6e, 0x1); // 0x2cce: 0000206c
 ShowText((6028)"Harry began to speak as if the floodgates had just been opened."); // 0x2cd6: 0000100c
 HandleInput(); // 0x2cdc: 00000010
 ShowText((6029)"¥"What are you getting at?! I am Cheryl's guardian. I have a responsibility to protect her. Tell me where she is going!¥""); // 0x2ce0: 0000100c
@@ -2203,14 +2203,14 @@ ShowText((6031)"Before Dahlia finished speaking Harry ran out of the church. ¥"
 HandleInput(); // 0x2cfa: 00000010
 Jump(L_0x2d04); // 0x2cfe: 00001001
 L_0x2d04:
-OP_0x62(0x18e, 0x382); // 0x2d04: 00002062
-OP_0x26(0x50); // 0x2d0c: 00001026
+TitleAndSubtitle(0x18e, 0x382); // 0x2d04: 00002062
+Area(0x50); // 0x2d0c: 00001026
 OP_0x2c(0x3, 0x1); // 0x2d12: 0000202c
-OP_0x64(); // 0x2d1a: 00000064
+CleanScreen(); // 0x2d1a: 00000064
 LoadEffect(0x0, 0x0, 0x1); // 0x2d1e: 0000306d
 LoadBackground(0x0); // 0x2d28: 00001069
 OP_0x65(); // 0x2d2e: 00000065
-OP_0x72(0x39); // 0x2d32: 00001072
+PlaySoundFx(0x39); // 0x2d32: 00001072
 ShowText((6032)"In order to resurrect myself I will need your body. Please understand this...)"); // 0x2d38: 0000100c
 HandleInput(); // 0x2d3e: 00000010
 ShowText((6033)"I understand. That is why I came here, and came to see you."); // 0x2d42: 0000100c
@@ -2228,14 +2228,14 @@ ShowText((6038)"..........................."); // 0x2d7c: 0000100c
 HandleInput(); // 0x2d82: 00000010
 Jump(L_0x2d8c); // 0x2d86: 00001001
 L_0x2d8c:
-OP_0x62(0x18f, 0x383); // 0x2d8c: 00002062
-OP_0x26(0x51); // 0x2d94: 00001026
-OP_0x25(); // 0x2d9a: 00000025
-OP_0x64(); // 0x2d9e: 00000064
+TitleAndSubtitle(0x18f, 0x383); // 0x2d8c: 00002062
+Area(0x51); // 0x2d94: 00001026
+CleanTextRecord(); // 0x2d9a: 00000025
+CleanScreen(); // 0x2d9e: 00000064
 LoadBackground(0x143); // 0x2da2: 00001069
 LoadEffect(0xe, 0x1, 0x0); // 0x2da8: 0000306d
 OP_0x65(); // 0x2db2: 00000065
-OP_0x6c(0x68); // 0x2db6: 0000106c
+PlayMusic(0x68); // 0x2db6: 0000106c
 ShowText((6039)"Once Cybil caught up to Harry he was having a difficult time breathing."); // 0x2dbc: 0000100c
 HandleInput(); // 0x2dc2: 00000010
 ShowText((6040)"¥"...ah... haa... You alright...?¥" ¥"That woman... Dahlia or something...¥" Harry placed one hand on his chest, stopped in the street, and placed his other hand on a car."); // 0x2dc6: 0000100c
@@ -2246,13 +2246,13 @@ ShowText((6042)"¥"Harry, you don't look so good.¥" ¥"Cybil... The air seems t
 HandleInput(); // 0x2de0: 00000010
 Jump(L_0x2dea); // 0x2de4: 00001001
 L_0x2dea:
-OP_0x26(0x52); // 0x2dea: 00001026
-OP_0x62(0x190, 0x384); // 0x2df0: 00002062
-OP_0x64(); // 0x2df8: 00000064
+Area(0x52); // 0x2dea: 00001026
+TitleAndSubtitle(0x190, 0x384); // 0x2df0: 00002062
+CleanScreen(); // 0x2df8: 00000064
 LoadBackground(0x143); // 0x2dfc: 00001069
 LoadEffect(0xe, 0x1, 0x0, 0x1); // 0x2e02: 0000406d
 OP_0x65(); // 0x2e0e: 00000065
-OP_0x6c(0x68, 0x1); // 0x2e12: 0000206c
+PlayMusic(0x68, 0x1); // 0x2e12: 0000206c
 Choice((620)"Harry...", (621)"A ) begins to talk again.", (622)"B ) begins coughing violently."); // 0x2e1a: 00003011
 Branch4(0x2e7, L_0x2e30); // 0x2e24: 00001004
 Jump(L_0x2e44); // 0x2e2a: 00001001
@@ -2263,14 +2263,14 @@ Jump(L_0x2fb8); // 0x2e3a: 00001001
 L_0x2e40:
 Nop7(); // 0x2e40: 00000007
 L_0x2e44:
-OP_0x62(0x191, 0x385); // 0x2e44: 00002062
-OP_0x26(0x53); // 0x2e4c: 00001026
-OP_0x64(); // 0x2e52: 00000064
+TitleAndSubtitle(0x191, 0x385); // 0x2e44: 00002062
+Area(0x53); // 0x2e4c: 00001026
+CleanScreen(); // 0x2e52: 00000064
 LoadBackground(0xf0); // 0x2e56: 00001069
 LoadEffect(0xe, 0x1, 0x0); // 0x2e5c: 0000306d
 OP_0x65(); // 0x2e66: 00000065
-OP_0x6c(0x68, 0x1); // 0x2e6a: 0000206c
-OP_0x6e(0x52, 0x1, 0x1); // 0x2e72: 0000306e
+PlayMusic(0x68, 0x1); // 0x2e6a: 0000206c
+LoadSecondEffect(0x52, 0x1, 0x1); // 0x2e72: 0000306e
 ShowText((6043)"¥"Well, it's alright... A town in which snow is falling... The name Dahlia... And her daughter is with my daughter... The fact that they are together...¥" He lifts his head, and looks at Cybil."); // 0x2e7c: 0000100c
 HandleInput(); // 0x2e82: 00000010
 ShowText((6044)"¥"Something... There is something that I think I know, but... it's on the tip of my tongue but I cannot remember it...¥" Cybil softly places her hand on Harry's shoulder. ¥"You're tired Harry. Let's rest for a bit...¥""); // 0x2e86: 0000100c
@@ -2281,14 +2281,14 @@ ShowText((6046)"Cybil once again follows behind Harry's frozen back."); // 0x2e9
 HandleInput(); // 0x2ea0: 00000010
 Jump(L_0x2eaa); // 0x2ea4: 00001001
 L_0x2eaa:
-OP_0x62(0x192, 0x386); // 0x2eaa: 00002062
-OP_0x26(0x54); // 0x2eb2: 00001026
-OP_0x64(); // 0x2eb8: 00000064
+TitleAndSubtitle(0x192, 0x386); // 0x2eaa: 00002062
+Area(0x54); // 0x2eb2: 00001026
+CleanScreen(); // 0x2eb8: 00000064
 LoadBackground(0x0); // 0x2ebc: 00001069
 LoadEffect(0x0, 0x0, 0x1); // 0x2ec2: 0000306d
 OP_0x65(); // 0x2ecc: 00000065
-OP_0x6c(0x68, 0x1); // 0x2ed0: 0000206c
-OP_0x64(); // 0x2ed8: 00000064
+PlayMusic(0x68, 0x1); // 0x2ed0: 0000206c
+CleanScreen(); // 0x2ed8: 00000064
 LoadBackground(0x50); // 0x2edc: 00001069
 LoadEffect(0xe, 0x1, 0x0); // 0x2ee2: 0000306d
 OP_0x65(); // 0x2eec: 00000065
@@ -2303,18 +2303,18 @@ HandleInput(); // 0x2f14: 00000010
 ShowText((9915)"Use the L and R Buttons to select a plate. Use the Control Pad to move the selected plate."); // 0x2f18: 0000100c
 HandleInput(); // 0x2f1e: 00000010
 Puzzle(0x5); // 0x2f22: 00001061
-OP_0x64(); // 0x2f28: 00000064
+CleanScreen(); // 0x2f28: 00000064
 LoadBackground(0x0); // 0x2f2c: 00001069
 OP_0x65(); // 0x2f32: 00000065
 OP_0x29(); // 0x2f36: 00000029
-OP_0x73(0x1f); // 0x2f3a: 00001073
+PlaySecondSoundFx(0x1f); // 0x2f3a: 00001073
 ShowText((6049)"Harry opened the door. Although they came as told..."); // 0x2f40: 0000100c
 HandleInput(); // 0x2f46: 00000010
 Jump(L_0x2f50); // 0x2f4a: 00001001
 L_0x2f50:
-OP_0x62(0x193, 0x387); // 0x2f50: 00002062
-OP_0x26(0x55); // 0x2f58: 00001026
-OP_0x64(); // 0x2f5e: 00000064
+TitleAndSubtitle(0x193, 0x387); // 0x2f50: 00002062
+Area(0x55); // 0x2f58: 00001026
+CleanScreen(); // 0x2f5e: 00000064
 LoadBackground(0x142); // 0x2f62: 00001069
 OP_0x65(); // 0x2f68: 00000065
 ShowText((6050)"Inside the hospital it is dark, and it seems that if one does not walk carefully then they would stumble."); // 0x2f6c: 0000100c
@@ -2333,13 +2333,13 @@ ShowText((6056)"Cybil immediately began to run toward the wall at the end of the
 HandleInput(); // 0x2fae: 00000010
 Jump(L_0x303e); // 0x2fb2: 00001001
 L_0x2fb8:
-OP_0x62(0x194, 0x388); // 0x2fb8: 00002062
-OP_0x26(0x56); // 0x2fc0: 00001026
-OP_0x64(); // 0x2fc6: 00000064
+TitleAndSubtitle(0x194, 0x388); // 0x2fb8: 00002062
+Area(0x56); // 0x2fc0: 00001026
+CleanScreen(); // 0x2fc6: 00000064
 LoadBackground(0x143); // 0x2fca: 00001069
 LoadEffect(0xe, 0x1, 0x0, 0x1); // 0x2fd0: 0000406d
 OP_0x65(); // 0x2fdc: 00000065
-OP_0x6c(0x68, 0x1); // 0x2fe0: 0000206c
+PlayMusic(0x68, 0x1); // 0x2fe0: 0000206c
 ShowText((7102)"¥"Cough! Cough...!¥" Harry began to cough violently again. ¥"Are you alright? You look like you are in pain...¥""); // 0x2fe8: 0000100c
 HandleInput(); // 0x2fee: 00000010
 ShowText((7103)"Blood flows out from the spaces between the fingers of the hand that Harry placed over his mouth. ¥"Harry...!¥""); // 0x2ff2: 0000100c
@@ -2358,10 +2358,10 @@ ShowText((7109)"¥"Harry...¥""); // 0x302e: 0000100c
 HandleInput(); // 0x3034: 00000010
 Jump(L_0x2e44); // 0x3038: 00001001
 L_0x303e:
-OP_0x62(0x195, 0x389); // 0x303e: 00002062
-OP_0x26(0x57); // 0x3046: 00001026
-OP_0x25(); // 0x304c: 00000025
-OP_0x64(); // 0x3050: 00000064
+TitleAndSubtitle(0x195, 0x389); // 0x303e: 00002062
+Area(0x57); // 0x3046: 00001026
+CleanTextRecord(); // 0x304c: 00000025
+CleanScreen(); // 0x3050: 00000064
 LoadBackground(0x154); // 0x3054: 00001069
 OP_0x65(); // 0x305a: 00000065
 ShowText((6057)"Cybil begins to walk along the concrete wall that is dimly lit by the outside light. Several doors are on the left and right of the passage."); // 0x305e: 0000100c
@@ -2370,7 +2370,7 @@ ShowText((6058)"Each door has a 3 digit number plate on it, and without even loo
 HandleInput(); // 0x306e: 00000010
 ShowText((6059)"¥"Cheryl! If you are there come out... Your Daddy is looking for you!¥" Cybil's voice just reverberates and then fades into the air."); // 0x3072: 0000100c
 HandleInput(); // 0x3078: 00000010
-OP_0x73(0x1f); // 0x307c: 00001073
+PlaySecondSoundFx(0x1f); // 0x307c: 00001073
 ShowText((6060)"She places her hand on the knob of one of the doors and turns it. It appears to be locked."); // 0x3082: 0000100c
 HandleInput(); // 0x3088: 00000010
 ShowText((6061)"Maybe Cheryl is in one of the rooms and locked it from the inside. But if Cybil's voice cannot reach her... ¥"Just how should I search for Cheryl?¥""); // 0x308c: 0000100c
@@ -2379,9 +2379,9 @@ ShowText((6062)"¥"...That's it...¥""); // 0x3096: 0000100c
 HandleInput(); // 0x309c: 00000010
 Jump(L_0x30a6); // 0x30a0: 00001001
 L_0x30a6:
-OP_0x26(0x58); // 0x30a6: 00001026
-OP_0x62(0x196, 0x38a); // 0x30ac: 00002062
-OP_0x64(); // 0x30b4: 00000064
+Area(0x58); // 0x30a6: 00001026
+TitleAndSubtitle(0x196, 0x38a); // 0x30ac: 00002062
+CleanScreen(); // 0x30b4: 00000064
 LoadBackground(0x154); // 0x30b8: 00001069
 OP_0x65(); // 0x30be: 00000065
 Choice((630)"Cybil thinks of something.", (631)"A ) If I use the key...", (632)"B ) If I use the hospital intercom..."); // 0x30c2: 00003011
@@ -2394,97 +2394,97 @@ Jump(L_0x3152); // 0x30e2: 00001001
 L_0x30e8:
 Nop7(); // 0x30e8: 00000007
 L_0x30ec:
-OP_0x62(0x197, 0x38b); // 0x30ec: 00002062
-OP_0x26(0x59); // 0x30f4: 00001026
-OP_0x64(); // 0x30fa: 00000064
+TitleAndSubtitle(0x197, 0x38b); // 0x30ec: 00002062
+Area(0x59); // 0x30f4: 00001026
+CleanScreen(); // 0x30fa: 00000064
 LoadBackground(0x154); // 0x30fe: 00001069
 OP_0x65(); // 0x3104: 00000065
-OP_0x6c(0x6e); // 0x3108: 0000106c
+PlayMusic(0x6e); // 0x3108: 0000106c
 ShowText((6063)"¥"The key... The key to the hospital rooms should be at the reception area. Then I can open the doors and search each room for her.¥""); // 0x310e: 0000100c
 HandleInput(); // 0x3114: 00000010
 Jump(L_0x311e); // 0x3118: 00001001
 L_0x311e:
-OP_0x62(0x198, 0x38c); // 0x311e: 00002062
-OP_0x26(0x5a); // 0x3126: 00001026
-OP_0x64(); // 0x312c: 00000064
+TitleAndSubtitle(0x198, 0x38c); // 0x311e: 00002062
+Area(0x5a); // 0x3126: 00001026
+CleanScreen(); // 0x312c: 00000064
 LoadBackground(0x154); // 0x3130: 00001069
 OP_0x65(); // 0x3136: 00000065
-OP_0x6c(0x6e, 0x1); // 0x313a: 0000206c
+PlayMusic(0x6e, 0x1); // 0x313a: 0000206c
 ShowText((6064)"¥"To realize this after coming up to the third floor...¥" Cybil races back down the stairs that she just ran up in order to return to the first floor."); // 0x3142: 0000100c
 HandleInput(); // 0x3148: 00000010
 Jump(L_0x318e); // 0x314c: 00001001
 L_0x3152:
-OP_0x62(0x199, 0x38d); // 0x3152: 00002062
-OP_0x26(0x5b); // 0x315a: 00001026
-OP_0x64(); // 0x3160: 00000064
+TitleAndSubtitle(0x199, 0x38d); // 0x3152: 00002062
+Area(0x5b); // 0x315a: 00001026
+CleanScreen(); // 0x3160: 00000064
 LoadBackground(0x154); // 0x3164: 00001069
 OP_0x65(); // 0x316a: 00000065
-OP_0x6c(0x6e); // 0x316e: 0000106c
+PlayMusic(0x6e); // 0x316e: 0000106c
 ShowText((7110)"¥"The hospital intercom... Most hospitals have a speaker installed in each room. A hospital of this size should definitely have such a thing installed."); // 0x3174: 0000100c
 HandleInput(); // 0x317a: 00000010
 ShowText((7111)"I'll head back to the reception area on the first floor and then look for the room with the intercom equipment. If something happens down there then I can get help from Harry.¥""); // 0x317e: 0000100c
 HandleInput(); // 0x3184: 00000010
 Jump(L_0x311e); // 0x3188: 00001001
 L_0x318e:
-OP_0x62(0x19a, 0x38e); // 0x318e: 00002062
-OP_0x26(0x5c); // 0x3196: 00001026
-OP_0x25(); // 0x319c: 00000025
-OP_0x73(0x9); // 0x31a0: 00001073
-OP_0x64(); // 0x31a6: 00000064
+TitleAndSubtitle(0x19a, 0x38e); // 0x318e: 00002062
+Area(0x5c); // 0x3196: 00001026
+CleanTextRecord(); // 0x319c: 00000025
+PlaySecondSoundFx(0x9); // 0x31a0: 00001073
+CleanScreen(); // 0x31a6: 00000064
 LoadBackground(0x0); // 0x31aa: 00001069
 LoadEffect(0x1d, 0x1, 0x0); // 0x31b0: 0000306d
 OP_0x65(); // 0x31ba: 00000065
-OP_0x6c(0x6e, 0x1); // 0x31be: 0000206c
+PlayMusic(0x6e, 0x1); // 0x31be: 0000206c
 ShowText((6065)"On her way down the stairs Cybil heard footsteps as she was passing the second floor. (Harry...?)"); // 0x31c6: 0000100c
 HandleInput(); // 0x31cc: 00000010
 ShowText((6066)"The second floor is the same as the third, there is a central corridor with doors lined up on both walls. ¥"Harry? Is that you Harry?¥""); // 0x31d0: 0000100c
 HandleInput(); // 0x31d6: 00000010
 OP_0x2c(0x3, 0x1); // 0x31da: 0000202c
-OP_0x6e(0x0, 0x0, 0x0); // 0x31e2: 0000306e
-OP_0x64(); // 0x31ec: 00000064
+LoadSecondEffect(0x0, 0x0, 0x0); // 0x31e2: 0000306e
+CleanScreen(); // 0x31ec: 00000064
 LoadBackground(0x96); // 0x31f0: 00001069
 OP_0x65(); // 0x31f6: 00000065
 ShowText((6067)"There is a large window at the end of the hall. White light from the foggy outside is reflecting off the floor. Without realizing it Cybil squinted."); // 0x31fa: 0000100c
 HandleInput(); // 0x3200: 00000010
 ShowText((6068)"But... Someone is standing in front of the window."); // 0x3204: 0000100c
 HandleInput(); // 0x320a: 00000010
-OP_0x6e(0x51, 0x1, 0x1); // 0x320e: 0000306e
+LoadSecondEffect(0x51, 0x1, 0x1); // 0x320e: 0000306e
 ShowText((6069)"From the shape of the outline of the human visible in the darkness Cybil can tell that it is not Harry... It looks like a girl."); // 0x3218: 0000100c
 HandleInput(); // 0x321e: 00000010
 Jump(L_0x3228); // 0x3222: 00001001
 L_0x3228:
-OP_0x62(0x19b, 0x38f); // 0x3228: 00002062
-OP_0x26(0x5d); // 0x3230: 00001026
-OP_0x64(); // 0x3236: 00000064
+TitleAndSubtitle(0x19b, 0x38f); // 0x3228: 00002062
+Area(0x5d); // 0x3230: 00001026
+CleanScreen(); // 0x3236: 00000064
 LoadBackground(0x96); // 0x323a: 00001069
 LoadEffect(0x51, 0x1, 0x1, 0x2); // 0x3240: 0000406d
 OP_0x65(); // 0x324c: 00000065
-OP_0x6e(0x51, 0x1, 0x1, 0x1); // 0x3250: 0000406e
+LoadSecondEffect(0x51, 0x1, 0x1, 0x1); // 0x3250: 0000406e
 ShowText((6070)"Cybil just stared at the figure, and was unable to move for a bit. Just like a frog being stared down by a snake, all her movements were sealed."); // 0x325c: 0000100c
 HandleInput(); // 0x3262: 00000010
 ShowText((6071)"¥"Cheryl...?¥" Who knows how long it was before she said that. The girl did not answer, and began moving toward Cybil, as if she was gliding..."); // 0x3266: 0000100c
 HandleInput(); // 0x326c: 00000010
 ShowText((6072)"Slowly, she continued moving toward Cybil..."); // 0x3270: 0000100c
 HandleInput(); // 0x3276: 00000010
-OP_0x6e(0x51, 0x2, 0x1); // 0x327a: 0000306e
+LoadSecondEffect(0x51, 0x2, 0x1); // 0x327a: 0000306e
 ShowText((6073)"Eventually the girl twisted her body and jerked her right hand. She made her hand into a fist, created a large bullet of light, and then looked at Cybil."); // 0x3284: 0000100c
 HandleInput(); // 0x328a: 00000010
-OP_0x6e(0x51, 0x3, 0x1); // 0x328e: 0000306e
+LoadSecondEffect(0x51, 0x3, 0x1); // 0x328e: 0000306e
 ShowText((6074)"¥"Wha...?¥" ¥"Watch out! Cybil! Get down!!¥" It is Harry's voice. At the moment Cybil drops down the bullet of light slices through the air, and impacts into something behind her."); // 0x3298: 0000100c
 HandleInput(); // 0x329e: 00000010
-OP_0x6e(0x51, 0x0, 0x1); // 0x32a2: 0000306e
-OP_0x6e(0x5a, 0x1, 0x1); // 0x32ac: 0000306e
-OP_0x73(0x2d); // 0x32b6: 00001073
-OP_0x73(0x2f); // 0x32bc: 00001073
-OP_0x6e(0x5a, 0x0, 0x1); // 0x32c2: 0000306e
-OP_0x6e(0x0, 0x0, 0x1); // 0x32cc: 0000306e
+LoadSecondEffect(0x51, 0x0, 0x1); // 0x32a2: 0000306e
+LoadSecondEffect(0x5a, 0x1, 0x1); // 0x32ac: 0000306e
+PlaySecondSoundFx(0x2d); // 0x32b6: 00001073
+PlaySecondSoundFx(0x2f); // 0x32bc: 00001073
+LoadSecondEffect(0x5a, 0x0, 0x1); // 0x32c2: 0000306e
+LoadSecondEffect(0x0, 0x0, 0x1); // 0x32cc: 0000306e
 ShowText((6075)"(Well, that takes care of... one of them...)"); // 0x32d6: 0000100c
 HandleInput(); // 0x32dc: 00000010
 Jump(L_0x32e6); // 0x32e0: 00001001
 L_0x32e6:
-OP_0x62(0x19c, 0x390); // 0x32e6: 00002062
-OP_0x26(0x5e); // 0x32ee: 00001026
-OP_0x64(); // 0x32f4: 00000064
+TitleAndSubtitle(0x19c, 0x390); // 0x32e6: 00002062
+Area(0x5e); // 0x32ee: 00001026
+CleanScreen(); // 0x32f4: 00000064
 LoadBackground(0x17c); // 0x32f8: 00001069
 OP_0x65(); // 0x32fe: 00000065
 ShowText((6076)"The girl vanishes. Cybil turns and sees Harry laying face down, holding his hand to his chest."); // 0x3302: 0000100c
@@ -2499,9 +2499,9 @@ ShowText((6080)"¥"...that... was...¥""); // 0x332a: 0000100c
 HandleInput(); // 0x3330: 00000010
 Jump(L_0x333a); // 0x3334: 00001001
 L_0x333a:
-OP_0x26(0x5f); // 0x333a: 00001026
-OP_0x62(0x19d, 0x391); // 0x3340: 00002062
-OP_0x64(); // 0x3348: 00000064
+Area(0x5f); // 0x333a: 00001026
+TitleAndSubtitle(0x19d, 0x391); // 0x3340: 00002062
+CleanScreen(); // 0x3348: 00000064
 LoadBackground(0x17c); // 0x334c: 00001069
 OP_0x65(); // 0x3352: 00000065
 Choice((640)"¥"Harry! Hold on!¥" Harry...", (641)"A ) stops moving.", (642)"B ) talks about the girl...", (643)"C ) opens his eyes wide."); // 0x3356: 00004011
@@ -2518,17 +2518,17 @@ Jump(L_0x3438); // 0x3388: 00001001
 L_0x338e:
 Nop7(); // 0x338e: 00000007
 L_0x3392:
-OP_0x62(0x19e, 0x392); // 0x3392: 00002062
-OP_0x26(0x60); // 0x339a: 00001026
-OP_0x64(); // 0x33a0: 00000064
+TitleAndSubtitle(0x19e, 0x392); // 0x3392: 00002062
+Area(0x60); // 0x339a: 00001026
+CleanScreen(); // 0x33a0: 00000064
 LoadBackground(0x17c); // 0x33a4: 00001069
 OP_0x65(); // 0x33aa: 00000065
 ShowText((6081)"¥"...Harry...? Harry!¥" Harry did not speak or respond again."); // 0x33ae: 0000100c
 HandleInput(); // 0x33b4: 00000010
-OP_0x64(); // 0x33b8: 00000064
+CleanScreen(); // 0x33b8: 00000064
 LoadBackground(0x17c); // 0x33bc: 00001069
 OP_0x65(); // 0x33c2: 00000065
-OP_0x6c(0x6e); // 0x33c6: 0000106c
+PlayMusic(0x6e); // 0x33c6: 0000106c
 ShowText((6082)"Cybil, who had been unable to accept the incomprehensible events that had occurred around her up to this point, was unable to believe that the man in front of her was dead."); // 0x33cc: 0000100c
 HandleInput(); // 0x33d2: 00000010
 ShowText((6083)"The wind seems to be blowing outside."); // 0x33d6: 0000100c
@@ -2540,9 +2540,9 @@ HandleInput(); // 0x33f0: 00000010
 OP_0x2c(0x3, 0x1); // 0x33f4: 0000202c
 Jump(L_0x373c); // 0x33fc: 00001001
 L_0x3402:
-OP_0x62(0x19f, 0x393); // 0x3402: 00002062
-OP_0x26(0x61); // 0x340a: 00001026
-OP_0x64(); // 0x3410: 00000064
+TitleAndSubtitle(0x19f, 0x393); // 0x3402: 00002062
+Area(0x61); // 0x340a: 00001026
+CleanScreen(); // 0x3410: 00000064
 LoadBackground(0x17c); // 0x3414: 00001069
 OP_0x65(); // 0x341a: 00000065
 ShowText((7112)"¥"That girl was... not...Cheryl...¥" Harry then begins coughing, and at the same time vermilion liquid spatters about. ¥"Harry! Don't talk anymore!¥""); // 0x341e: 0000100c
@@ -2551,42 +2551,42 @@ ShowText((7113)"Harry is crying. ¥"...zha...t... That was... not Cheryl at... a
 HandleInput(); // 0x342e: 00000010
 Jump(L_0x3392); // 0x3432: 00001001
 L_0x3438:
-OP_0x62(0x1a0, 0x394); // 0x3438: 00002062
-OP_0x26(0x62); // 0x3440: 00001026
-OP_0x64(); // 0x3446: 00000064
+TitleAndSubtitle(0x1a0, 0x394); // 0x3438: 00002062
+Area(0x62); // 0x3440: 00001026
+CleanScreen(); // 0x3446: 00000064
 LoadBackground(0x17c); // 0x344a: 00001069
 OP_0x65(); // 0x3450: 00000065
 ShowText((7114)"Harry calls forth the last of his strength and opens his eyes wide. ¥"...Cybil... Look out...!¥" The dim corridor is lit with blindingly bright light, and Cybil's shadow extends forward."); // 0x3454: 0000100c
 HandleInput(); // 0x345a: 00000010
-OP_0x64(); // 0x345e: 00000064
+CleanScreen(); // 0x345e: 00000064
 LoadBackground(0x17d); // 0x3462: 00001069
 OP_0x65(); // 0x3468: 00000065
-OP_0x6e(0x47, 0x1, 0x1); // 0x346c: 0000306e
+LoadSecondEffect(0x47, 0x1, 0x1); // 0x346c: 0000306e
 ShowText((7115)"Cybil turns... and notices the girl has another bullet of light in her hand. ¥"Stop it... Cheryl... no more...¥""); // 0x3476: 0000100c
 HandleInput(); // 0x347c: 00000010
 ShowText((7116)"Summoning the last of his strength Harry crawls towards the girl. And when he sees her face in the light, a mysterious look appears on his face, as if he has remembered something and realized something."); // 0x3480: 0000100c
 HandleInput(); // 0x3486: 00000010
 ShowText((7117)"¥"...why... are you...¥" The girl swings her arm down and at the same time Harry's scream echoes."); // 0x348a: 0000100c
 HandleInput(); // 0x3490: 00000010
-OP_0x6e(0x47, 0x0, 0x1); // 0x3494: 0000306e
-OP_0x6e(0x59, 0x1, 0x1); // 0x349e: 0000306e
-OP_0x73(0x2d); // 0x34a8: 00001073
+LoadSecondEffect(0x47, 0x0, 0x1); // 0x3494: 0000306e
+LoadSecondEffect(0x59, 0x1, 0x1); // 0x349e: 0000306e
+PlaySecondSoundFx(0x2d); // 0x34a8: 00001073
 ShowText((7118)"The area flashes with light. Harry is gone, and the floor tile where he was has been burned black."); // 0x34ae: 0000100c
 HandleInput(); // 0x34b4: 00000010
-OP_0x6e(0x59, 0x0, 0x1); // 0x34b8: 0000306e
-OP_0x6e(0x47, 0x1, 0x1); // 0x34c2: 0000306e
+LoadSecondEffect(0x59, 0x0, 0x1); // 0x34b8: 0000306e
+LoadSecondEffect(0x47, 0x1, 0x1); // 0x34c2: 0000306e
 ShowText((7119)"Now only Cybil and the girl are in the corridor."); // 0x34cc: 0000100c
 HandleInput(); // 0x34d2: 00000010
 Jump(L_0x34dc); // 0x34d6: 00001001
 L_0x34dc:
-OP_0x26(0x63); // 0x34dc: 00001026
-OP_0x62(0x1a1, 0x395); // 0x34e2: 00002062
-OP_0x64(); // 0x34ea: 00000064
+Area(0x63); // 0x34dc: 00001026
+TitleAndSubtitle(0x1a1, 0x395); // 0x34e2: 00002062
+CleanScreen(); // 0x34ea: 00000064
 LoadBackground(0x17d); // 0x34ee: 00001069
 LoadEffect(0x47, 0x1, 0x1, 0x2); // 0x34f4: 0000406d
 OP_0x65(); // 0x3500: 00000065
-OP_0x6c(0x66); // 0x3504: 0000106c
-OP_0x6e(0x47, 0x1, 0x1, 0x1); // 0x350a: 0000406e
+PlayMusic(0x66); // 0x3504: 0000106c
+LoadSecondEffect(0x47, 0x1, 0x1, 0x1); // 0x350a: 0000406e
 Choice((650)"Cybil gasps.", (651)"A ) She flees with all her might.", (652)"B ) She must fight."); // 0x3516: 00003011
 Branch4(0x318, L_0x352c); // 0x3520: 00001004
 Jump(L_0x3540); // 0x3526: 00001001
@@ -2597,17 +2597,17 @@ Jump(L_0x35ee); // 0x3536: 00001001
 L_0x353c:
 Nop7(); // 0x353c: 00000007
 L_0x3540:
-OP_0x62(0x1a2, 0x396); // 0x3540: 00002062
-OP_0x26(0x64); // 0x3548: 00001026
-OP_0x64(); // 0x354e: 00000064
+TitleAndSubtitle(0x1a2, 0x396); // 0x3540: 00002062
+Area(0x64); // 0x3548: 00001026
+CleanScreen(); // 0x354e: 00000064
 LoadBackground(0x17d); // 0x3552: 00001069
 LoadEffect(0x47, 0x1, 0x1, 0x2); // 0x3558: 0000406d
 OP_0x65(); // 0x3564: 00000065
-OP_0x6c(0x66, 0x1); // 0x3568: 0000206c
-OP_0x6e(0x47, 0x1, 0x1, 0x1); // 0x3570: 0000406e
+PlayMusic(0x66, 0x1); // 0x3568: 0000206c
+LoadSecondEffect(0x47, 0x1, 0x1, 0x1); // 0x3570: 0000406e
 ShowText((7120)"¥"I have to run. That is not a human. It is not something that I stand a chance against.¥""); // 0x357c: 0000100c
 HandleInput(); // 0x3582: 00000010
-OP_0x64(); // 0x3586: 00000064
+CleanScreen(); // 0x3586: 00000064
 LoadBackground(0x0); // 0x358a: 00001069
 LoadEffect(0x0, 0x0, 0x1); // 0x3590: 0000306d
 OP_0x65(); // 0x359a: 00000065
@@ -2615,7 +2615,7 @@ ShowText((7121)"Cybil summons all the strength she can muster and begins to run 
 HandleInput(); // 0x35a4: 00000010
 ShowText((7122)"No matter how much she runs she gets the feeling that she is not moving forward. ¥"Is the floor moving? And is this because of that girl's power?¥""); // 0x35a8: 0000100c
 HandleInput(); // 0x35ae: 00000010
-OP_0x73(0x2d); // 0x35b2: 00001073
+PlaySecondSoundFx(0x2d); // 0x35b2: 00001073
 ShowText((7123)"Light flashes from behind Cybil. It hits the wall and cracks it. The tiles have come off. A scene that she has not seen before approaches right in front of her eyes."); // 0x35b8: 0000100c
 HandleInput(); // 0x35be: 00000010
 ShowText((7124)"From black to white... However, it is not a sacred flame, but the fires that light Hell. Her clothes, hair, and skin are enveloped in a great light."); // 0x35c2: 0000100c
@@ -2627,31 +2627,31 @@ HandleInput(); // 0x35dc: 00000010
 OP_0x2c(0x3, 0x2); // 0x35e0: 0000202c
 Jump(L_0x39d8); // 0x35e8: 00001001
 L_0x35ee:
-OP_0x62(0x1a3, 0x397); // 0x35ee: 00002062
-OP_0x26(0x65); // 0x35f6: 00001026
-OP_0x64(); // 0x35fc: 00000064
+TitleAndSubtitle(0x1a3, 0x397); // 0x35ee: 00002062
+Area(0x65); // 0x35f6: 00001026
+CleanScreen(); // 0x35fc: 00000064
 LoadBackground(0x17d); // 0x3600: 00001069
 LoadEffect(0x47, 0x1, 0x1, 0x2); // 0x3606: 0000406d
 OP_0x65(); // 0x3612: 00000065
-OP_0x6c(0x66, 0x1); // 0x3616: 0000206c
-OP_0x6e(0x47, 0x1, 0x1, 0x1); // 0x361e: 0000406e
+PlayMusic(0x66, 0x1); // 0x3616: 0000206c
+LoadSecondEffect(0x47, 0x1, 0x1, 0x1); // 0x361e: 0000406e
 ShowText((7127)"¥"I have to fight. I cannot run from this.¥" Cybil felt this instinctively."); // 0x362a: 0000100c
 HandleInput(); // 0x3630: 00000010
 ShowText((7128)"She suddenly charged at the girl. Once again a ball of light began to grow large in the girl's hand."); // 0x3634: 0000100c
 HandleInput(); // 0x363a: 00000010
 ShowText((7129)"At the moment that the girl raised her hand high, Cybil knocked her to the ground before she could fire."); // 0x363e: 0000100c
 HandleInput(); // 0x3644: 00000010
-OP_0x73(0x2d); // 0x3648: 00001073
-OP_0x6e(0x59, 0x1, 0x1); // 0x364e: 0000306e
-OP_0x1f(0x28); // 0x3658: 0000101f
-OP_0x73(0x25); // 0x365e: 00001073
+PlaySecondSoundFx(0x2d); // 0x3648: 00001073
+LoadSecondEffect(0x59, 0x1, 0x1); // 0x364e: 0000306e
+PlaySecondSoundFx(0x28); // 0x3658: 0000101f
+PlaySecondSoundFx(0x25); // 0x365e: 00001073
 OP_0x2c(0x3, 0x1); // 0x3664: 0000202c
-OP_0x6e(0x59, 0x0, 0x1); // 0x366c: 0000306e
-OP_0x6e(0x0, 0x0, 0x1); // 0x3676: 0000306e
-OP_0x64(); // 0x3680: 00000064
+LoadSecondEffect(0x59, 0x0, 0x1); // 0x366c: 0000306e
+LoadSecondEffect(0x0, 0x0, 0x1); // 0x3676: 0000306e
+CleanScreen(); // 0x3680: 00000064
 LoadBackground(0x182); // 0x3684: 00001069
 OP_0x65(); // 0x368a: 00000065
-OP_0x6c(0x6f); // 0x368e: 0000106c
+PlayMusic(0x6f); // 0x368e: 0000106c
 ShowText((7130)"Cybil then forcefully straddled the girl, placed both hands firmly around her neck and continued to choke her."); // 0x3694: 0000100c
 HandleInput(); // 0x369a: 00000010
 ShowText((7131)"Her pupils were paralyzed by the bright light, but now as darkness quickly filled the area she would only have to wait for her vision to return."); // 0x369e: 0000100c
@@ -2673,25 +2673,25 @@ HandleInput(); // 0x36ea: 00000010
 ShowText((7139)"Her body becomes heavy... She has the desire to tell someone about who the girl is, but cannot..."); // 0x36ee: 0000100c
 HandleInput(); // 0x36f4: 00000010
 OP_0x2c(0x3, 0x1); // 0x36f8: 0000202c
-OP_0x64(); // 0x3700: 00000064
+CleanScreen(); // 0x3700: 00000064
 LoadBackground(0x0); // 0x3704: 00001069
 OP_0x65(); // 0x370a: 00000065
 ShowText((7140)"Cybil's consciousness grows distant..."); // 0x370e: 0000100c
 HandleInput(); // 0x3714: 00000010
-OP_0x6c(0x65); // 0x3718: 0000106c
+PlayMusic(0x65); // 0x3718: 0000106c
 PlayCredits(); // 0x371e: 0000005f
 OP_0x2c(0x3, 0x3); // 0x3722: 0000202c
-OP_0x1f(0x78); // 0x372a: 0000101f
+PlaySecondSoundFx(0x78); // 0x372a: 0000101f
 GiveCard(0xf, 0x1b); // 0x3730: 00002060
 Stop(); // 0x3738: 00000063
 L_0x373c:
-OP_0x62(0x1a4, 0x398); // 0x373c: 00002062
-OP_0x26(0x66); // 0x3744: 00001026
-OP_0x25(); // 0x374a: 00000025
-OP_0x64(); // 0x374e: 00000064
+TitleAndSubtitle(0x1a4, 0x398); // 0x373c: 00002062
+Area(0x66); // 0x3744: 00001026
+CleanTextRecord(); // 0x374a: 00000025
+CleanScreen(); // 0x374e: 00000064
 LoadBackground(0x0); // 0x3752: 00001069
 OP_0x65(); // 0x3758: 00000065
-OP_0x6c(0x67); // 0x375c: 0000106c
+PlayMusic(0x67); // 0x375c: 0000106c
 ShowText((6086)"¥"Just who was the girl... Cheryl? Or... Was it that woman's daughter...?"); // 0x3762: 0000100c
 HandleInput(); // 0x3768: 00000010
 ShowText((6087)"Concerning the incidents that have occurred in this town... No, they cannot be called incidents, but instead concerning this enigmatic situation, I have not found one piece of conclusive evidence and that irritates me."); // 0x376c: 0000100c
@@ -2704,12 +2704,12 @@ ShowText((6090)"¥"That Dahlia might know something. However...the destination t
 HandleInput(); // 0x3790: 00000010
 Jump(L_0x379a); // 0x3794: 00001001
 L_0x379a:
-OP_0x62(0x1a5, 0x399); // 0x379a: 00002062
-OP_0x26(0x67); // 0x37a2: 00001026
-OP_0x64(); // 0x37a8: 00000064
+TitleAndSubtitle(0x1a5, 0x399); // 0x379a: 00002062
+Area(0x67); // 0x37a2: 00001026
+CleanScreen(); // 0x37a8: 00000064
 LoadBackground(0x197); // 0x37ac: 00001069
 OP_0x65(); // 0x37b2: 00000065
-OP_0x6c(0x67, 0x1); // 0x37b6: 0000206c
+PlayMusic(0x67, 0x1); // 0x37b6: 0000206c
 ShowText((6091)"Cybil had returned to the first floor to get the key to the hospital rooms, but then she noticed a door that had been left open."); // 0x37be: 0000100c
 HandleInput(); // 0x37c4: 00000010
 ShowText((6092)"Creeeeek... Creeeeek... The door sways on its hinges as the result of wind blowing from somewhere."); // 0x37c8: 0000100c
@@ -2720,12 +2720,12 @@ ShowText((6094)"This door was unmistakably locked and not open just before. Cybi
 HandleInput(); // 0x37e2: 00000010
 Jump(L_0x37ec); // 0x37e6: 00001001
 L_0x37ec:
-OP_0x26(0x68); // 0x37ec: 00001026
-OP_0x62(0x1a6, 0x39a); // 0x37f2: 00002062
-OP_0x64(); // 0x37fa: 00000064
+Area(0x68); // 0x37ec: 00001026
+TitleAndSubtitle(0x1a6, 0x39a); // 0x37f2: 00002062
+CleanScreen(); // 0x37fa: 00000064
 LoadBackground(0x197); // 0x37fe: 00001069
 OP_0x65(); // 0x3804: 00000065
-OP_0x6c(0x67, 0x1); // 0x3808: 0000206c
+PlayMusic(0x67, 0x1); // 0x3808: 0000206c
 Choice((660)"¥"Ah...¥"", (661)"A ) There is a staircase leading to the basement.", (662)"B ) There is a blinding light. Cybil covers her eyes in reaction to it."); // 0x3810: 00003011
 Branch4(0x326, L_0x3826); // 0x381a: 00001004
 Jump(L_0x383a); // 0x3820: 00001001
@@ -2736,12 +2736,12 @@ Jump(L_0x3ab8); // 0x3830: 00001001
 L_0x3836:
 Nop7(); // 0x3836: 00000007
 L_0x383a:
-OP_0x62(0x1a7, 0x39b); // 0x383a: 00002062
-OP_0x26(0x69); // 0x3842: 00001026
-OP_0x64(); // 0x3848: 00000064
+TitleAndSubtitle(0x1a7, 0x39b); // 0x383a: 00002062
+Area(0x69); // 0x3842: 00001026
+CleanScreen(); // 0x3848: 00000064
 LoadBackground(0x195); // 0x384c: 00001069
 OP_0x65(); // 0x3852: 00000065
-OP_0x6c(0x67, 0x1); // 0x3856: 0000206c
+PlayMusic(0x67, 0x1); // 0x3856: 0000206c
 ShowText((6095)"There was not a room there. Just inside the doorway there was a staircase leading to the basement. It is not lit, so from her position Cybil cannot judge how far down it goes."); // 0x385e: 0000100c
 HandleInput(); // 0x3864: 00000010
 ShowText((6096)"Upon first glance, Cybil senses that this door was not opened by Harry. ¥"From the inside... Someone... came up the stairs...¥""); // 0x3868: 0000100c
@@ -2752,11 +2752,11 @@ ShowText((6098)"There was a large bloodstain on the knob on the inside of the do
 HandleInput(); // 0x3882: 00000010
 Jump(L_0x388c); // 0x3886: 00001001
 L_0x388c:
-OP_0x62(0x1a8, 0x39c); // 0x388c: 00002062
-OP_0x26(0x6a); // 0x3894: 00001026
-OP_0x25(); // 0x389a: 00000025
+TitleAndSubtitle(0x1a8, 0x39c); // 0x388c: 00002062
+Area(0x6a); // 0x3894: 00001026
+CleanTextRecord(); // 0x389a: 00000025
 OP_0x2c(0x3, 0x1); // 0x389e: 0000202c
-OP_0x64(); // 0x38a6: 00000064
+CleanScreen(); // 0x38a6: 00000064
 LoadBackground(0x195); // 0x38aa: 00001069
 OP_0x65(); // 0x38b0: 00000065
 ShowText((6099)"Cybil descends the long staircase while keeping one hand on the wall."); // 0x38b4: 0000100c
@@ -2767,13 +2767,13 @@ ShowText((6101)"She gets the feeling that she has been descending for quite a lo
 HandleInput(); // 0x38ce: 00000010
 Jump(L_0x38d8); // 0x38d2: 00001001
 L_0x38d8:
-OP_0x62(0x1a9, 0x39d); // 0x38d8: 00002062
-OP_0x26(0x6b); // 0x38e0: 00001026
-OP_0x64(); // 0x38e6: 00000064
+TitleAndSubtitle(0x1a9, 0x39d); // 0x38d8: 00002062
+Area(0x6b); // 0x38e0: 00001026
+CleanScreen(); // 0x38e6: 00000064
 LoadBackground(0xa8); // 0x38ea: 00001069
 OP_0x65(); // 0x38f0: 00000065
-OP_0x6c(0x68); // 0x38f4: 0000106c
-OP_0x6e(0x48, 0x1, 0x1); // 0x38fa: 0000306e
+PlayMusic(0x68); // 0x38f4: 0000106c
+LoadSecondEffect(0x48, 0x1, 0x1); // 0x38fa: 0000306e
 ShowText((6102)"It is hot. Somewhere something is burning. To her front..."); // 0x3904: 0000100c
 HandleInput(); // 0x390a: 00000010
 ShowText((6103)"Far off in front of her a small red light can be seen. The red light is swaying... It wriggles like a hand waving someone to come forth."); // 0x390e: 0000100c
@@ -2785,17 +2785,17 @@ HandleInput(); // 0x3928: 00000010
 OP_0x2c(0x3, 0x1); // 0x392c: 0000202c
 ShowText((6106)"She may or may not have realized this... Cybil continues forward."); // 0x3934: 0000100c
 HandleInput(); // 0x393a: 00000010
-OP_0x6e(0x48, 0x0, 0x1); // 0x393e: 0000306e
-OP_0x6e(0x0, 0x0, 0x1); // 0x3948: 0000306e
+LoadSecondEffect(0x48, 0x0, 0x1); // 0x393e: 0000306e
+LoadSecondEffect(0x0, 0x0, 0x1); // 0x3948: 0000306e
 Jump(L_0x3958); // 0x3952: 00001001
 L_0x3958:
-OP_0x62(0x1aa, 0x39e); // 0x3958: 00002062
-OP_0x26(0x6c); // 0x3960: 00001026
-OP_0x64(); // 0x3966: 00000064
+TitleAndSubtitle(0x1aa, 0x39e); // 0x3958: 00002062
+Area(0x6c); // 0x3960: 00001026
+CleanScreen(); // 0x3966: 00000064
 LoadBackground(0x1a4); // 0x396a: 00001069
 LoadEffect(0x2e, 0x1, 0x0); // 0x3970: 0000306d
 OP_0x65(); // 0x397a: 00000065
-OP_0x6c(0x71); // 0x397e: 0000106c
+PlayMusic(0x71); // 0x397e: 0000106c
 ShowText((6107)"As she entered the room she noticed two people, Dahlia and a girl dressed in blue. The two of them are facing each other amongst the blazing flames, staring at each other's expressions."); // 0x3984: 0000100c
 HandleInput(); // 0x398a: 00000010
 ShowText((6108)"When the two of them notice Cybil's presence they turn to face her. Dahlia looks surprised and the girl looks calm. Their expressions are in great contrast to each other."); // 0x398e: 0000100c
@@ -2807,54 +2807,54 @@ HandleInput(); // 0x39a8: 00000010
 ShowText((6111)"..........................."); // 0x39ac: 0000100c
 HandleInput(); // 0x39b2: 00000010
 OP_0x2c(0x3, 0x1); // 0x39b6: 0000202c
-OP_0x6e(0x2e, 0x0, 0x0); // 0x39be: 0000306e
-OP_0x6e(0x0, 0x0, 0x0); // 0x39c8: 0000306e
+LoadSecondEffect(0x2e, 0x0, 0x0); // 0x39be: 0000306e
+LoadSecondEffect(0x0, 0x0, 0x0); // 0x39c8: 0000306e
 Jump(L_0x39d8); // 0x39d2: 00001001
 L_0x39d8:
-OP_0x62(0x1ab, 0x39f); // 0x39d8: 00002062
-OP_0x26(0x6d); // 0x39e0: 00001026
-OP_0x64(); // 0x39e6: 00000064
+TitleAndSubtitle(0x1ab, 0x39f); // 0x39d8: 00002062
+Area(0x6d); // 0x39e0: 00001026
+CleanScreen(); // 0x39e6: 00000064
 LoadBackground(0x0); // 0x39ea: 00001069
 OP_0x65(); // 0x39f0: 00000065
-OP_0x1f(0x78); // 0x39f4: 0000101f
-OP_0x64(); // 0x39fa: 00000064
+PlaySecondSoundFx(0x78); // 0x39f4: 0000101f
+CleanScreen(); // 0x39fa: 00000064
 LoadBackground(0x1cc); // 0x39fe: 00001069
 OP_0x65(); // 0x3a04: 00000065
-OP_0x6e(0xd, 0x1, 0x0); // 0x3a08: 0000306e
-OP_0x72(0x37); // 0x3a12: 00001072
-OP_0x6e(0x50, 0x1, 0x1); // 0x3a18: 0000306e
+LoadSecondEffect(0xd, 0x1, 0x0); // 0x3a08: 0000306e
+PlaySoundFx(0x37); // 0x3a12: 00001072
+LoadSecondEffect(0x50, 0x1, 0x1); // 0x3a18: 0000306e
 ShowText((6112)"When she came to Cybil was sleeping on a small bench in the cafe. Cheryl is standing next to her, gazing out the window at the steadily falling snow."); // 0x3a22: 0000100c
 HandleInput(); // 0x3a28: 00000010
 ShowText((6113)"A bike is waiting outside of the cafe for Cybil. Its engine is running."); // 0x3a2c: 0000100c
 HandleInput(); // 0x3a32: 00000010
-OP_0x64(); // 0x3a36: 00000064
+CleanScreen(); // 0x3a36: 00000064
 LoadBackground(0xf0); // 0x3a3a: 00001069
 LoadEffect(0x50, 0x0, 0x1); // 0x3a40: 0000306d
 LoadEffect(0xe, 0x1, 0x0); // 0x3a4a: 0000306d
 OP_0x65(); // 0x3a54: 00000065
 ShowText((6114)"Cheryl... smiles brightly at Cybil, opens the door of the cafe, and disappears into the fog. Cybil runs out after her."); // 0x3a58: 0000100c
 HandleInput(); // 0x3a5e: 00000010
-OP_0x6e(0x50, 0x0, 0x1); // 0x3a62: 0000306e
-OP_0x6e(0x0, 0x0, 0x1); // 0x3a6c: 0000306e
+LoadSecondEffect(0x50, 0x0, 0x1); // 0x3a62: 0000306e
+LoadSecondEffect(0x0, 0x0, 0x1); // 0x3a6c: 0000306e
 OP_0x2c(0x2, 0x1); // 0x3a76: 0000202c
-OP_0x64(); // 0x3a7e: 00000064
+CleanScreen(); // 0x3a7e: 00000064
 LoadBackground(0x0); // 0x3a82: 00001069
 LoadEffect(0x0, 0x0, 0x0); // 0x3a88: 0000306d
 OP_0x65(); // 0x3a92: 00000065
-OP_0x6c(0x65); // 0x3a96: 0000106c
+PlayMusic(0x65); // 0x3a96: 0000106c
 PlayCredits(); // 0x3a9c: 0000005f
 OP_0x2c(0x3, 0x3); // 0x3aa0: 0000202c
-OP_0x1f(0x78); // 0x3aa8: 0000101f
+PlaySecondSoundFx(0x78); // 0x3aa8: 0000101f
 GiveCard(0x13); // 0x3aae: 00001060
 Stop(); // 0x3ab4: 00000063
 L_0x3ab8:
-OP_0x62(0x1ac, 0x3a0); // 0x3ab8: 00002062
-OP_0x26(0x6e); // 0x3ac0: 00001026
+TitleAndSubtitle(0x1ac, 0x3a0); // 0x3ab8: 00002062
+Area(0x6e); // 0x3ac0: 00001026
 OP_0x2c(0x3, 0x1); // 0x3ac6: 0000202c
-OP_0x64(); // 0x3ace: 00000064
+CleanScreen(); // 0x3ace: 00000064
 LoadBackground(0x198); // 0x3ad2: 00001069
 OP_0x65(); // 0x3ad8: 00000065
-OP_0x6c(0x68); // 0x3adc: 0000106c
+PlayMusic(0x68); // 0x3adc: 0000106c
 ShowText((7141)"The blinding light falls all over Cybil's body. Cybil lost her ability to see instantly, and had no idea whether her eyes were opened or closed."); // 0x3ae2: 0000100c
 HandleInput(); // 0x3ae8: 00000010
 ShowText((7142)"As Cybil's sight finally began to return to her, she felt the wind on her skin. From these two senses she could tell that she was now outside."); // 0x3aec: 0000100c
@@ -2865,7 +2865,7 @@ ShowText((7144)"Cybil begins to walk. And then, at some point she began to run. 
 HandleInput(); // 0x3b06: 00000010
 ShowText((7145)"There is a cemetery. Cybil finally remembers. This is the place where her grandparents are resting. When she was young, her parents often brought her here."); // 0x3b0a: 0000100c
 HandleInput(); // 0x3b10: 00000010
-OP_0x64(); // 0x3b14: 00000064
+CleanScreen(); // 0x3b14: 00000064
 LoadBackground(0x196); // 0x3b18: 00001069
 OP_0x65(); // 0x3b1e: 00000065
 ShowText((7146)"Next to her grandparents graves... Many people in black have gathered. The sobbing of the people dressed in mourning clothes can be heard."); // 0x3b22: 0000100c
@@ -2876,7 +2876,7 @@ ShowText((7148)"Her mother and father... Her three year younger sister... ¥"Wha
 HandleInput(); // 0x3b3c: 00000010
 ShowText((7149)"The police chief of Brahms... Fellow officers... And Sally... ¥"Hey, Sally? Who passed away?¥" None of them answer."); // 0x3b40: 0000100c
 HandleInput(); // 0x3b46: 00000010
-OP_0x64(); // 0x3b4a: 00000064
+CleanScreen(); // 0x3b4a: 00000064
 LoadBackground(0x199); // 0x3b4e: 00001069
 OP_0x65(); // 0x3b54: 00000065
 ShowText((7150)"The sacred ceremony is proceeding without delay. A magnificent casket is brought out by several men, and then it is gently lowered into a hole that was prepared in advance."); // 0x3b58: 0000100c
@@ -2891,7 +2891,7 @@ ShowText((7154)"Cybil tries as hard as she can to try and make someone notice he
 HandleInput(); // 0x3b86: 00000010
 ShowText((7155)"Her name has been engraved on the tombstone. ¥"Am I dead. Am I dead. Someone tell me...¥""); // 0x3b8a: 0000100c
 HandleInput(); // 0x3b90: 00000010
-OP_0x64(); // 0x3b94: 00000064
+CleanScreen(); // 0x3b94: 00000064
 LoadBackground(0x196); // 0x3b98: 00001069
 OP_0x65(); // 0x3b9e: 00000065
 ShowText((7156)"Between the people dressed in black... There is a girl wearing a white one piece dress standing on the dark green grass, only half visible."); // 0x3ba2: 0000100c
@@ -2903,23 +2903,23 @@ HandleInput(); // 0x3bbc: 00000010
 ShowText((7159)"Before long, nothing else appeared in Cybil's eyes."); // 0x3bc0: 0000100c
 HandleInput(); // 0x3bc6: 00000010
 OP_0x29(); // 0x3bca: 00000029
-OP_0x64(); // 0x3bce: 00000064
+CleanScreen(); // 0x3bce: 00000064
 LoadBackground(0x0); // 0x3bd2: 00001069
 OP_0x65(); // 0x3bd8: 00000065
-OP_0x6c(0x65); // 0x3bdc: 0000106c
+PlayMusic(0x65); // 0x3bdc: 0000106c
 PlayCredits(); // 0x3be2: 0000005f
 OP_0x2c(0x3, 0x3); // 0x3be6: 0000202c
-OP_0x1f(0x78); // 0x3bee: 0000101f
+PlaySecondSoundFx(0x78); // 0x3bee: 0000101f
 GiveCard(0x5, 0xe); // 0x3bf4: 00002060
 Stop(); // 0x3bfc: 00000063
 L_0x3c00:
-OP_0x62(0x1ad, 0x3a1); // 0x3c00: 00002062
-OP_0x26(0x6f); // 0x3c08: 00001026
-OP_0x64(); // 0x3c0e: 00000064
+TitleAndSubtitle(0x1ad, 0x3a1); // 0x3c00: 00002062
+Area(0x6f); // 0x3c08: 00001026
+CleanScreen(); // 0x3c0e: 00000064
 LoadBackground(0x43); // 0x3c12: 00001069
 LoadEffect(0xe, 0x1, 0x0); // 0x3c18: 0000306d
 OP_0x65(); // 0x3c22: 00000065
-OP_0x6c(0x68); // 0x3c26: 0000106c
+PlayMusic(0x68); // 0x3c26: 0000106c
 ShowText((6501)"Cybil and Cheryl wandered the town, literally with no destination. Their cheeks were numb, so they no longer even felt the cold pelting of the snow."); // 0x3c2c: 0000100c
 HandleInput(); // 0x3c32: 00000010
 ShowText((6502)"From time to time Cybil would look back to check on Cheryl. The girl just followed Cybil with her head down."); // 0x3c36: 0000100c
@@ -2928,18 +2928,18 @@ ShowText((6503)"¥"Are you hungry?¥" She asked this because she thought Cheryl 
 HandleInput(); // 0x3c46: 00000010
 Jump(L_0x3c50); // 0x3c4a: 00001001
 L_0x3c50:
-OP_0x62(0x1ae, 0x3a2); // 0x3c50: 00002062
-OP_0x26(0x70); // 0x3c58: 00001026
-OP_0x64(); // 0x3c5e: 00000064
+TitleAndSubtitle(0x1ae, 0x3a2); // 0x3c50: 00002062
+Area(0x70); // 0x3c58: 00001026
+CleanScreen(); // 0x3c5e: 00000064
 LoadBackground(0x43); // 0x3c62: 00001069
 LoadEffect(0xe, 0x1, 0x0, 0x1); // 0x3c68: 0000406d
-OP_0x6c(0x68, 0x1); // 0x3c74: 0000206c
+PlayMusic(0x68, 0x1); // 0x3c74: 0000206c
 OP_0x65(); // 0x3c7c: 00000065
 ShowText((6504)"After walking for a bit the girl suddenly stopped. ¥"I'm tired¥" (Cheryl) Cybil's strength had began to fade, so she thought that this could be the case with Cheryl as well."); // 0x3c80: 0000100c
 HandleInput(); // 0x3c86: 00000010
 ShowText((6505)"¥"I must not compare my body with Cheryl's small one.¥" The two of them sat down on a bench on the sidewalk."); // 0x3c8a: 0000100c
 HandleInput(); // 0x3c90: 00000010
-OP_0x64(); // 0x3c94: 00000064
+CleanScreen(); // 0x3c94: 00000064
 LoadBackground(0x17f); // 0x3c98: 00001069
 LoadEffect(0xe, 0x1, 0x0); // 0x3c9e: 0000306d
 OP_0x65(); // 0x3ca8: 00000065
@@ -2949,13 +2949,13 @@ ShowText((6507)"As soon as Cheryl sat down on the bench she fell asleep. She is 
 HandleInput(); // 0x3cbc: 00000010
 Jump(L_0x3cc6); // 0x3cc0: 00001001
 L_0x3cc6:
-OP_0x26(0x71); // 0x3cc6: 00001026
-OP_0x62(0x1af, 0x3a3); // 0x3ccc: 00002062
-OP_0x64(); // 0x3cd4: 00000064
+Area(0x71); // 0x3cc6: 00001026
+TitleAndSubtitle(0x1af, 0x3a3); // 0x3ccc: 00002062
+CleanScreen(); // 0x3cd4: 00000064
 LoadBackground(0x17f); // 0x3cd8: 00001069
 LoadEffect(0xe, 0x1, 0x0, 0x1); // 0x3cde: 0000406d
 OP_0x65(); // 0x3cea: 00000065
-OP_0x6c(0x68, 0x1); // 0x3cee: 0000206c
+PlayMusic(0x68, 0x1); // 0x3cee: 0000206c
 Choice((670)"Cybil...", (671)"A ) held the girl's body close so that she would not freeze.", (672)"B ) began to look for a safe building to rest in."); // 0x3cf6: 00003011
 Branch4(0x334, L_0x3d0c); // 0x3d00: 00001004
 Jump(L_0x3d20); // 0x3d06: 00001001
@@ -2966,13 +2966,13 @@ Jump(L_0x400c); // 0x3d16: 00001001
 L_0x3d1c:
 Nop7(); // 0x3d1c: 00000007
 L_0x3d20:
-OP_0x62(0x1b0, 0x3a4); // 0x3d20: 00002062
-OP_0x26(0x72); // 0x3d28: 00001026
-OP_0x64(); // 0x3d2e: 00000064
+TitleAndSubtitle(0x1b0, 0x3a4); // 0x3d20: 00002062
+Area(0x72); // 0x3d28: 00001026
+CleanScreen(); // 0x3d2e: 00000064
 LoadBackground(0x17f); // 0x3d32: 00001069
 LoadEffect(0xe, 0x1, 0x0, 0x1); // 0x3d38: 0000406d
 OP_0x65(); // 0x3d44: 00000065
-OP_0x6c(0x68, 0x1); // 0x3d48: 0000206c
+PlayMusic(0x68, 0x1); // 0x3d48: 0000206c
 ShowText((6508)"She holds the girl's shoulders close, and while stroking her head Cybil is struck with the feeling that the warmth is being absorbed out of her."); // 0x3d50: 0000100c
 HandleInput(); // 0x3d56: 00000010
 ShowText((6509)"¥"Sudden sleepiness... Even though we are out of the snow at this rate we will freeze to death. If a human's body temperature drops below 98.6 then they will fall into a dangerous state."); // 0x3d5a: 0000100c
@@ -2986,18 +2986,18 @@ HandleInput(); // 0x3d7e: 00000010
 ShowText((6513)"Like sinking to the bottom of the ocean... Cybil's consciousness grows distant..."); // 0x3d82: 0000100c
 HandleInput(); // 0x3d88: 00000010
 OP_0x2c(0x3, 0x2); // 0x3d8c: 0000202c
-OP_0x64(); // 0x3d94: 00000064
+CleanScreen(); // 0x3d94: 00000064
 LoadBackground(0x0); // 0x3d98: 00001069
 LoadEffect(0x0, 0x0, 0x0); // 0x3d9e: 0000306d
 OP_0x65(); // 0x3da8: 00000065
 Jump(L_0x3db2); // 0x3dac: 00001001
 L_0x3db2:
-OP_0x62(0x1b1, 0x3a5); // 0x3db2: 00002062
-OP_0x26(0x73); // 0x3dba: 00001026
-OP_0x64(); // 0x3dc0: 00000064
+TitleAndSubtitle(0x1b1, 0x3a5); // 0x3db2: 00002062
+Area(0x73); // 0x3dba: 00001026
+CleanScreen(); // 0x3dc0: 00000064
 LoadBackground(0x0); // 0x3dc4: 00001069
 OP_0x65(); // 0x3dca: 00000065
-OP_0x6c(0x6e, 0x1); // 0x3dce: 0000206c
+PlayMusic(0x6e, 0x1); // 0x3dce: 0000206c
 ShowText((6514)"¥"My body feels weird..."); // 0x3dd6: 0000100c
 HandleInput(); // 0x3ddc: 00000010
 ShowText((6515)"My body feels weird..."); // 0x3de0: 0000100c
@@ -3012,12 +3012,12 @@ ShowText((6519)"My body is on fire. My body is on fire. My eyes feel like they a
 HandleInput(); // 0x3e0e: 00000010
 Jump(L_0x3e18); // 0x3e12: 00001001
 L_0x3e18:
-OP_0x62(0x1b2, 0x3a6); // 0x3e18: 00002062
-OP_0x26(0x74); // 0x3e20: 00001026
-OP_0x64(); // 0x3e26: 00000064
+TitleAndSubtitle(0x1b2, 0x3a6); // 0x3e18: 00002062
+Area(0x74); // 0x3e20: 00001026
+CleanScreen(); // 0x3e26: 00000064
 LoadBackground(0x0); // 0x3e2a: 00001069
 OP_0x65(); // 0x3e30: 00000065
-OP_0x6c(0x6e, 0x1); // 0x3e34: 0000206c
+PlayMusic(0x6e, 0x1); // 0x3e34: 0000206c
 ShowText((6520)"Laughing. Coming from my stomach. A slightly dirty doll. Where are my parents? Have they already escaped?"); // 0x3e3c: 0000100c
 HandleInput(); // 0x3e42: 00000010
 ShowText((6521)"Since when.... Why here. A wheelchair... Something... I don't know what, but... Something evil is here. Somewhere inside me..."); // 0x3e46: 0000100c
@@ -3026,14 +3026,14 @@ ShowText((6522)"Beginning to make a nest. One cell at a time... Beginning to con
 HandleInput(); // 0x3e56: 00000010
 ShowText((6523)"My body is on fire. My body is on fire. It feels like fire is going to shoot from my eyes... My eyes hurt. My eyes are on fire."); // 0x3e5a: 0000100c
 HandleInput(); // 0x3e60: 00000010
-OP_0x64(); // 0x3e64: 00000064
+CleanScreen(); // 0x3e64: 00000064
 LoadBackground(0x183); // 0x3e68: 00001069
 OP_0x65(); // 0x3e6e: 00000065
 ShowText((6524)"Laughing. Ha ha. Coming from my stomach. A slightly dirty doll. Where are my parents? Have they already escaped?"); // 0x3e72: 0000100c
 HandleInput(); // 0x3e78: 00000010
 ShowText((6525)"Since when.... Why here. I am sitting in a wheelchair. A roar... The dark sky... Something is spinning."); // 0x3e7c: 0000100c
 HandleInput(); // 0x3e82: 00000010
-OP_0x64(); // 0x3e86: 00000064
+CleanScreen(); // 0x3e86: 00000064
 LoadBackground(0x184); // 0x3e8a: 00001069
 OP_0x65(); // 0x3e90: 00000065
 ShowText((6526)"He has come... to me. That man's name is... He said it was Harry. Definitely, Harry is what... He said it was..."); // 0x3e94: 0000100c
@@ -3046,12 +3046,12 @@ ShowText((6529)"Wait... Please wait. I must not shoot that man. In this world he
 HandleInput(); // 0x3eb8: 00000010
 ShowText((6530)"Kill me. I can no longer control myself. My body is acting on its own. Kill him. Kill. You must kill him."); // 0x3ebc: 0000100c
 HandleInput(); // 0x3ec2: 00000010
-OP_0x64(); // 0x3ec6: 00000064
+CleanScreen(); // 0x3ec6: 00000064
 LoadBackground(0x0); // 0x3eca: 00001069
 OP_0x65(); // 0x3ed0: 00000065
-OP_0x73(0xf); // 0x3ed4: 00001073
-OP_0x6e(0xf, 0x1, 0x2); // 0x3eda: 0000306e
-OP_0x6e(0x0, 0x0, 0x2); // 0x3ee4: 0000306e
+PlaySecondSoundFx(0xf); // 0x3ed4: 00001073
+LoadSecondEffect(0xf, 0x1, 0x2); // 0x3eda: 0000306e
+LoadSecondEffect(0x0, 0x0, 0x2); // 0x3ee4: 0000306e
 ShowText((6531)"Something small has passed through me. It doesn't hurt. It hurts. My clothes are soaked. I will die. Protect the girl."); // 0x3eee: 0000100c
 HandleInput(); // 0x3ef4: 00000010
 ShowText((6532)"I fall to the ground. I bounce once and cannot move. Is this my body. Why. I cannot control it."); // 0x3ef8: 0000100c
@@ -3060,18 +3060,18 @@ ShowText((6533)"Some small creature... It got inside me at some time. It bites t
 HandleInput(); // 0x3f08: 00000010
 ShowText((6534)"..........................."); // 0x3f0c: 0000100c
 HandleInput(); // 0x3f12: 00000010
-OP_0x6e(0xf, 0x0, 0x2); // 0x3f16: 0000306e
-OP_0x6e(0x0, 0x0, 0x2); // 0x3f20: 0000306e
+LoadSecondEffect(0xf, 0x0, 0x2); // 0x3f16: 0000306e
+LoadSecondEffect(0x0, 0x0, 0x2); // 0x3f20: 0000306e
 OP_0x2c(0x3, 0x2); // 0x3f2a: 0000202c
 Jump(L_0x3f38); // 0x3f32: 00001001
 L_0x3f38:
-OP_0x62(0x1b3, 0x3a7); // 0x3f38: 00002062
-OP_0x26(0x75); // 0x3f40: 00001026
-OP_0x64(); // 0x3f46: 00000064
+TitleAndSubtitle(0x1b3, 0x3a7); // 0x3f38: 00002062
+Area(0x75); // 0x3f40: 00001026
+CleanScreen(); // 0x3f46: 00000064
 LoadBackground(0xa7); // 0x3f4a: 00001069
 OP_0x65(); // 0x3f50: 00000065
-OP_0x72(0x39); // 0x3f54: 00001072
-OP_0x6e(0x49, 0x1, 0x1); // 0x3f5a: 0000306e
+PlaySoundFx(0x39); // 0x3f54: 00001072
+LoadSecondEffect(0x49, 0x1, 0x1); // 0x3f5a: 0000306e
 ShowText((6535)"¥"In my fading consciousness, I can see Harry shaking me."); // 0x3f64: 0000100c
 HandleInput(); // 0x3f6a: 00000010
 ShowText((6536)"Harry has stopped moving. He looks at me and weeps. Then he begins to move toward something off in the distance that looks like a dimly shining girl."); // 0x3f6e: 0000100c
@@ -3080,49 +3080,49 @@ ShowText((6537)"I am okay... I can still move. The thing that came out of me is 
 HandleInput(); // 0x3f7e: 00000010
 ShowText((6538)"And I know who that will be."); // 0x3f82: 0000100c
 HandleInput(); // 0x3f88: 00000010
-OP_0x6e(0x49, 0x0, 0x1); // 0x3f8c: 0000306e
-OP_0x6e(0x0, 0x0, 0x1); // 0x3f96: 0000306e
-OP_0x64(); // 0x3fa0: 00000064
+LoadSecondEffect(0x49, 0x0, 0x1); // 0x3f8c: 0000306e
+LoadSecondEffect(0x0, 0x0, 0x1); // 0x3f96: 0000306e
+CleanScreen(); // 0x3fa0: 00000064
 LoadBackground(0x185); // 0x3fa4: 00001069
 LoadEffect(0x4a, 0x1, 0x0); // 0x3faa: 0000306d
 OP_0x65(); // 0x3fb4: 00000065
-OP_0x6e(0xc, 0x1, 0x1); // 0x3fb8: 0000306e
+LoadSecondEffect(0xc, 0x1, 0x1); // 0x3fb8: 0000306e
 ShowText((6539)"If I cannot let Harry know this then something horrible will happen. But I cannot speak. It is because a bullet went through the side of my lung... So I cannot put any power into my voice."); // 0x3fc2: 0000100c
 HandleInput(); // 0x3fc8: 00000010
 ShowText((6540)"Harry has began to run. I am not yet dead. But he thinks that I am."); // 0x3fcc: 0000100c
 HandleInput(); // 0x3fd2: 00000010
 ShowText((6541)"Even if I must crawl, I must move on. Cheryl is in danger. I must get there first... Harry will get there soon enough. But I must get there before then, and I must stop him.¥""); // 0x3fd6: 0000100c
 HandleInput(); // 0x3fdc: 00000010
-OP_0x6e(0x0, 0x0, 0x1); // 0x3fe0: 0000306e
-OP_0x6e(0x4a, 0x0, 0x0); // 0x3fea: 0000306e
-OP_0x6e(0x0, 0x0, 0x0); // 0x3ff4: 0000306e
+LoadSecondEffect(0x0, 0x0, 0x1); // 0x3fe0: 0000306e
+LoadSecondEffect(0x4a, 0x0, 0x0); // 0x3fea: 0000306e
+LoadSecondEffect(0x0, 0x0, 0x0); // 0x3ff4: 0000306e
 OP_0x2c(0x2, 0x2); // 0x3ffe: 0000202c
 Jump(L_0x4186); // 0x4006: 00001001
 L_0x400c:
-OP_0x62(0x1b4, 0x3a8); // 0x400c: 00002062
-OP_0x26(0x76); // 0x4014: 00001026
-OP_0x64(); // 0x401a: 00000064
+TitleAndSubtitle(0x1b4, 0x3a8); // 0x400c: 00002062
+Area(0x76); // 0x4014: 00001026
+CleanScreen(); // 0x401a: 00000064
 LoadBackground(0x17f); // 0x401e: 00001069
 LoadEffect(0xe, 0x1, 0x0, 0x1); // 0x4024: 0000406d
 OP_0x65(); // 0x4030: 00000065
-OP_0x6c(0x68, 0x1); // 0x4034: 0000206c
+PlayMusic(0x68, 0x1); // 0x4034: 0000206c
 ShowText((7160)"Cybil stared at Cheryl's small body for a bit."); // 0x403c: 0000100c
 HandleInput(); // 0x4042: 00000010
 ShowText((7161)"Even though they were out of the snow Cheryl's clothes were not warm enough for the mid-winter temperatures. If unlucky, then she might be deprived of even her life."); // 0x4046: 0000100c
 HandleInput(); // 0x404c: 00000010
-OP_0x64(); // 0x4050: 00000064
+CleanScreen(); // 0x4050: 00000064
 LoadBackground(0x107); // 0x4054: 00001069
 LoadEffect(0xe, 0x1, 0x0); // 0x405a: 0000306d
 OP_0x65(); // 0x4064: 00000065
-OP_0x73(0x1f); // 0x4068: 00001073
+PlaySecondSoundFx(0x1f); // 0x4068: 00001073
 ShowText((7162)"¥"Perhaps there is someplace warm somewhere?¥" Cybil leaves Cheryl sleeping on the bench and walks around to the nearby houses trying the doors."); // 0x406e: 0000100c
 HandleInput(); // 0x4074: 00000010
-OP_0x73(0x1f); // 0x4078: 00001073
+PlaySecondSoundFx(0x1f); // 0x4078: 00001073
 ShowText((7163)"¥"No good, the door is locked. And this one too. And this one as well... They're all locked.¥""); // 0x407e: 0000100c
 HandleInput(); // 0x4084: 00000010
 ShowText((7164)"The doors are sealed on all the houses lining the area. There might be someone inside, but there is no way to check."); // 0x4088: 0000100c
 HandleInput(); // 0x408e: 00000010
-OP_0x64(); // 0x4092: 00000064
+CleanScreen(); // 0x4092: 00000064
 LoadBackground(0x78); // 0x4096: 00001069
 LoadEffect(0xe, 0x1, 0x0); // 0x409c: 0000306d
 OP_0x65(); // 0x40a6: 00000065
@@ -3130,8 +3130,8 @@ ShowText((7165)"After walking for a while Cybil discovers a garage door that is 
 HandleInput(); // 0x40b0: 00000010
 ShowText((7166)"The inside cannot be said to be warm, but it is probably better than that bench. Cybil quickly returns to Cheryl."); // 0x40b4: 0000100c
 HandleInput(); // 0x40ba: 00000010
-OP_0x73(0x9); // 0x40be: 00001073
-OP_0x64(); // 0x40c4: 00000064
+PlaySecondSoundFx(0x9); // 0x40be: 00001073
+CleanScreen(); // 0x40c4: 00000064
 LoadBackground(0x180); // 0x40c8: 00001069
 LoadEffect(0xe, 0x1, 0x0); // 0x40ce: 0000306d
 OP_0x65(); // 0x40d8: 00000065
@@ -3144,14 +3144,14 @@ ShowText((7169)"¥"Impossible.¥" Cybil places her right hand on Cheryl's chest.
 HandleInput(); // 0x40fe: 00000010
 ShowText((7170)"Cheryl's heart is not beating."); // 0x4102: 0000100c
 HandleInput(); // 0x4108: 00000010
-OP_0x64(); // 0x410c: 00000064
+CleanScreen(); // 0x410c: 00000064
 LoadBackground(0x180); // 0x4110: 00001069
 LoadEffect(0xe, 0x1, 0x0, 0x1); // 0x4116: 0000406d
 OP_0x65(); // 0x4122: 00000065
-OP_0x6c(0x6e); // 0x4126: 0000106c
+PlayMusic(0x6e); // 0x4126: 0000106c
 ShowText((7171)"And also, her small body has no warmth at all. ¥"This cannot be... In such a short time... Why...¥""); // 0x412c: 0000100c
 HandleInput(); // 0x4132: 00000010
-OP_0x64(); // 0x4136: 00000064
+CleanScreen(); // 0x4136: 00000064
 LoadBackground(0x0); // 0x413a: 00001069
 LoadEffect(0x0, 0x0, 0x0); // 0x4140: 0000306d
 OP_0x65(); // 0x414a: 00000065
@@ -3167,13 +3167,13 @@ ShowText((7176)"Like morning sickness... She is filled with a desire to vomit. I
 HandleInput(); // 0x417c: 00000010
 Jump(L_0x3db2); // 0x4180: 00001001
 L_0x4186:
-OP_0x62(0x1b5, 0x3a9); // 0x4186: 00002062
-OP_0x26(0x77); // 0x418e: 00001026
-OP_0x25(); // 0x4194: 00000025
-OP_0x64(); // 0x4198: 00000064
+TitleAndSubtitle(0x1b5, 0x3a9); // 0x4186: 00002062
+Area(0x77); // 0x418e: 00001026
+CleanTextRecord(); // 0x4194: 00000025
+CleanScreen(); // 0x4198: 00000064
 LoadBackground(0x0); // 0x419c: 00001069
 OP_0x65(); // 0x41a2: 00000065
-OP_0x73(0x25); // 0x41a6: 00001073
+PlaySecondSoundFx(0x25); // 0x41a6: 00001073
 ShowText((6542)"Cybil somehow manages to stand up, but staggers and falls back down onto the floor."); // 0x41ac: 0000100c
 HandleInput(); // 0x41b2: 00000010
 ShowText((6543)"However, she decides to summon the last of her strength in order to save the girl that she was moving with for a bit, Cheryl."); // 0x41b6: 0000100c
@@ -3182,25 +3182,25 @@ ShowText((6544)"She stands up again. And her entire body is beset with severe pa
 HandleInput(); // 0x41c6: 00000010
 ShowText((6545)"She follows the trail of the evil creature that came out of her, and escapes from the amusement park through the open door of a garage dump."); // 0x41ca: 0000100c
 HandleInput(); // 0x41d0: 00000010
-OP_0x64(); // 0x41d4: 00000064
+CleanScreen(); // 0x41d4: 00000064
 LoadBackground(0x17e); // 0x41d8: 00001069
 OP_0x65(); // 0x41de: 00000065
 ShowText((6546)"¥"A long staircase to the basement... Just where does it lead to?¥" She rests her hand on the wall, and from time to time squats down where she is standing, as she continues forward via her strong will."); // 0x41e2: 0000100c
 HandleInput(); // 0x41e8: 00000010
 Jump(L_0x41f2); // 0x41ec: 00001001
 L_0x41f2:
-OP_0x62(0x1b6, 0x3aa); // 0x41f2: 00002062
-OP_0x26(0x78); // 0x41fa: 00001026
-OP_0x64(); // 0x4200: 00000064
+TitleAndSubtitle(0x1b6, 0x3aa); // 0x41f2: 00002062
+Area(0x78); // 0x41fa: 00001026
+CleanScreen(); // 0x4200: 00000064
 LoadBackground(0xa8); // 0x4204: 00001069
 OP_0x65(); // 0x420a: 00000065
-OP_0x6c(0x67); // 0x420e: 0000106c
+PlayMusic(0x67); // 0x420e: 0000106c
 ShowText((6547)"Eventually a long corridor appears in front of her. The passage spreads out like a blood vessel of the town's underground. ¥"Who could have made this? Am I being led somewhere?"); // 0x4214: 0000100c
 HandleInput(); // 0x421a: 00000010
 ShowText((6548)"It's too late... My legs are unsteady and color is disappearing from my view. A monochrome underground passage... And from time to time a storm of mixed noise...¥""); // 0x421e: 0000100c
 HandleInput(); // 0x4224: 00000010
-OP_0x72(0x26); // 0x4228: 00001072
-OP_0x6e(0x48, 0x1, 0x1); // 0x422e: 0000306e
+PlaySoundFx(0x26); // 0x4228: 00001072
+LoadSecondEffect(0x48, 0x1, 0x1); // 0x422e: 0000306e
 ShowText((6549)"A warm breeze ruffles Cybil's blond hair. Somewhere far off, at the end of this passage, something is burning."); // 0x4238: 0000100c
 HandleInput(); // 0x423e: 00000010
 ShowText((6550)"It's dangerous. However, it's because it is dangerous that Cybil must all the more face it. The girl is being held prisoner."); // 0x4242: 0000100c
@@ -3213,35 +3213,35 @@ ShowText((6553)"I tried to kill Harry. What of the unseen force that tried to ma
 HandleInput(); // 0x4266: 00000010
 Jump(L_0x4270); // 0x426a: 00001001
 L_0x4270:
-OP_0x62(0x1b7, 0x3ab); // 0x4270: 00002062
-OP_0x26(0x79); // 0x4278: 00001026
-OP_0x64(); // 0x427e: 00000064
+TitleAndSubtitle(0x1b7, 0x3ab); // 0x4270: 00002062
+Area(0x79); // 0x4278: 00001026
+CleanScreen(); // 0x427e: 00000064
 LoadBackground(0xa8); // 0x4282: 00001069
 OP_0x65(); // 0x4288: 00000065
-OP_0x6c(0x67, 0x1); // 0x428c: 0000206c
-OP_0x72(0x26, 0x1); // 0x4294: 00002072
-OP_0x6e(0x48, 0x1, 0x1, 0x1); // 0x429c: 0000406e
+PlayMusic(0x67, 0x1); // 0x428c: 0000206c
+PlaySoundFx(0x26, 0x1); // 0x4294: 00002072
+LoadSecondEffect(0x48, 0x1, 0x1, 0x1); // 0x429c: 0000406e
 ShowText((6554)"It's hot. The basement is shaking. Is it an earthquake, or is Cybil hallucinating?"); // 0x42a8: 0000100c
 HandleInput(); // 0x42ae: 00000010
-OP_0x73(0x2f); // 0x42b2: 00001073
+PlaySecondSoundFx(0x2f); // 0x42b2: 00001073
 ShowText((6555)"An explosion. Light flashes from the front. And at the same time her cheeks become covered in heat. ¥"It is close. Not far now. Something is happening."); // 0x42b8: 0000100c
 HandleInput(); // 0x42be: 00000010
 ShowText((6556)"The door at the end of the passage is slightly open. If I can get in there...¥""); // 0x42c2: 0000100c
 HandleInput(); // 0x42c8: 00000010
-OP_0x6e(0x48, 0x0, 0x1); // 0x42cc: 0000306e
-OP_0x6e(0x0, 0x0, 0x1); // 0x42d6: 0000306e
-OP_0x64(); // 0x42e0: 00000064
+LoadSecondEffect(0x48, 0x0, 0x1); // 0x42cc: 0000306e
+LoadSecondEffect(0x0, 0x0, 0x1); // 0x42d6: 0000306e
+CleanScreen(); // 0x42e0: 00000064
 LoadBackground(0x0); // 0x42e4: 00001069
 OP_0x65(); // 0x42ea: 00000065
 Jump(L_0x42f4); // 0x42ee: 00001001
 L_0x42f4:
-OP_0x26(0x7a); // 0x42f4: 00001026
-OP_0x62(0x1b8, 0x3ac); // 0x42fa: 00002062
+Area(0x7a); // 0x42f4: 00001026
+TitleAndSubtitle(0x1b8, 0x3ac); // 0x42fa: 00002062
 OP_0x2c(0x2, 0x2); // 0x4302: 0000202c
-OP_0x64(); // 0x430a: 00000064
+CleanScreen(); // 0x430a: 00000064
 LoadBackground(0x0); // 0x430e: 00001069
 OP_0x65(); // 0x4314: 00000065
-OP_0x6c(0x67, 0x1); // 0x4318: 0000206c
+PlayMusic(0x67, 0x1); // 0x4318: 0000206c
 Choice((680)"Cybil thinks.", (681)"A ) I can still make it in time...I've got to hurry.", (682)"B ) Wait, should I go in there...", (683)"C ) Things will happen as they will..."); // 0x4320: 00004011
 Branch4(0x342, L_0x4338); // 0x432c: 00001004
 Jump(L_0x435c); // 0x4332: 00001001
@@ -3256,12 +3256,12 @@ Jump(L_0x45a0); // 0x4352: 00001001
 L_0x4358:
 Nop7(); // 0x4358: 00000007
 L_0x435c:
-OP_0x62(0x1b9, 0x3ad); // 0x435c: 00002062
-OP_0x26(0x7b); // 0x4364: 00001026
-OP_0x64(); // 0x436a: 00000064
+TitleAndSubtitle(0x1b9, 0x3ad); // 0x435c: 00002062
+Area(0x7b); // 0x4364: 00001026
+CleanScreen(); // 0x436a: 00000064
 LoadBackground(0x0); // 0x436e: 00001069
 OP_0x65(); // 0x4374: 00000065
-OP_0x6c(0x67, 0x1); // 0x4378: 0000206c
+PlayMusic(0x67, 0x1); // 0x4378: 0000206c
 ShowText((6557)"¥"I can still make it in time. Someone is here. I sense them. I have made it here. I can still make it in time.¥""); // 0x4380: 0000100c
 HandleInput(); // 0x4386: 00000010
 ShowText((6558)"Cybil collapses. With just only a bit further to go Cybil realizes that she is not breathing."); // 0x438a: 0000100c
@@ -3271,23 +3271,23 @@ HandleInput(); // 0x439a: 00000010
 ShowText((6560)"Cybil crawls, she continues to crawl and when she finally reaches a door... A man is in the center of the room... An unfamiliar girl is passing something to Harry... The scene fills Cybil's eyes."); // 0x439e: 0000100c
 HandleInput(); // 0x43a4: 00000010
 OP_0x2c(0x3, 0x1); // 0x43a8: 0000202c
-OP_0x64(); // 0x43b0: 00000064
+CleanScreen(); // 0x43b0: 00000064
 LoadBackground(0x192); // 0x43b4: 00001069
 OP_0x65(); // 0x43ba: 00000065
-OP_0x72(0x26); // 0x43be: 00001072
-OP_0x6e(0x2e, 0x1, 0x1); // 0x43c4: 0000306e
+PlaySoundFx(0x26); // 0x43be: 00001072
+LoadSecondEffect(0x2e, 0x1, 0x1); // 0x43c4: 0000306e
 ShowText((6561)"Harry holds something dearly, at his chest... It is a baby. Harry holds it as if it is his own... Or maybe he is thinking of it as Cheryl... He smiles a bit. It will go on forever..."); // 0x43ce: 0000100c
 HandleInput(); // 0x43d4: 00000010
 Jump(L_0x43de); // 0x43d8: 00001001
 L_0x43de:
-OP_0x62(0x1ba, 0x3ae); // 0x43de: 00002062
-OP_0x26(0x7c); // 0x43e6: 00001026
-OP_0x64(); // 0x43ec: 00000064
+TitleAndSubtitle(0x1ba, 0x3ae); // 0x43de: 00002062
+Area(0x7c); // 0x43e6: 00001026
+CleanScreen(); // 0x43ec: 00000064
 LoadBackground(0x192); // 0x43f0: 00001069
 LoadEffect(0x2e, 0x1, 0x1, 0x2); // 0x43f6: 0000406d
 OP_0x65(); // 0x4402: 00000065
-OP_0x72(0x26, 0x1); // 0x4406: 00002072
-OP_0x6e(0x2e, 0x1, 0x1, 0x1); // 0x440e: 0000406e
+PlaySoundFx(0x26, 0x1); // 0x4406: 00002072
+LoadSecondEffect(0x2e, 0x1, 0x1, 0x1); // 0x440e: 0000406e
 ShowText((6562)"¥"It's a mistake...¥" Perhaps Cybil was the only one to realize this. ¥"He must not accept that baby... It will go on forever... With the spinning of the world and time..."); // 0x441a: 0000100c
 HandleInput(); // 0x4420: 00000010
 ShowText((6563)"The baby represents the beginning. It is a devil. Look into its eyes and you can tell."); // 0x4424: 0000100c
@@ -3298,19 +3298,19 @@ ShowText((6565)"Cybil was unable to convey this to him. She could not even move,
 HandleInput(); // 0x443e: 00000010
 ShowText((6566)"The nightmare will begin again. A nightmare that cannot be stopped, even when it is known to be a nightmare. Cybil is headed to her death... Her vitality is rapidly fading."); // 0x4442: 0000100c
 HandleInput(); // 0x4448: 00000010
-OP_0x6e(0x11, 0x1, 0x1); // 0x444c: 0000306e
-OP_0x6e(0x11, 0x0, 0x1); // 0x4456: 0000306e
-OP_0x6e(0x0, 0x0, 0x1); // 0x4460: 0000306e
+LoadSecondEffect(0x11, 0x1, 0x1); // 0x444c: 0000306e
+LoadSecondEffect(0x11, 0x0, 0x1); // 0x4456: 0000306e
+LoadSecondEffect(0x0, 0x0, 0x1); // 0x4460: 0000306e
 OP_0x2c(0x2, 0x1); // 0x446a: 0000202c
-OP_0x64(); // 0x4472: 00000064
+CleanScreen(); // 0x4472: 00000064
 LoadBackground(0x0); // 0x4476: 00001069
 OP_0x65(); // 0x447c: 00000065
 OP_0x29(); // 0x4480: 00000029
 Jump(L_0x448a); // 0x4484: 00001001
 L_0x448a:
-OP_0x62(0x1bb, 0x3af); // 0x448a: 00002062
-OP_0x26(0x7d); // 0x4492: 00001026
-OP_0x64(); // 0x4498: 00000064
+TitleAndSubtitle(0x1bb, 0x3af); // 0x448a: 00002062
+Area(0x7d); // 0x4492: 00001026
+CleanScreen(); // 0x4498: 00000064
 LoadBackground(0x0); // 0x449c: 00001069
 OP_0x65(); // 0x44a2: 00000065
 ShowText((6567)"The world is ending. Looking at it subjectively, the act of one's body dying is the same as the world dying."); // 0x44a6: 0000100c
@@ -3321,19 +3321,19 @@ ShowText((6569)"The world is within the self, and also a part of the self."); //
 HandleInput(); // 0x44c0: 00000010
 ShowText((6570)"However, when Cybil lost consciousness for the last time... She knew a completely different truth than what she was expecting."); // 0x44c4: 0000100c
 HandleInput(); // 0x44ca: 00000010
-OP_0x6c(0x65); // 0x44ce: 0000106c
+PlayMusic(0x65); // 0x44ce: 0000106c
 PlayCredits(); // 0x44d4: 0000005f
 OP_0x2c(0x3, 0x3); // 0x44d8: 0000202c
-OP_0x1f(0x78); // 0x44e0: 0000101f
+PlaySecondSoundFx(0x78); // 0x44e0: 0000101f
 GiveCard(0x2); // 0x44e6: 00001060
 Stop(); // 0x44ec: 00000063
 L_0x44f0:
-OP_0x62(0x1bc, 0x3b0); // 0x44f0: 00002062
-OP_0x26(0x7e); // 0x44f8: 00001026
-OP_0x64(); // 0x44fe: 00000064
+TitleAndSubtitle(0x1bc, 0x3b0); // 0x44f0: 00002062
+Area(0x7e); // 0x44f8: 00001026
+CleanScreen(); // 0x44fe: 00000064
 LoadBackground(0x0); // 0x4502: 00001069
 OP_0x65(); // 0x4508: 00000065
-OP_0x6c(0x67, 0x1); // 0x450c: 0000206c
+PlayMusic(0x67, 0x1); // 0x450c: 0000206c
 ShowText((7177)"¥"Should I go.... Someone is trying to kill me..."); // 0x4514: 0000100c
 HandleInput(); // 0x451a: 00000010
 ShowText((7178)"I must not go. I must not obey. I will stop. I have now realized... That this is madness.¥""); // 0x451e: 0000100c
@@ -3345,7 +3345,7 @@ HandleInput(); // 0x4538: 00000010
 ShowText((7181)"..........................."); // 0x453c: 0000100c
 HandleInput(); // 0x4542: 00000010
 OP_0x2c(0x3, 0x4); // 0x4546: 0000202c
-OP_0x1f(0xf0); // 0x454e: 0000101f
+PlaySecondSoundFx(0xf0); // 0x454e: 0000101f
 ShowText((7182)"The next day, in an article from a Brahms region paper:"); // 0x4554: 0000100c
 HandleInput(); // 0x455a: 00000010
 ShowText((7183)"¥"Early this morning a burned corpse that is thought to be a woman's was discovered on a path in the north Brahms forest."); // 0x455e: 0000100c
@@ -3354,22 +3354,22 @@ ShowText((7184)"The body has severe external injuries, and parts of it were redu
 HandleInput(); // 0x456e: 00000010
 ShowText((7185)"Additionally, in the area around the body there was no sign of fire, and no trace of gasoline, kerosene, or other oil based substances. For this reason the Brahms Police Department is hurrying to identify the body, and has launched a full scale investigation into the cause of death...¥""); // 0x4572: 0000100c
 HandleInput(); // 0x4578: 00000010
-OP_0x6c(0x65); // 0x457c: 0000106c
+PlayMusic(0x65); // 0x457c: 0000106c
 PlayCredits(); // 0x4582: 0000005f
 OP_0x2c(0x3, 0x3); // 0x4586: 0000202c
-OP_0x1f(0x78); // 0x458e: 0000101f
+PlaySecondSoundFx(0x78); // 0x458e: 0000101f
 GiveCard(0x3, 0x1d); // 0x4594: 00002060
 Stop(); // 0x459c: 00000063
 L_0x45a0:
-OP_0x62(0x1bd, 0x3b1); // 0x45a0: 00002062
-OP_0x26(0x7f); // 0x45a8: 00001026
-OP_0x64(); // 0x45ae: 00000064
+TitleAndSubtitle(0x1bd, 0x3b1); // 0x45a0: 00002062
+Area(0x7f); // 0x45a8: 00001026
+CleanScreen(); // 0x45ae: 00000064
 LoadBackground(0x0); // 0x45b2: 00001069
 OP_0x65(); // 0x45b8: 00000065
-OP_0x6c(0x67, 0x1); // 0x45bc: 0000206c
+PlayMusic(0x67, 0x1); // 0x45bc: 0000206c
 ShowText((7186)"¥"At any rate I should go. If I stay here I will be burned to death.¥" Cybil continues forward while breathing feebly."); // 0x45c4: 0000100c
 HandleInput(); // 0x45ca: 00000010
-OP_0x64(); // 0x45ce: 00000064
+CleanScreen(); // 0x45ce: 00000064
 LoadBackground(0x192); // 0x45d2: 00001069
 LoadEffect(0x2e, 0x1, 0x1); // 0x45d8: 0000306d
 OP_0x65(); // 0x45e2: 00000065
@@ -3395,18 +3395,18 @@ ShowText((7196)"Harry takes the hand gun from his hip. ¥"I thought I killed you
 HandleInput(); // 0x4646: 00000010
 ShowText((7197)"Even though I cannot speak, even though I have been shot in the chest. even though one of my arms is burning... I am still alive.¥""); // 0x464a: 0000100c
 HandleInput(); // 0x4650: 00000010
-OP_0x73(0xf); // 0x4654: 00001073
+PlaySecondSoundFx(0xf); // 0x4654: 00001073
 ShowText((7198)"Bang... Cybil hears the familiar sound of gunfire. At the same time she felt a severe impact on her forehead."); // 0x465a: 0000100c
 HandleInput(); // 0x4660: 00000010
-OP_0x6e(0x0, 0x0, 0x1); // 0x4664: 0000306e
-OP_0x64(); // 0x466e: 00000064
+LoadSecondEffect(0x0, 0x0, 0x1); // 0x4664: 0000306e
+CleanScreen(); // 0x466e: 00000064
 LoadBackground(0x19a); // 0x4672: 00001069
 OP_0x65(); // 0x4678: 00000065
 ShowText((7199)"Only vivid red suddenly returned to what had been a monochrome world. There is no strength in her body. Her body falls like a doll's, and her broken face forcefully hits the ground with a smash."); // 0x467c: 0000100c
 HandleInput(); // 0x4682: 00000010
 ShowText((7200)"¥"I can see Harry. He is walking this way. Behind him... Behind him I see a baby. It is looking at me...¥""); // 0x4686: 0000100c
 HandleInput(); // 0x468c: 00000010
-OP_0x64(); // 0x4690: 00000064
+CleanScreen(); // 0x4690: 00000064
 LoadBackground(0x0); // 0x4694: 00001069
 OP_0x65(); // 0x469a: 00000065
 ShowText((7201)"Harry gently closes Cybil's eyes with the palm of his hand. That was his final consideration for her..."); // 0x469e: 0000100c
@@ -3414,13 +3414,13 @@ HandleInput(); // 0x46a4: 00000010
 OP_0x2c(0x3, 0x1); // 0x46a8: 0000202c
 Jump(L_0x448a); // 0x46b0: 00001001
 L_0x46b6:
-OP_0x26(0x80); // 0x46b6: 00001026
-OP_0x62(0x1be, 0x3b2); // 0x46bc: 00002062
-OP_0x64(); // 0x46c4: 00000064
+Area(0x80); // 0x46b6: 00001026
+TitleAndSubtitle(0x1be, 0x3b2); // 0x46bc: 00002062
+CleanScreen(); // 0x46c4: 00000064
 LoadBackground(0x43); // 0x46c8: 00001069
 LoadEffect(0xe, 0x1, 0x0, 0x1); // 0x46ce: 0000406d
 OP_0x65(); // 0x46da: 00000065
-OP_0x6c(0x66, 0x1); // 0x46de: 0000206c
+PlayMusic(0x66, 0x1); // 0x46de: 0000206c
 Choice((700)"Cybil...", (701)"A ) calms herself down.", (702)"B ) is overcome with hopelessness."); // 0x46e6: 00003011
 Branch4(0x357, L_0x46fc); // 0x46f0: 00001004
 Jump(L_0xe08); // 0x46f6: 00001001
@@ -3431,11 +3431,11 @@ Jump(L_0x287c); // 0x4706: 00001001
 L_0x470c:
 Nop7(); // 0x470c: 00000007
 L_0x4710:
-OP_0x26(0x81); // 0x4710: 00001026
-OP_0x62(0x1bf, 0x3b3); // 0x4716: 00002062
-OP_0x25(); // 0x471e: 00000025
+Area(0x81); // 0x4710: 00001026
+TitleAndSubtitle(0x1bf, 0x3b3); // 0x4716: 00002062
+CleanTextRecord(); // 0x471e: 00000025
 OP_0x2c(0x3, 0x2); // 0x4722: 0000202c
-OP_0x64(); // 0x472a: 00000064
+CleanScreen(); // 0x472a: 00000064
 LoadBackground(0x0); // 0x472e: 00001069
 LoadEffect(0x0, 0x0, 0x0); // 0x4734: 0000306d
 OP_0x65(); // 0x473e: 00000065
@@ -3448,25 +3448,25 @@ Branch4(0x36c, L_0x4768); // 0x475c: 00001004
 Jump(L_0x3c00); // 0x4762: 00001001
 L_0x4768:
 Nop7(); // 0x4768: 00000007
-OP_0x26(0x2); // 0x476c: 00001026
-OP_0x26(0x4); // 0x4772: 00001026
-OP_0x26(0x5); // 0x4778: 00001026
-OP_0x26(0x7); // 0x477e: 00001026
-OP_0x26(0x9); // 0x4784: 00001026
-OP_0x26(0xb); // 0x478a: 00001026
-OP_0x26(0xe); // 0x4790: 00001026
-OP_0x26(0xd); // 0x4796: 00001026
-OP_0x26(0x80); // 0x479c: 00001026
-OP_0x26(0xf); // 0x47a2: 00001026
-OP_0x26(0x11); // 0x47a8: 00001026
-OP_0x26(0x14); // 0x47ae: 00001026
-OP_0x26(0x13); // 0x47b4: 00001026
-OP_0x26(0x15); // 0x47ba: 00001026
-OP_0x26(0x18); // 0x47c0: 00001026
-OP_0x26(0x19); // 0x47c6: 00001026
-OP_0x26(0x1b); // 0x47cc: 00001026
-OP_0x26(0x1c); // 0x47d2: 00001026
-OP_0x26(0x24); // 0x47d8: 00001026
+Area(0x2); // 0x476c: 00001026
+Area(0x4); // 0x4772: 00001026
+Area(0x5); // 0x4778: 00001026
+Area(0x7); // 0x477e: 00001026
+Area(0x9); // 0x4784: 00001026
+Area(0xb); // 0x478a: 00001026
+Area(0xe); // 0x4790: 00001026
+Area(0xd); // 0x4796: 00001026
+Area(0x80); // 0x479c: 00001026
+Area(0xf); // 0x47a2: 00001026
+Area(0x11); // 0x47a8: 00001026
+Area(0x14); // 0x47ae: 00001026
+Area(0x13); // 0x47b4: 00001026
+Area(0x15); // 0x47ba: 00001026
+Area(0x18); // 0x47c0: 00001026
+Area(0x19); // 0x47c6: 00001026
+Area(0x1b); // 0x47cc: 00001026
+Area(0x1c); // 0x47d2: 00001026
+Area(0x24); // 0x47d8: 00001026
 .begin branch_info
 .4byte 0x363d3173 // 0x47de
 .4byte 0x35333535 // 0x47e2
