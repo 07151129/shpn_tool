@@ -1,3 +1,9 @@
+### v0.2
+
+- Support rendering []* characters
+- Fix some typos in the English script (contributed by IlDucci)
+- Identify some script operations
+
 ### v0.1
 
 - Initial release
