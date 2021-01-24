@@ -242,9 +242,6 @@ void init_script_handlers() {
     script_handlers[0].handler = handler_Nop;
     script_handlers[0].name = "Nop0";
 
-    script_handlers[7].handler = handler_Nop;
-    script_handlers[7].name = "Nop7";
-
     script_handlers[1].name = "Jump";
     script_handlers[1].handler = handler_Jump;
     script_handlers[1].has_va = true;
@@ -253,9 +250,13 @@ void init_script_handlers() {
         script_handlers[i].handler = handler_Branch;
         script_handlers[i].has_va = true;
     }
+    
     script_handlers[4].name = "Branch4";
     script_handlers[5].name = "Branch5";
     script_handlers[6].name = "Branch6";
+
+    script_handlers[7].handler = handler_Nop;
+    script_handlers[7].name = "Nop7";
 
     script_handlers[0xc].name = "ShowText";
     script_handlers[0xc].handler = handler_ShowText;
@@ -267,23 +268,31 @@ void init_script_handlers() {
 
     script_handlers[0x10].name = "HandleInput";
 
-    script_handlers[0x69].name = "LoadBackground";
-    // script_handlers[0x69].has_va = true;
-    script_handlers[0x69].handler = handler_LoadBackground;
-
-    script_handlers[0x6d].name = "LoadEffect";
-    // script_handlers[0x6d].has_va = true;
-    script_handlers[0x6d].handler = handler_LoadEffect;
-
     script_handlers[0x11].name = "Choice";
     script_handlers[0x11].has_va = true;
     script_handlers[0x11].handler = handler_Choice;
 
+    script_handlers[0x1f].name = "WaitTime";
+    
+    script_handlers[0x22].name = "FadeToWhite";
+    
+    script_handlers[0x23].name = "FadeFromBlack";
+    
+    script_handlers[0x24].name = "FadeFromWhite";
+    
+    script_handlers[0x25].name = "CleanTextRecord";
+    
+    script_handlers[0x26].name = "Area";
+    
     script_handlers[0x30].handler = handler_0x30;
 
     script_handlers[0x35].name = "ChoiceIdx";
     script_handlers[0x35].has_va = true;
     script_handlers[0x35].handler = handler_ChoiceIdx;
+    
+    script_handlers[0x37].name = "SaveVariable";
+    
+    script_handlers[0x38].name = "ReadVariable";
 
     script_handlers[0x5f].name = "PlayCredits";
 
@@ -291,9 +300,29 @@ void init_script_handlers() {
 
     script_handlers[0x61].name = "Puzzle";
 
+    script_handlers[0x62].name = "TitleAndSubtitle";
+    
     script_handlers[0x63].name = "Stop";
     // script_handlers[0x63].handler = handler_Stop;
+    
+    script_handlers[0x64].name = "CleanScreen";
 
+    script_handlers[0x69].name = "LoadBackground";
+    // script_handlers[0x69].has_va = true;
+    script_handlers[0x69].handler = handler_LoadBackground;
+    
+    script_handlers[0x6c].name = "PlayMusic";
+
+    script_handlers[0x6d].name = "LoadEffect";
+    // script_handlers[0x6d].has_va = true;
+    script_handlers[0x6d].handler = handler_LoadEffect;
+
+    script_handlers[0x6e].name = "LoadSecondEffect";
+
+    script_handlers[0x72].name = "PlaySoundFx";
+
+    script_handlers[0x73].name = "PlaySecondSoundFx";
+    
     did_init = true;
 }
 

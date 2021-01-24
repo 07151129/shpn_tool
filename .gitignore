@@ -1,0 +1,8 @@
+agb/build/
+build/
+*.gba
+*.rom
+src/script_gram.tab.c
+src/script_gram.tab.h
+src/script_lex.yy.c
+src/script_lex.yy.h
