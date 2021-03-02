@@ -311,7 +311,7 @@ void init_script_handlers() {
     
     script_handlers[0x64].name = "CleanScreen";
     
-    script_handlers[0x65].name = "PaintScreen";
+    script_handlers[0x65].name = "DrawBackground";
 
     script_handlers[0x69].name = "LoadBackground";
     // script_handlers[0x69].has_va = true;
