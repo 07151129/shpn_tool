@@ -2,6 +2,7 @@ agb/build/
 build/
 *.gba
 *.rom
+*.sav
 src/script_gram.tab.c
 src/script_gram.tab.h
 src/script_lex.yy.c
