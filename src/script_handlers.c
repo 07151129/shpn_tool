@@ -266,6 +266,8 @@ void init_script_handlers() {
     script_handlers[0xd].handler = handler_ShowMovie;
     // script_handlers[0xd].has_va = true;
 
+    script_handlers[0xf].name = "FadeToBlack";
+    
     script_handlers[0x10].name = "HandleInput";
 
     script_handlers[0x11].name = "Choice";
@@ -283,6 +285,8 @@ void init_script_handlers() {
     script_handlers[0x25].name = "CleanTextRecord";
     
     script_handlers[0x26].name = "Area";
+    
+    script_handlers[0x2c].name = "AudioFadeOut";
     
     script_handlers[0x30].handler = handler_0x30;
 
@@ -306,6 +310,8 @@ void init_script_handlers() {
     // script_handlers[0x63].handler = handler_Stop;
     
     script_handlers[0x64].name = "CleanScreen";
+    
+    script_handlers[0x65].name = "DrawBackground";
 
     script_handlers[0x69].name = "LoadBackground";
     // script_handlers[0x69].has_va = true;
